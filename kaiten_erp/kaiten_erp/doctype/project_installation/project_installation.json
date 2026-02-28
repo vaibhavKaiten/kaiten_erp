@@ -1,0 +1,393 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-01-31 15:55:48.579985",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "basic_details_tab",
+    "customer_and_address_section",
+    "first_name",
+    "last_name",
+    "mobile_number",
+    "column_break_zucu",
+    "contact_number",
+    "whatsapp_number",
+    "email",
+    "column_break_ilox",
+    "address_line_1",
+    "address_line_2",
+    "address_line_3",
+    "city__district",
+    "state",
+    "project_installation_details_tab",
+    "assignment_and_planning_section",
+    "assigned_internal_user",
+    "assigned_vendor",
+    "column_break_gopt",
+    "planned_start_date",
+    "planned_end_date",
+    "column_break_lxlu",
+    "actual_start_date",
+    "actual_end_date",
+    "structure_data_read_only_section",
+    "structure_type",
+    "column_break_ocrt",
+    "anchoring_type",
+    "column_break_rdyv",
+    "structure_height_m",
+    "installation_details_section",
+    "panel_item",
+    "column_break_gdpp",
+    "panel_count",
+    "column_break_oxgp",
+    "installation_notes",
+    "photo_attachments_section",
+    "panel_installed_front",
+    "panel_installed_back",
+    "column_break_ydhz",
+    "inverter_installed",
+    "acdb__dcdb",
+    "column_break_cdvp",
+    "wiring_route",
+    "overall_site_view",
+    "installation__safety_notes_section",
+    "column_break_dzfl",
+    "column_break_xhqd",
+    "safety__deviation_notes",
+    "gps_latitude",
+    "gps_longitude",
+    "gps_location",
+    "gps_map_link",
+    "location_log"
+  ],
+  "fields": [
+    {
+      "fieldname": "customer_and_address_section",
+      "fieldtype": "Section Break",
+      "label": "Customer and Address"
+    },
+    {
+      "fieldname": "first_name",
+      "fieldtype": "Data",
+      "label": "First Name"
+    },
+    {
+      "fieldname": "last_name",
+      "fieldtype": "Data",
+      "label": "Last Name"
+    },
+    {
+      "fieldname": "mobile_number",
+      "fieldtype": "Data",
+      "label": " Mobile Number"
+    },
+    {
+      "fieldname": "column_break_zucu",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "contact_number",
+      "fieldtype": "Data",
+      "label": "Contact Number"
+    },
+    {
+      "fieldname": "whatsapp_number",
+      "fieldtype": "Data",
+      "label": "WhatsApp Number"
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email"
+    },
+    {
+      "fieldname": "column_break_ilox",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "address_line_1",
+      "fieldtype": "Data",
+      "label": "Address Line 1"
+    },
+    {
+      "fieldname": "address_line_2",
+      "fieldtype": "Data",
+      "label": "Address Line 2"
+    },
+    {
+      "fieldname": "address_line_3",
+      "fieldtype": "Data",
+      "label": "Address Line 3"
+    },
+    {
+      "fieldname": "city__district",
+      "fieldtype": "Data",
+      "label": "City / District"
+    },
+    {
+      "fieldname": "state",
+      "fieldtype": "Data",
+      "label": "State"
+    },
+    {
+      "fieldname": "basic_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Basic Details"
+    },
+    {
+      "fieldname": "project_installation_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Project Installation Details"
+    },
+    {
+      "fieldname": "assignment_and_planning_section",
+      "fieldtype": "Section Break",
+      "label": "Assignment and Planning"
+    },
+    {
+      "fieldname": "assigned_internal_user",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Assigned Internal User"
+    },
+    {
+      "fieldname": "assigned_vendor",
+      "fieldtype": "Data",
+      "label": "Assigned Vendor"
+    },
+    {
+      "fieldname": "column_break_gopt",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "planned_start_date",
+      "fieldtype": "Date",
+      "label": "Planned Start Date"
+    },
+    {
+      "fieldname": "planned_end_date",
+      "fieldtype": "Date",
+      "label": "Planned End Date"
+    },
+    {
+      "fieldname": "column_break_lxlu",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "actual_start_date",
+      "fieldtype": "Date",
+      "label": "Actual Start Date"
+    },
+    {
+      "fieldname": "actual_end_date",
+      "fieldtype": "Date",
+      "label": "Actual End Date"
+    },
+    {
+      "fieldname": "structure_data_read_only_section",
+      "fieldtype": "Section Break",
+      "label": "Structure Data (Read Only)"
+    },
+    {
+      "fieldname": "structure_type",
+      "fieldtype": "Data",
+      "label": "Structure Type"
+    },
+    {
+      "fieldname": "column_break_ocrt",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "anchoring_type",
+      "fieldtype": "Data",
+      "label": "Anchoring Type"
+    },
+    {
+      "fieldname": "column_break_rdyv",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "structure_height_m",
+      "fieldtype": "Data",
+      "label": "Structure Height (m)"
+    },
+    {
+      "fieldname": "installation_details_section",
+      "fieldtype": "Section Break",
+      "label": "Installation Details"
+    },
+    {
+      "fieldname": "panel_item",
+      "fieldtype": "Data",
+      "label": "Panel Item"
+    },
+    {
+      "fieldname": "column_break_gdpp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "panel_count",
+      "fieldtype": "Data",
+      "label": "Panel Count"
+    },
+    {
+      "fieldname": "column_break_oxgp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "installation_notes",
+      "fieldtype": "Small Text",
+      "label": "Installation Notes"
+    },
+    {
+      "fieldname": "photo_attachments_section",
+      "fieldtype": "Section Break",
+      "label": "Photo Attachments"
+    },
+    {
+      "fieldname": "panel_installed_front",
+      "fieldtype": "Attach",
+      "label": "Panel Installed Front"
+    },
+    {
+      "fieldname": "panel_installed_back",
+      "fieldtype": "Attach",
+      "label": "Panel Installed Back"
+    },
+    {
+      "fieldname": "column_break_ydhz",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "inverter_installed",
+      "fieldtype": "Attach",
+      "label": "Inverter Installed"
+    },
+    {
+      "fieldname": "acdb__dcdb",
+      "fieldtype": "Attach",
+      "label": "ACDB / DCDB"
+    },
+    {
+      "fieldname": "column_break_cdvp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "wiring_route",
+      "fieldtype": "Attach",
+      "label": "Wiring Route"
+    },
+    {
+      "fieldname": "overall_site_view",
+      "fieldtype": "Attach",
+      "label": "Overall Site View"
+    },
+    {
+      "fieldname": "installation__safety_notes_section",
+      "fieldtype": "Section Break",
+      "label": "Safety/Review Notes"
+    },
+    {
+      "fieldname": "column_break_xhqd",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "safety__deviation_notes",
+      "fieldtype": "Small Text",
+      "label": "Safety / Deviation Notes"
+    },
+    {
+      "fieldname": "column_break_dzfl",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "gps_latitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Latitude"
+    },
+    {
+      "fieldname": "gps_longitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Longitude"
+    },
+    {
+      "fieldname": "gps_location",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Location"
+    },
+    {
+      "fieldname": "gps_map_link",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Map Link"
+    },
+    {
+      "fieldname": "location_log",
+      "fieldtype": "Table",
+      "allow_on_submit": 1,
+      "read_only": 1,
+      "label": "Location Log",
+      "options": "Location Log"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-02-05 16:25:45.183620",
+  "modified_by": "Administrator",
+  "module": "Kaiten Erp",
+  "name": "Project Installation",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "select": 1,
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Vendor Manager",
+      "select": 1,
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Vendor Executive",
+      "select": 1,
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}

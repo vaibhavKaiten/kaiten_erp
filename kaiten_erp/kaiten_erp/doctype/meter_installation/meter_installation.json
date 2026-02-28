@@ -1,0 +1,344 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-01-31 16:11:40.394949",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "basic_details_tab",
+    "customer_and_address_section",
+    "first_name",
+    "last_name",
+    "mobile_number",
+    "column_break_czow",
+    "contact_number",
+    "whatsapp_number",
+    "email",
+    "column_break_ytwo",
+    "address_line_1",
+    "address_line_2",
+    "address_line_3",
+    "city__district",
+    "state",
+    "meter_installation_details_tab",
+    "assignment_and_scheduling_section",
+    "assigned_internal_user",
+    "column_break_wokv",
+    "assigned_vendor",
+    "column_break_wail",
+    "actual_installation_date",
+    "meter_details_section",
+    "meter_type",
+    "column_break_izco",
+    "meter_serial_number",
+    "column_break_xier",
+    "net_meter_application_no",
+    "installation_notes_section",
+    "meter_installation_status",
+    "column_break_axcy",
+    "meter_notes",
+    "column_break_oifu",
+    "execution_remarks",
+    "photo_attachments_section",
+    "meter_front_photo",
+    "column_break_mhtt",
+    "meter_side_photo",
+    "column_break_xhpm",
+    "meter_installed_location",
+    "meter_documents_section",
+    "meter_installation_report",
+    "column_break_foos",
+    "utility_acknowledgement",
+    "column_break_ihbw",
+    "other_supporting_document",
+    "gps_latitude",
+    "gps_longitude",
+    "gps_location",
+    "gps_map_link",
+    "location_log"
+  ],
+  "fields": [
+    {
+      "fieldname": "customer_and_address_section",
+      "fieldtype": "Section Break",
+      "label": "Customer and Address"
+    },
+    {
+      "fieldname": "first_name",
+      "fieldtype": "Data",
+      "label": "First Name"
+    },
+    {
+      "fieldname": "last_name",
+      "fieldtype": "Data",
+      "label": "Last Name"
+    },
+    {
+      "fieldname": "mobile_number",
+      "fieldtype": "Data",
+      "label": "Mobile Number"
+    },
+    {
+      "fieldname": "column_break_czow",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "contact_number",
+      "fieldtype": "Data",
+      "label": "Contact Number"
+    },
+    {
+      "fieldname": "whatsapp_number",
+      "fieldtype": "Data",
+      "label": "WhatsApp Number"
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email"
+    },
+    {
+      "fieldname": "column_break_ytwo",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "address_line_1",
+      "fieldtype": "Data",
+      "label": "Address Line 1"
+    },
+    {
+      "fieldname": "address_line_2",
+      "fieldtype": "Data",
+      "label": "Address Line 2"
+    },
+    {
+      "fieldname": "address_line_3",
+      "fieldtype": "Data",
+      "label": "Address Line 3"
+    },
+    {
+      "fieldname": "city__district",
+      "fieldtype": "Data",
+      "label": "City / District"
+    },
+    {
+      "fieldname": "state",
+      "fieldtype": "Data",
+      "label": "State"
+    },
+    {
+      "fieldname": "basic_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Basic Details"
+    },
+    {
+      "fieldname": "meter_installation_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Meter Installation Details"
+    },
+    {
+      "fieldname": "assignment_and_scheduling_section",
+      "fieldtype": "Section Break",
+      "label": "Assignment and Scheduling"
+    },
+    {
+      "fieldname": "assigned_internal_user",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Assigned Internal User"
+    },
+    {
+      "fieldname": "column_break_wokv",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "assigned_vendor",
+      "fieldtype": "Data",
+      "label": "Assigned Vendor"
+    },
+    {
+      "fieldname": "column_break_wail",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "actual_installation_date",
+      "fieldtype": "Date",
+      "label": "Actual Installation Date"
+    },
+    {
+      "fieldname": "meter_details_section",
+      "fieldtype": "Section Break",
+      "label": "Meter Details"
+    },
+    {
+      "fieldname": "meter_type",
+      "fieldtype": "Data",
+      "label": "Meter Type"
+    },
+    {
+      "fieldname": "column_break_izco",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "meter_serial_number",
+      "fieldtype": "Data",
+      "label": "Meter Serial Number"
+    },
+    {
+      "fieldname": "column_break_xier",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "net_meter_application_no",
+      "fieldtype": "Data",
+      "label": " Net Meter Application No"
+    },
+    {
+      "fieldname": "installation_notes_section",
+      "fieldtype": "Section Break",
+      "label": "Installation Notes"
+    },
+    {
+      "fieldname": "meter_installation_status",
+      "fieldtype": "Data",
+      "label": "Meter Installation Status"
+    },
+    {
+      "fieldname": "column_break_axcy",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "meter_notes",
+      "fieldtype": "Small Text",
+      "label": "Meter Notes"
+    },
+    {
+      "fieldname": "column_break_oifu",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "execution_remarks",
+      "fieldtype": "Small Text",
+      "label": "Execution Remarks"
+    },
+    {
+      "fieldname": "photo_attachments_section",
+      "fieldtype": "Section Break",
+      "label": "Photo Attachments"
+    },
+    {
+      "fieldname": "meter_front_photo",
+      "fieldtype": "Attach",
+      "label": "Meter Front Photo"
+    },
+    {
+      "fieldname": "column_break_mhtt",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "meter_side_photo",
+      "fieldtype": "Attach",
+      "label": "Meter Side Photo"
+    },
+    {
+      "fieldname": "column_break_xhpm",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "meter_installed_location",
+      "fieldtype": "Attach",
+      "label": "Meter Installed Location"
+    },
+    {
+      "fieldname": "meter_documents_section",
+      "fieldtype": "Section Break",
+      "label": "Meter Documents"
+    },
+    {
+      "fieldname": "meter_installation_report",
+      "fieldtype": "Attach",
+      "label": "Meter Installation Report"
+    },
+    {
+      "fieldname": "column_break_foos",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "utility_acknowledgement",
+      "fieldtype": "Attach",
+      "label": "Utility Acknowledgement"
+    },
+    {
+      "fieldname": "column_break_ihbw",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "other_supporting_document",
+      "fieldtype": "Attach",
+      "label": "Other Supporting Document"
+    },
+    {
+      "fieldname": "gps_latitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Latitude"
+    },
+    {
+      "fieldname": "gps_longitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Longitude"
+    },
+    {
+      "fieldname": "gps_location",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Location"
+    },
+    {
+      "fieldname": "gps_map_link",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Map Link"
+    },
+    {
+      "fieldname": "location_log",
+      "fieldtype": "Table",
+      "allow_on_submit": 1,
+      "read_only": 1,
+      "label": "Location Log",
+      "options": "Location Log"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-01-31 17:23:39.434955",
+  "modified_by": "Administrator",
+  "module": "Kaiten Erp",
+  "name": "Meter Installation",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}

@@ -1,0 +1,24 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Job File",
+  "enabled": 1,
+  "modified": "2026-02-13 15:52:09.809591",
+  "module": "Kaiten Erp",
+  "name": "Show connections in Connections Tab",
+  "script": "frappe.ui.form.on('Job File', {\n    refresh: function(frm) {\n        // 1. Check if the dashboard wrapper exists\n        if (frm.dashboard && frm.dashboard.wrapper) {\n            \n            // 2. Locate our target HTML field (dashboard_html)\n            var target_wrapper = frm.fields_dict['dashboard_html'].wrapper;\n            \n            // 3. Move the dashboard into the target field\n            $(target_wrapper).empty().append(frm.dashboard.wrapper);\n            \n            // Optional: Hide the default section label if it looks messy\n            $(target_wrapper).find('.section-head').hide();\n        }\n    }\n});",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Technical Survey",
+  "enabled": 1,
+  "modified": "2026-02-18 18:03:20.657097",
+  "module": "Kaiten Erp",
+  "name": "Technical Survey – Fetch From Job File",
+  "script": "frappe.ui.form.on(\"Technical Survey\", {\n\n    onload: function(frm) {\n        if (frm.doc.custom_job_file && frm.is_new()) {\n            fetch_job_file_data(frm);\n        }\n    },\n\n    custom_job_file: function(frm) {\n        if (!frm.doc.custom_job_file) return;\n        fetch_job_file_data(frm);\n    }\n\n});\n\n\nfunction fetch_job_file_data(frm) {\n\n    frappe.db.get_value(\"Job File\", frm.doc.custom_job_file, [\n        \"monthly_consumption\",\n        \"existing_load_kw\",\n        \"required_load_kw\",\n        \"sanctioned_load_kw\",\n        \"phase_type\",\n        \"discom\",\n        \"proposed_system\",\n        \"roof_area_sqft\",\n        \"roof_type\",\n        \"site_type\",\n        \"area_suitability\",\n        \"preferred_visit_date\",\n        \"preferred_time_slot\"\n    ]).then(r => {\n\n        if (!r.message) return;\n\n        let d = r.message;\n\n        frm.set_value({\n            monthly_consumption: d.monthly_consumption,\n            existing_load_kw: d.existing_load_kw,\n            required_load_kw: d.required_load_kw,\n            sanctioned_load_kw: d.sanctioned_load_kw,\n            discom: d.discom,\n            phase_type_copy: d.phase_type,\n            proposed_system_kw__tier: d.proposed_system,\n            roof_area_sqft: d.roof_area_sqft,\n            roof_type: d.roof_type,\n            site_type: d.site_type,\n            area_suitability: d.area_suitability,\n            data_ycke: d.preferred_visit_date,\n            data_tila: d.preferred_time_slot\n        });\n\n    });\n\n}\n",
+  "view": "Form"
+ }
+]

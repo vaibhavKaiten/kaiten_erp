@@ -1,0 +1,453 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-02-07 16:16:04.951001",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "job_overview_tab",
+    "job_references_section",
+    "lead",
+    "sales_order",
+    "column_break_jvdk",
+    "customer",
+    "proposed_system",
+    "column_break_bimj",
+    "job_priority",
+    "workflow_state",
+    "commercial_snapshot_section",
+    "mrp",
+    "token_amount_recieved",
+    "column_break_gqxp",
+    "negotiated_amount",
+    "balance_amount",
+    "column_break_wwih",
+    "payment_term_template",
+    "finance_required",
+    "tab_2_tab",
+    "customer_snapshot_section",
+    "first_name",
+    "last_name",
+    "column_break_rqqe",
+    "company_name",
+    "mobile_number",
+    "column_break_szvl",
+    "email",
+    "customer_type",
+    "location_snapshot_section",
+    "address_line_1",
+    "address_line_2",
+    "column_break_foex",
+    "city",
+    "state",
+    "column_break_mfkx",
+    "territory",
+    "territory_copy",
+    "electrical_snapshot_section",
+    "k_number",
+    "monthly_consumption",
+    "column_break_bdhq",
+    "existing_load_kw",
+    "required_load_kw",
+    "sanctioned_load_kw",
+    "column_break_pvee",
+    "phase_type",
+    "discom",
+    "job_control_tab",
+    "job_execution_control_section",
+    "table_royw",
+    "payment_control_tab",
+    "payment_control_section",
+    "advance_invoice_number",
+    "advance_invoice_amount",
+    "advance_paid_amount",
+    "advance_outstanding_amount",
+    "advance_invoice_status",
+    "column_break_pc1",
+    "advance_override_approved",
+    "advance_override_remark",
+    "column_break_pc2",
+    "advance_override_approved_by",
+    "advance_override_approved_on",
+    "override_notification_sent",
+    "connection_tab"
+  ],
+  "fields": [
+    {
+      "fieldname": "job_overview_tab",
+      "fieldtype": "Tab Break",
+      "label": "Job Overview"
+    },
+    {
+      "fieldname": "job_references_section",
+      "fieldtype": "Section Break",
+      "label": "Job References"
+    },
+    {
+      "fieldname": "lead",
+      "fieldtype": "Link",
+      "label": "Lead",
+      "options": "Lead"
+    },
+    {
+      "fieldname": "sales_order",
+      "fieldtype": "Link",
+      "label": "Sales Order",
+      "options": "Sales Order"
+    },
+    {
+      "fieldname": "column_break_jvdk",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Customer",
+      "options": "Customer"
+    },
+    {
+      "fieldname": "proposed_system",
+      "fieldtype": "Link",
+      "label": "Proposed System",
+      "options": "Item"
+    },
+    {
+      "fieldname": "column_break_bimj",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "job_priority",
+      "fieldtype": "Select",
+      "label": "Job Priority",
+      "options": "High\nMedium\nLow\nNone"
+    },
+    {
+      "fieldname": "workflow_state",
+      "fieldtype": "Link",
+      "label": "Workflow State",
+      "options": "Workflow State",
+      "read_only": 1
+    },
+    {
+      "fieldname": "tab_2_tab",
+      "fieldtype": "Tab Break",
+      "label": "Customer Site Snapshot"
+    },
+    {
+      "fieldname": "commercial_snapshot_section",
+      "fieldtype": "Section Break",
+      "label": "Commercial Snapshot"
+    },
+    {
+      "fieldname": "mrp",
+      "fieldtype": "Currency",
+      "label": "MRP"
+    },
+    {
+      "fieldname": "token_amount_recieved",
+      "fieldtype": "Currency",
+      "label": "Token Amount Recieved"
+    },
+    {
+      "fieldname": "column_break_gqxp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "negotiated_amount",
+      "fieldtype": "Currency",
+      "label": "Negotiated Amount"
+    },
+    {
+      "fieldname": "balance_amount",
+      "fieldtype": "Currency",
+      "label": "Balance Amount"
+    },
+    {
+      "fieldname": "column_break_wwih",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "payment_term_template",
+      "fieldtype": "Data",
+      "label": "Payment Term Template"
+    },
+    {
+      "fieldname": "finance_required",
+      "fieldtype": "Select",
+      "label": "Finance Required",
+      "options": "Yes\nNo"
+    },
+    {
+      "fieldname": "customer_snapshot_section",
+      "fieldtype": "Section Break",
+      "label": "Customer Snapshot"
+    },
+    {
+      "fieldname": "first_name",
+      "fieldtype": "Data",
+      "label": "First Name"
+    },
+    {
+      "fieldname": "last_name",
+      "fieldtype": "Data",
+      "label": "Last Name"
+    },
+    {
+      "fieldname": "column_break_rqqe",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "company_name",
+      "fieldtype": "Data",
+      "label": "Company Name"
+    },
+    {
+      "fieldname": "mobile_number",
+      "fieldtype": "Data",
+      "label": "Mobile Number"
+    },
+    {
+      "fieldname": "column_break_szvl",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email"
+    },
+    {
+      "fieldname": "customer_type",
+      "fieldtype": "Data",
+      "label": "Customer Type"
+    },
+    {
+      "fieldname": "location_snapshot_section",
+      "fieldtype": "Section Break",
+      "label": "Location Snapshot"
+    },
+    {
+      "fieldname": "address_line_1",
+      "fieldtype": "Small Text",
+      "label": "Address Line 1"
+    },
+    {
+      "fieldname": "address_line_2",
+      "fieldtype": "Small Text",
+      "label": "Address Line 2"
+    },
+    {
+      "fieldname": "city",
+      "fieldtype": "Data",
+      "label": "City "
+    },
+    {
+      "fieldname": "state",
+      "fieldtype": "Data",
+      "label": "State"
+    },
+    {
+      "fieldname": "territory",
+      "fieldtype": "Data",
+      "label": "Territory"
+    },
+    {
+      "fieldname": "territory_copy",
+      "fieldtype": "Data",
+      "label": "Pincode"
+    },
+    {
+      "fieldname": "column_break_foex",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "column_break_mfkx",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "electrical_snapshot_section",
+      "fieldtype": "Section Break",
+      "label": "Electrical Snapshot"
+    },
+    {
+      "fieldname": "k_number",
+      "fieldtype": "Data",
+      "label": "K Number"
+    },
+    {
+      "fieldname": "monthly_consumption",
+      "fieldtype": "Data",
+      "label": "Monthly Consumption"
+    },
+    {
+      "fieldname": "column_break_bdhq",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "existing_load_kw",
+      "fieldtype": "Data",
+      "label": "Existing Load (kW)"
+    },
+    {
+      "fieldname": "required_load_kw",
+      "fieldtype": "Data",
+      "label": "Required Load (kW)"
+    },
+    {
+      "fieldname": "sanctioned_load_kw",
+      "fieldtype": "Data",
+      "label": "Sanctioned Load (kW)"
+    },
+    {
+      "fieldname": "column_break_pvee",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "phase_type",
+      "fieldtype": "Select",
+      "label": "Phase type",
+      "options": "Single Phase\nThree Phase"
+    },
+    {
+      "fieldname": "discom",
+      "fieldtype": "Data",
+      "label": "Discom"
+    },
+    {
+      "fieldname": "job_control_tab",
+      "fieldtype": "Tab Break",
+      "label": "Job Control"
+    },
+    {
+      "fieldname": "job_execution_control_section",
+      "fieldtype": "Section Break",
+      "label": "Job Execution Control"
+    },
+    {
+      "fieldname": "table_royw",
+      "fieldtype": "Table",
+      "options": "Job Execution Child Table"
+    },
+    {
+      "fieldname": "payment_control_tab",
+      "fieldtype": "Tab Break",
+      "label": "Payment Control"
+    },
+    {
+      "fieldname": "payment_control_section",
+      "fieldtype": "Section Break",
+      "label": ""
+    },
+    {
+      "fieldname": "advance_invoice_number",
+      "fieldtype": "Link",
+      "label": "Advance Invoice Number",
+      "options": "Sales Invoice",
+      "read_only": 1
+    },
+    {
+      "fieldname": "advance_invoice_amount",
+      "fieldtype": "Currency",
+      "label": "Advance Invoice Amount",
+      "read_only": 1
+    },
+    {
+      "fieldname": "advance_paid_amount",
+      "fieldtype": "Currency",
+      "label": "Advance Paid Amount",
+      "read_only": 1
+    },
+    {
+      "fieldname": "advance_outstanding_amount",
+      "fieldtype": "Currency",
+      "label": "Advance Outstanding Amount",
+      "read_only": 1
+    },
+    {
+      "fieldname": "advance_invoice_status",
+      "fieldtype": "Read Only",
+      "label": "Advance Invoice Status"
+    },
+    {
+      "fieldname": "column_break_pc1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "advance_override_approved",
+      "fieldtype": "Check",
+      "label": "Advance Override Approved",
+      "permlevel": 1
+    },
+    {
+      "fieldname": "advance_override_remark",
+      "fieldtype": "Small Text",
+      "label": "Advance Override Remark",
+      "permlevel": 1,
+      "mandatory_depends_on": "eval:doc.advance_override_approved == 1"
+    },
+    {
+      "fieldname": "column_break_pc2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "advance_override_approved_by",
+      "fieldtype": "Link",
+      "label": "Advance Override Approved By",
+      "options": "User",
+      "read_only": 1
+    },
+    {
+      "fieldname": "advance_override_approved_on",
+      "fieldtype": "Datetime",
+      "label": "Advance Override Approved On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "override_notification_sent",
+      "fieldtype": "Check",
+      "label": "Override Notification Sent",
+      "read_only": 1
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-02-07 16:40:46.188849",
+  "modified_by": "Administrator",
+  "module": "Kaiten Erp",
+  "name": "Job File",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "read": 1,
+      "write": 1,
+      "role": "Execution Manager"
+    },
+    {
+      "read": 1,
+      "write": 1,
+      "role": "Execution Manager",
+      "permlevel": 1
+    },
+    {
+      "read": 1,
+      "role": "Accounts Manager"
+    }
+  ],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}

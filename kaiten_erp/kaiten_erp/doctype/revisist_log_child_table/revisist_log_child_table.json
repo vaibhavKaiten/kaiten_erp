@@ -1,0 +1,57 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-02-05 18:41:04.320202",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "reason_category",
+        "created_on",
+        "due_date",
+        "status"
+    ],
+    "fields": [
+        {
+            "fieldname": "reason_category",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Reason Category",
+            "options": "Customer Not Available\nAccess Issue\nLayout Change\nElectrical Change\nDISCOM Requirement\nMaterial Not Available\nQuality Issue"
+        },
+        {
+            "fieldname": "created_on",
+            "fieldtype": "Datetime",
+            "in_list_view": 1,
+            "label": "Created On"
+        },
+        {
+            "fieldname": "due_date",
+            "fieldtype": "Date",
+            "in_list_view": 1,
+            "label": "Due Date"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Status",
+            "options": "Open\nClosed"
+        }
+    ],
+    "grid_page_length": 50,
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2026-02-05 18:55:43.054884",
+    "modified_by": "Administrator",
+    "module": "Kaiten Erp",
+    "name": "Revisist Log Child Table",
+    "owner": "Administrator",
+    "permissions": [],
+    "row_format": "Dynamic",
+    "rows_threshold_for_grid_search": 20,
+    "sort_field": "creation",
+    "sort_order": "DESC",
+    "states": []
+}

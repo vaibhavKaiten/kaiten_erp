@@ -1,0 +1,303 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-31 17:12:07.098577",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_details_tab",
+  "customer_and_address_section",
+  "first_name",
+  "last_name",
+  "mobile_number",
+  "column_break_czow",
+  "contact_number",
+  "whatsapp_number",
+  "email",
+  "column_break_ytwo",
+  "address_line_1",
+  "address_line_2",
+  "address_line_3",
+  "city__district",
+  "state",
+  "verification_handover_tab",
+  "assignment_and_scheduling_section",
+  "assigned_internal_user",
+  "column_break_wokv",
+  "assigned_vendor",
+  "column_break_wail",
+  "verification_date",
+  "installation_notes_section",
+  "verification_reference_no",
+  "column_break_axcy",
+  "verification_notes",
+  "column_break_oifu",
+  "execution_remarks",
+  "photo_attachments_section",
+  "s_and_d_final",
+  "column_break_mhtt",
+  "customer_handover_form",
+  "column_break_xhpm",
+  "warrenty_documents",
+  "meter_documents_section",
+  "customer_signature",
+  "column_break_foos",
+  "handover_completed_on",
+  "column_break_ihbw",
+  "customer_feedback",
+  "final_review_section",
+  "reviewer",
+  "column_break_evcc",
+  "reviewer_decision",
+  "column_break_fqeq",
+  "closure_comments"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Basic Details"
+  },
+  {
+   "fieldname": "customer_and_address_section",
+   "fieldtype": "Section Break",
+   "label": "Customer and Address"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "column_break_czow",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "whatsapp_number",
+   "fieldtype": "Data",
+   "label": "WhatsApp Number"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "column_break_ytwo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address_line_1",
+   "fieldtype": "Data",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "address_line_2",
+   "fieldtype": "Data",
+   "label": "Address Line 2"
+  },
+  {
+   "fieldname": "address_line_3",
+   "fieldtype": "Data",
+   "label": "Address Line 3"
+  },
+  {
+   "fieldname": "city__district",
+   "fieldtype": "Data",
+   "label": "City / District"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "assignment_and_scheduling_section",
+   "fieldtype": "Section Break",
+   "label": "Assignment and Scheduling"
+  },
+  {
+   "fieldname": "assigned_internal_user",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Assigned Internal User"
+  },
+  {
+   "fieldname": "column_break_wokv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "assigned_vendor",
+   "fieldtype": "Data",
+   "label": "Assigned Vendor"
+  },
+  {
+   "fieldname": "column_break_wail",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "installation_notes_section",
+   "fieldtype": "Section Break",
+   "label": "Verification"
+  },
+  {
+   "fieldname": "column_break_axcy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_oifu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "execution_remarks",
+   "fieldtype": "Small Text",
+   "label": "Execution Remarks"
+  },
+  {
+   "fieldname": "photo_attachments_section",
+   "fieldtype": "Section Break",
+   "label": "Final Documents"
+  },
+  {
+   "fieldname": "column_break_mhtt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_xhpm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "meter_documents_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Acceptance"
+  },
+  {
+   "fieldname": "column_break_foos",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ihbw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "verification_handover_tab",
+   "fieldtype": "Tab Break",
+   "label": "Verification Handover Details"
+  },
+  {
+   "fieldname": "verification_date",
+   "fieldtype": "Date",
+   "label": "Verification Date"
+  },
+  {
+   "fieldname": "verification_reference_no",
+   "fieldtype": "Data",
+   "label": "Verification Reference No"
+  },
+  {
+   "fieldname": "verification_notes",
+   "fieldtype": "Small Text",
+   "label": "Verification Notes"
+  },
+  {
+   "fieldname": "s_and_d_final",
+   "fieldtype": "Attach",
+   "label": "S and D Final"
+  },
+  {
+   "fieldname": "customer_handover_form",
+   "fieldtype": "Attach",
+   "label": "Customer Handover Form"
+  },
+  {
+   "fieldname": "warrenty_documents",
+   "fieldtype": "Attach",
+   "label": "Warranty Documents"
+  },
+  {
+   "fieldname": "customer_signature",
+   "fieldtype": "Attach Image",
+   "label": "Customer Signature"
+  },
+  {
+   "fieldname": "handover_completed_on",
+   "fieldtype": "Date",
+   "label": "Handover Completed On"
+  },
+  {
+   "fieldname": "customer_feedback",
+   "fieldtype": "Small Text",
+   "label": "Customer Feedback"
+  },
+  {
+   "fieldname": "final_review_section",
+   "fieldtype": "Section Break",
+   "label": "Final Review"
+  },
+  {
+   "fieldname": "reviewer",
+   "fieldtype": "Data",
+   "label": "Reviewer"
+  },
+  {
+   "fieldname": "column_break_evcc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reviewer_decision",
+   "fieldtype": "Data",
+   "label": "Reviewer Decision"
+  },
+  {
+   "fieldname": "column_break_fqeq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "closure_comments",
+   "fieldtype": "Data",
+   "label": "Closure Comments"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-31 17:23:25.689764",
+ "modified_by": "Administrator",
+ "module": "Kaiten Erp",
+ "name": "Verification Handover",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

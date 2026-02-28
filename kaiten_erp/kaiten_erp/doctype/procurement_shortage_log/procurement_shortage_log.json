@@ -1,0 +1,268 @@
+{
+    "actions": [],
+    "allow_rename": 0,
+    "autoname": "format:PSL-{YYYY}-{#####}",
+    "creation": "2025-12-27 06:00:00",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "section_reference",
+        "sales_order",
+        "material_request",
+        "technical_survey",
+        "column_break_ref",
+        "customer",
+        "project",
+        "log_timestamp",
+        "section_item",
+        "item_code",
+        "item_name",
+        "warehouse",
+        "column_break_item",
+        "required_qty",
+        "available_qty",
+        "shortage_qty",
+        "stock_uom",
+        "section_status",
+        "status",
+        "fulfilled_qty",
+        "fulfilled_date",
+        "column_break_status",
+        "purchase_order",
+        "purchase_receipt"
+    ],
+    "fields": [
+        {
+            "fieldname": "section_reference",
+            "fieldtype": "Section Break",
+            "label": "Reference"
+        },
+        {
+            "fieldname": "sales_order",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Sales Order",
+            "options": "Sales Order",
+            "reqd": 1
+        },
+        {
+            "fieldname": "material_request",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Material Request",
+            "options": "Material Request"
+        },
+        {
+            "fieldname": "technical_survey",
+            "fieldtype": "Link",
+            "label": "Technical Survey",
+            "options": "Technical Survey",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_ref",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "customer",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Customer",
+            "options": "Customer",
+            "read_only": 1
+        },
+        {
+            "fieldname": "project",
+            "fieldtype": "Link",
+            "label": "Project",
+            "options": "Project",
+            "read_only": 1
+        },
+        {
+            "default": "Now",
+            "fieldname": "log_timestamp",
+            "fieldtype": "Datetime",
+            "in_list_view": 1,
+            "label": "Log Timestamp",
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_item",
+            "fieldtype": "Section Break",
+            "label": "Item Details"
+        },
+        {
+            "fieldname": "item_code",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Item Code",
+            "options": "Item",
+            "reqd": 1
+        },
+        {
+            "fetch_from": "item_code.item_name",
+            "fieldname": "item_name",
+            "fieldtype": "Data",
+            "label": "Item Name",
+            "read_only": 1
+        },
+        {
+            "fieldname": "warehouse",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "Warehouse",
+            "options": "Warehouse",
+            "reqd": 1
+        },
+        {
+            "fieldname": "column_break_item",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "required_qty",
+            "fieldtype": "Float",
+            "in_list_view": 1,
+            "label": "Required Qty",
+            "precision": "3",
+            "reqd": 1
+        },
+        {
+            "fieldname": "available_qty",
+            "fieldtype": "Float",
+            "label": "Available Qty",
+            "precision": "3",
+            "read_only": 1
+        },
+        {
+            "fieldname": "shortage_qty",
+            "fieldtype": "Float",
+            "in_list_view": 1,
+            "label": "Shortage Qty",
+            "precision": "3",
+            "reqd": 1
+        },
+        {
+            "fetch_from": "item_code.stock_uom",
+            "fieldname": "stock_uom",
+            "fieldtype": "Link",
+            "label": "Stock UOM",
+            "options": "UOM",
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_status",
+            "fieldtype": "Section Break",
+            "label": "Fulfillment"
+        },
+        {
+            "default": "Pending",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Pending\nPartially Fulfilled\nFulfilled",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "fulfilled_qty",
+            "fieldtype": "Float",
+            "label": "Fulfilled Qty",
+            "precision": "3",
+            "read_only": 1
+        },
+        {
+            "fieldname": "fulfilled_date",
+            "fieldtype": "Date",
+            "label": "Fulfilled Date",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_status",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "purchase_order",
+            "fieldtype": "Link",
+            "label": "Purchase Order",
+            "options": "Purchase Order",
+            "read_only": 1
+        },
+        {
+            "fieldname": "purchase_receipt",
+            "fieldtype": "Link",
+            "label": "Purchase Receipt",
+            "options": "Purchase Receipt",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 0,
+    "is_submittable": 0,
+    "links": [],
+    "modified": "2025-12-27 06:00:00",
+    "modified_by": "Administrator",
+    "module": "Kaiten Erp",
+    "name": "Procurement Shortage Log",
+    "naming_rule": "Expression",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Sales Manager",
+            "share": 1,
+            "write": 0
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Stock Manager",
+            "share": 1,
+            "write": 0
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Purchase Manager",
+            "share": 1,
+            "write": 0
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "log_timestamp",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1,
+    "track_seen": 1
+}

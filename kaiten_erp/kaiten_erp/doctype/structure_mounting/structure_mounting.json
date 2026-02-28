@@ -1,0 +1,319 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-02-05 18:24:27.622250",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "references_section",
+    "job_file",
+    "lead",
+    "column_break_svkw",
+    "sales_order",
+    "customer",
+    "column_break_aqua",
+    "delievery_note",
+    "assignment_and_planning_section",
+    "assigned_vendor",
+    "assigned_internal_user",
+    "column_break_yjci",
+    "plannned_start_date",
+    "plannned_end_date",
+    "column_break_zcsu",
+    "actual_start_date",
+    "actual_end_date",
+    "execution_section",
+    "structure_type",
+    "anchoring_type",
+    "column_break_vnej",
+    "strucutre_height",
+    "strucutre_completion_status",
+    "column_break_osuw",
+    "execution_notes",
+    "materials_section",
+    "table_adcq",
+    "photos_section",
+    "table_xirq",
+    "manager_action_section",
+    "reason_for_rejection__on_hold",
+    "review__approval_section",
+    "reviewer",
+    "column_break_npvl",
+    "review_decision",
+    "column_break_hivk",
+    "review_comments",
+    "revisit_logs_section",
+    "table_bpwu",
+    "gps_latitude",
+    "gps_longitude",
+    "gps_location",
+    "gps_map_link",
+    "location_log"
+  ],
+  "fields": [
+    {
+      "fieldname": "references_section",
+      "fieldtype": "Section Break",
+      "label": "References"
+    },
+    {
+      "fieldname": "custom_job_file",
+      "fieldtype": "Link",
+      "label": "Job File",
+      "options": "Job File"
+    },
+    {
+      "fieldname": "lead",
+      "fieldtype": "Link",
+      "label": "Lead",
+      "options": "Lead"
+    },
+    {
+      "fieldname": "column_break_svkw",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "sales_order",
+      "fieldtype": "Link",
+      "label": "Sales Order",
+      "options": "Sales Order"
+    },
+    {
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Customer",
+      "options": "Customer"
+    },
+    {
+      "fieldname": "column_break_aqua",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "delievery_note",
+      "fieldtype": "Link",
+      "label": "Delievery Note",
+      "options": "Delivery Note"
+    },
+    {
+      "fieldname": "assignment_and_planning_section",
+      "fieldtype": "Section Break",
+      "label": "Assignment and Planning"
+    },
+    {
+      "fieldname": "assigned_vendor",
+      "fieldtype": "Link",
+      "label": "Assigned Vendor",
+      "options": "Supplier"
+    },
+    {
+      "fieldname": "column_break_yjci",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "plannned_start_date",
+      "fieldtype": "Date",
+      "label": "Plannned Start Date"
+    },
+    {
+      "fieldname": "plannned_end_date",
+      "fieldtype": "Date",
+      "label": "Plannned End Date"
+    },
+    {
+      "fieldname": "column_break_zcsu",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "actual_start_date",
+      "fieldtype": "Date",
+      "label": "Actual Start Date"
+    },
+    {
+      "fieldname": "actual_end_date",
+      "fieldtype": "Date",
+      "label": "Actual End Date"
+    },
+    {
+      "fieldname": "execution_section",
+      "fieldtype": "Section Break",
+      "label": "Execution"
+    },
+    {
+      "fieldname": "structure_type",
+      "fieldtype": "Select",
+      "label": "Structure Type",
+      "options": "Fixed\nElevated\nBallasted\nOther"
+    },
+    {
+      "fieldname": "anchoring_type",
+      "fieldtype": "Select",
+      "label": "Anchoring Type",
+      "options": "Concrete Foundation\nRoof Penetration\nBallast\nClamps\nOther"
+    },
+    {
+      "fieldname": "column_break_vnej",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "strucutre_height",
+      "fieldtype": "Float",
+      "label": "Strucutre Height"
+    },
+    {
+      "fieldname": "strucutre_completion_status",
+      "fieldtype": "Select",
+      "label": "Strucutre Completion Status",
+      "options": "Pending\nActive\nIn Active\nCompleted"
+    },
+    {
+      "fieldname": "column_break_osuw",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "execution_notes",
+      "fieldtype": "Small Text",
+      "label": "Execution Notes",
+      "options": "Pending\nActive\nIn Active\nCompleted"
+    },
+    {
+      "fieldname": "materials_section",
+      "fieldtype": "Section Break",
+      "label": "Materials"
+    },
+    {
+      "fieldname": "table_adcq",
+      "fieldtype": "Table",
+      "options": "Material Line Child Table"
+    },
+    {
+      "fieldname": "photos_section",
+      "fieldtype": "Section Break",
+      "label": "Photos"
+    },
+    {
+      "fieldname": "table_xirq",
+      "fieldtype": "Table",
+      "options": "Photo Log"
+    },
+    {
+      "fieldname": "manager_action_section",
+      "fieldtype": "Section Break",
+      "label": "Manager Action"
+    },
+    {
+      "fieldname": "reason_for_rejection__on_hold",
+      "fieldtype": "Small Text",
+      "label": "Reason for Rejection / On Hold"
+    },
+    {
+      "fieldname": "review__approval_section",
+      "fieldtype": "Section Break",
+      "label": "Review  Approval "
+    },
+    {
+      "fieldname": "reviewer",
+      "fieldtype": "Link",
+      "label": "Reviewer",
+      "options": "User"
+    },
+    {
+      "fieldname": "column_break_npvl",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "review_decision",
+      "fieldtype": "Select",
+      "label": "Review Decision",
+      "options": "Approved\nReWork"
+    },
+    {
+      "fieldname": "column_break_hivk",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "review_comments",
+      "fieldtype": "Small Text",
+      "label": "Review Comments",
+      "options": "Approved\nReWork"
+    },
+    {
+      "fieldname": "revisit_logs_section",
+      "fieldtype": "Section Break",
+      "label": "Revisit Logs"
+    },
+    {
+      "fieldname": "table_bpwu",
+      "fieldtype": "Table",
+      "options": "Revisist Log Child Table"
+    },
+    {
+      "fieldname": "assigned_internal_user",
+      "fieldtype": "Link",
+      "label": "Assigned Internal User",
+      "options": "User"
+    },
+    {
+      "fieldname": "gps_latitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Latitude"
+    },
+    {
+      "fieldname": "gps_longitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Longitude"
+    },
+    {
+      "fieldname": "gps_location",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Location"
+    },
+    {
+      "fieldname": "gps_map_link",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Map Link"
+    },
+    {
+      "fieldname": "location_log",
+      "fieldtype": "Table",
+      "allow_on_submit": 1,
+      "read_only": 1,
+      "label": "Location Log",
+      "options": "Location Log"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-02-10 15:45:05.616288",
+  "modified_by": "Administrator",
+  "module": "Kaiten Erp",
+  "name": "Structure Mounting",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}

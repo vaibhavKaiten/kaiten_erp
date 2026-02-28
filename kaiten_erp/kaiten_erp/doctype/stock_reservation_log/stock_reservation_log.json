@@ -1,0 +1,309 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:SRL-{YYYY}-{#####}",
+ "creation": "2025-12-26 18:30:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_reference",
+  "sales_order",
+  "sales_order_item",
+  "quotation",
+  "technical_survey",
+  "bom",
+  "column_break_ref",
+  "customer",
+  "reservation_date",
+  "status",
+  "section_item",
+  "item_code",
+  "item_name",
+  "warehouse",
+  "column_break_item",
+  "required_qty",
+  "reserved_qty",
+  "available_qty_at_reservation",
+  "stock_uom",
+  "section_release",
+  "released_date",
+  "release_reason",
+  "column_break_release",
+  "consumed_qty",
+  "delivery_note",
+  "section_override",
+  "is_override",
+  "override_by",
+  "override_reason",
+  "override_timestamp"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_reference",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Sales Order",
+   "options": "Sales Order",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sales_order_item",
+   "fieldtype": "Data",
+   "label": "Sales Order Item Row"
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "options": "Quotation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "technical_survey",
+   "fieldtype": "Link",
+   "label": "Technical Survey",
+   "options": "Technical Survey",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bom",
+   "fieldtype": "Link",
+   "label": "BOM",
+   "options": "BOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ref",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "reservation_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Reservation Date",
+   "read_only": 1
+  },
+  {
+   "default": "Reserved",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Reserved\nPartially Reserved\nPartially Consumed\nConsumed\nReleased\nCancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_item",
+   "fieldtype": "Section Break",
+   "label": "Item Details"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_item",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "required_qty",
+   "fieldtype": "Float",
+   "label": "Required Qty",
+   "precision": "3",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reserved_qty",
+   "fieldtype": "Float",
+   "label": "Reserved Qty",
+   "precision": "3"
+  },
+  {
+   "description": "Stock available when reservation was made",
+   "fieldname": "available_qty_at_reservation",
+   "fieldtype": "Float",
+   "label": "Available Qty at Reservation",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.stock_uom",
+   "fieldname": "stock_uom",
+   "fieldtype": "Link",
+   "label": "Stock UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_release",
+   "fieldtype": "Section Break",
+   "label": "Release / Consumption"
+  },
+  {
+   "fieldname": "released_date",
+   "fieldtype": "Date",
+   "label": "Released Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "release_reason",
+   "fieldtype": "Select",
+   "label": "Release Reason",
+   "options": "\nSales Order Cancelled\nDelivery Completed\nAdmin Override\nStock Adjustment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_release",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "consumed_qty",
+   "fieldtype": "Float",
+   "label": "Consumed Qty",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "label": "Delivery Note",
+   "options": "Delivery Note",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_override",
+   "fieldtype": "Section Break",
+   "label": "Admin Override"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_override",
+   "fieldtype": "Check",
+   "label": "Is Override",
+   "read_only": 1
+  },
+  {
+   "fieldname": "override_by",
+   "fieldtype": "Link",
+   "label": "Override By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "override_reason",
+   "fieldtype": "Small Text",
+   "label": "Override Reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "override_timestamp",
+   "fieldtype": "Datetime",
+   "label": "Override Timestamp",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "is_submittable": 0,
+ "links": [],
+ "modified": "2025-12-26 18:30:00",
+ "modified_by": "Administrator",
+ "module": "Kaiten Erp",
+ "name": "Stock Reservation Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 0
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 0,
+   "write": 0
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "write": 0
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}

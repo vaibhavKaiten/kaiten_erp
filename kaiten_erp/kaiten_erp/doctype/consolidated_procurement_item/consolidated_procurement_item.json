@@ -1,0 +1,190 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-01-07 12:16:03.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "select_item",
+        "column_break_1",
+        "item_code",
+        "item_name",
+        "brand",
+        "uom",
+        "column_break_2",
+        "gst_percentage",
+        "section_break_quantity",
+        "total_required_quantity",
+        "actual_quantity",
+        "column_break_quantity",
+        "is_completed",
+        "available_stock",
+        "net_quantity_to_procure",
+        "section_break_supplier",
+        "supplier",
+        "supplier_rate",
+        "amount",
+        "section_break_traceability",
+        "source_material_requests"
+    ],
+    "fields": [
+        {
+            "columns": 1,
+            "default": "0",
+            "fieldname": "select_item",
+            "fieldtype": "Check",
+            "in_list_view": 1,
+            "label": "Select Item"
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "columns": 2,
+            "fieldname": "item_code",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Item Code",
+            "options": "Item",
+            "reqd": 1
+        },
+        {
+            "columns": 2,
+            "fieldname": "item_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Item Name",
+            "read_only": 1
+        },
+        {
+            "fieldname": "brand",
+            "fieldtype": "Data",
+            "label": "Brand",
+            "read_only": 1
+        },
+        {
+            "fieldname": "uom",
+            "fieldtype": "Link",
+            "label": "UOM",
+            "options": "UOM",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "columns": 1,
+            "fieldname": "gst_percentage",
+            "fieldtype": "Float",
+            "in_list_view": 1,
+            "label": "GST %",
+            "precision": 2,
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_break_quantity",
+            "fieldtype": "Section Break",
+            "label": "Quantity Information"
+        },
+        {
+            "bold": 1,
+            "columns": 2,
+            "fieldname": "total_required_quantity",
+            "fieldtype": "Float",
+            "in_list_view": 1,
+            "label": "Total Required Qty",
+            "precision": 3,
+            "read_only": 1
+        },
+        {
+            "bold": 1,
+            "columns": 2,
+            "description": "Quantity to procure in this Purchase Order (editable by user)",
+            "fieldname": "actual_quantity",
+            "fieldtype": "Float",
+            "in_list_view": 1,
+            "label": "Actual Qty to Order",
+            "precision": 3
+        },
+        {
+            "fieldname": "column_break_quantity",
+            "fieldtype": "Column Break"
+        },
+        {
+            "columns": 1,
+            "default": "0",
+            "description": "Automatically set to 1 when Total Required Quantity reaches 0",
+            "fieldname": "is_completed",
+            "fieldtype": "Check",
+            "in_list_view": 1,
+            "label": "Completed",
+            "read_only": 1
+        },
+        {
+            "fieldname": "available_stock",
+            "fieldtype": "Float",
+            "label": "Available Stock",
+            "precision": 3,
+            "read_only": 1
+        },
+        {
+            "fieldname": "net_quantity_to_procure",
+            "fieldtype": "Float",
+            "in_list_view": 0,
+            "label": "Net Quantity To Procure",
+            "precision": 3,
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_break_supplier",
+            "fieldtype": "Section Break",
+            "label": "Supplier Selection"
+        },
+        {
+            "fieldname": "supplier",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Supplier",
+            "options": "Supplier"
+        },
+        {
+            "fieldname": "supplier_rate",
+            "fieldtype": "Currency",
+            "label": "Supplier Rate",
+            "precision": 2
+        },
+        {
+            "fieldname": "amount",
+            "fieldtype": "Currency",
+            "label": "Amount",
+            "precision": 2
+        },
+        {
+            "fieldname": "section_break_traceability",
+            "fieldtype": "Section Break",
+            "label": "Traceability"
+        },
+        {
+            "fieldname": "source_material_requests",
+            "fieldtype": "Long Text",
+            "label": "Source Material Requests",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2026-01-07 12:16:03.000000",
+    "modified_by": "Administrator",
+    "module": "Kaiten Erp",
+    "name": "Consolidated Procurement Item",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+}

@@ -1,0 +1,646 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-02-07 16:42:20.859912",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "basic_details_tab",
+    "first_name",
+    "last_name",
+    "mobile_number",
+    "column_break_knfa",
+    "contact_number",
+    "whatsapp_number",
+    "email",
+    "column_break_ltnx",
+    "address_line_1",
+    "address_line_2",
+    "city",
+    "state",
+    "tab_2_tab",
+    "proposed_system_section",
+    "proposed_system_kw__tier",
+    "column_break_amhy",
+    "bom_reference",
+    "column_break_pgzj",
+    "system_category",
+    "component_selection_section",
+    "panel",
+    "panel_qty_bom",
+    "column_break_rtyp",
+    "inverter",
+    "inverter_qty_bom",
+    "column_break_dbjl",
+    "battery",
+    "battery_qty_bom",
+    "bom_items_section",
+    "table_vctx",
+    "visit_schedule_tab",
+    "assigned_internal_user",
+    "assigned_vendor",
+    "territory",
+    "column_break_tqcl",
+    "visit_type",
+    "data_ycke",
+    "data_tila",
+    "column_break_gdhh",
+    "data_mrku",
+    "data_zxjn",
+    "data_xwsx",
+    "site_visit_details_tab",
+    "site_building_section",
+    "site_type",
+    "number_of_floors",
+    "roof_area_sqft",
+    "column_break_qsnw",
+    "roof_type",
+    "area_suitability",
+    "column_break_kxhy",
+    "roof_orientation",
+    "site_risks",
+    "electrical_section",
+    "phase_type_copy",
+    "existing_load_kw",
+    "monthly_consumption",
+    "column_break_vzwb",
+    "sanctioned_load_kw",
+    "required_load_kw",
+    "column_break_rvyn",
+    "discom",
+    "connection_type",
+    "technical_measurements_section",
+    "azimuth_deg",
+    "front_height_m",
+    "column_break_pnvk",
+    "tilt_deg",
+    "back_height_m",
+    "column_break_dssp",
+    "shading_level",
+    "measurement_notes",
+    "site_visit_output_section",
+    "proposed_structure_type",
+    "survey_summary",
+    "column_break_ezul",
+    "roof_load_capacity",
+    "feasibility_status",
+    "column_break_egss",
+    "execution_remarks",
+    "technical_documents_section",
+    "marked_roof_layout",
+    "column_break_acfx",
+    "sld_draft",
+    "column_break_mbtp",
+    "electrical_notes",
+    "site_photos_section",
+    "front",
+    "left",
+    "back_right",
+    "column_break_oddf",
+    "back",
+    "front_right",
+    "back_left",
+    "column_break_crjl",
+    "right",
+    "front_left",
+    "front_down",
+    "connections_tab"
+  ],
+  "fields": [
+    {
+      "fieldname": "basic_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Basic Details"
+    },
+    {
+      "fieldname": "first_name",
+      "fieldtype": "Data",
+      "label": "First Name"
+    },
+    {
+      "fieldname": "last_name",
+      "fieldtype": "Data",
+      "label": "Last Name"
+    },
+    {
+      "fieldname": "mobile_number",
+      "fieldtype": "Data",
+      "label": "Mobile Number"
+    },
+    {
+      "fieldname": "column_break_knfa",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "contact_number",
+      "fieldtype": "Data",
+      "label": "Contact Number"
+    },
+    {
+      "fieldname": "whatsapp_number",
+      "fieldtype": "Data",
+      "label": "Whatsapp Number"
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email"
+    },
+    {
+      "fieldname": "column_break_ltnx",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "address_line_1",
+      "fieldtype": "Data",
+      "label": "Address Line 1"
+    },
+    {
+      "fieldname": "address_line_2",
+      "fieldtype": "Data",
+      "label": "Address Line 2"
+    },
+    {
+      "fieldname": "city",
+      "fieldtype": "Data",
+      "label": "City"
+    },
+    {
+      "fieldname": "state",
+      "fieldtype": "Data",
+      "label": "State"
+    },
+    {
+      "fieldname": "tab_2_tab",
+      "fieldtype": "Tab Break",
+      "label": "System Configuration"
+    },
+    {
+      "fieldname": "proposed_system_section",
+      "fieldtype": "Section Break",
+      "label": "Proposed System"
+    },
+    {
+      "fieldname": "proposed_system_kw__tier",
+      "fieldtype": "Link",
+      "label": "Proposed System (kW / Tier)",
+      "options": "Item"
+    },
+    {
+      "fieldname": "column_break_amhy",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "bom_reference",
+      "fieldtype": "Data",
+      "label": "BOM Reference"
+    },
+    {
+      "fieldname": "column_break_pgzj",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "system_category",
+      "fieldtype": "Select",
+      "label": "System Category"
+    },
+    {
+      "fieldname": "component_selection_section",
+      "fieldtype": "Section Break",
+      "label": "Component Selection"
+    },
+    {
+      "fieldname": "panel",
+      "fieldtype": "Link",
+      "label": "Panel",
+      "options": "Item"
+    },
+    {
+      "fieldname": "panel_qty_bom",
+      "fieldtype": "Data",
+      "label": "Panel Qty (BOM)"
+    },
+    {
+      "fieldname": "column_break_rtyp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "inverter",
+      "fieldtype": "Link",
+      "label": "Inverter",
+      "options": "Item"
+    },
+    {
+      "fieldname": "inverter_qty_bom",
+      "fieldtype": "Data",
+      "label": "Inverter Qty (BOM)"
+    },
+    {
+      "fieldname": "column_break_dbjl",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "battery",
+      "fieldtype": "Link",
+      "label": "Battery",
+      "options": "Item"
+    },
+    {
+      "fieldname": "battery_qty_bom",
+      "fieldtype": "Data",
+      "label": "Battery Qty (BOM)"
+    },
+    {
+      "fieldname": "bom_items_section",
+      "fieldtype": "Section Break",
+      "label": "BOM items"
+    },
+    {
+      "fieldname": "table_vctx",
+      "fieldtype": "Table",
+      "options": "BOM Item"
+    },
+    {
+      "fieldname": "visit_schedule_tab",
+      "fieldtype": "Tab Break",
+      "label": "Visit Schedule"
+    },
+    {
+      "fieldname": "assigned_internal_user",
+      "fieldtype": "Link",
+      "label": "Assigned Internal User",
+      "options": "User"
+    },
+    {
+      "fieldname": "assigned_vendor",
+      "fieldtype": "Data",
+      "label": "Assigned Vendor"
+    },
+    {
+      "fieldname": "territory",
+      "fieldtype": "Data",
+      "label": "Territory"
+    },
+    {
+      "fieldname": "column_break_tqcl",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "visit_type",
+      "fieldtype": "Data",
+      "label": "Visit Type"
+    },
+    {
+      "fieldname": "data_ycke",
+      "fieldtype": "Date",
+      "label": "Scheduled Date"
+    },
+    {
+      "fieldname": "data_tila",
+      "fieldtype": "Select",
+      "options" : "9 AM-12 PM\n12 PM-3 PM\n3 PM-6 PM",
+      "label": "Schedule Slot"
+    },
+    {
+      "fieldname": "column_break_gdhh",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "data_zxjn",
+      "fieldtype": "Date",
+      "label": "Survey Start Date"
+    },
+    {
+      "fieldname": "data_xwsx",
+      "fieldtype": "Date",
+      "label": "Survey End Date"
+    },
+    {
+      "fieldname": "data_mrku",
+      "fieldtype": "Data",
+      "label": "Check-in Time"
+    },
+    {
+      "fieldname": "site_visit_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Site Visit Details"
+    },
+    {
+      "fieldname": "site_type",
+      "fieldtype": "Select",
+      "label": "Site Type",
+      "options": "Residential\nCommercial\nIndustrial\nFarming"
+    },
+    {
+      "fieldname": "number_of_floors",
+      "fieldtype": "Data",
+      "label": "Number of Floors"
+    },
+    {
+      "fieldname": "roof_area_sqft",
+      "fieldtype": "Data",
+      "label": "Roof Area (sqft)"
+    },
+    {
+      "fieldname": "column_break_qsnw",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "roof_type",
+      "fieldtype": "Data",
+      "label": "Roof Type"
+    },
+    {
+      "fieldname": "area_suitability",
+      "fieldtype": "Data",
+      "label": "Area Suitability"
+    },
+    {
+      "fieldname": "column_break_kxhy",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "roof_orientation",
+      "fieldtype": "Data",
+      "label": "Roof Orientation"
+    },
+    {
+      "fieldname": "site_risks",
+      "fieldtype": "Data",
+      "label": "Site Risks"
+    },
+    {
+      "fieldname": "site_building_section",
+      "fieldtype": "Section Break",
+      "label": "Site Building"
+    },
+    {
+      "fieldname": "electrical_section",
+      "fieldtype": "Section Break",
+      "label": "Electrical"
+    },
+    {
+      "fieldname": "phase_type_copy",
+      "fieldtype": "Data",
+      "label": "Phase Type Copy"
+    },
+    {
+      "fieldname": "existing_load_kw",
+      "fieldtype": "Data",
+      "label": "Existing Load (kW)"
+    },
+    {
+      "fieldname": "monthly_consumption",
+      "fieldtype": "Data",
+      "label": "Monthly Consumption"
+    },
+    {
+      "fieldname": "column_break_vzwb",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "sanctioned_load_kw",
+      "fieldtype": "Data",
+      "label": "Sanctioned Load (kW)"
+    },
+    {
+      "fieldname": "required_load_kw",
+      "fieldtype": "Data",
+      "label": "Required Load (kW)"
+    },
+    {
+      "fieldname": "discom",
+      "fieldtype": "Data",
+      "label": "DISCOM"
+    },
+    {
+      "fieldname": "connection_type",
+      "fieldtype": "Data",
+      "label": "Connection Type"
+    },
+    {
+      "fieldname": "column_break_rvyn",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "technical_measurements_section",
+      "fieldtype": "Section Break",
+      "label": "Technical Measurements"
+    },
+    {
+      "fieldname": "azimuth_deg",
+      "fieldtype": "Data",
+      "label": "Azimuth (deg)"
+    },
+    {
+      "fieldname": "front_height_m",
+      "fieldtype": "Data",
+      "label": "Front Height (m)"
+    },
+    {
+      "fieldname": "column_break_pnvk",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "tilt_deg",
+      "fieldtype": "Data",
+      "label": "Tilt (deg)"
+    },
+    {
+      "fieldname": "back_height_m",
+      "fieldtype": "Data",
+      "label": "Back Height (m)"
+    },
+    {
+      "fieldname": "column_break_dssp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "shading_level",
+      "fieldtype": "Select",
+      "label": "Shading Level",
+      "options": "None\nPartial\nFull"
+    },
+    {
+      "fieldname": "measurement_notes",
+      "fieldtype": "Small Text",
+      "label": "Measurement Notes"
+    },
+    {
+      "fieldname": "site_visit_output_section",
+      "fieldtype": "Section Break",
+      "label": "Site Visit Output"
+    },
+    {
+      "fieldname": "proposed_structure_type",
+      "fieldtype": "Data",
+      "label": "Proposed Structure Type"
+    },
+    {
+      "fieldname": "survey_summary",
+      "fieldtype": "Data",
+      "label": "Survey Summary"
+    },
+    {
+      "fieldname": "column_break_ezul",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "roof_load_capacity",
+      "fieldtype": "Data",
+      "label": "Roof Load Capacity"
+    },
+    {
+      "fieldname": "feasibility_status",
+      "fieldtype": "Select",
+      "label": "Feasibility Status"
+    },
+    {
+      "fieldname": "column_break_egss",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "execution_remarks",
+      "fieldtype": "Small Text",
+      "label": "Execution Remarks"
+    },
+    {
+      "fieldname": "technical_documents_section",
+      "fieldtype": "Section Break",
+      "label": "Technical Documents"
+    },
+    {
+      "fieldname": "marked_roof_layout",
+      "fieldtype": "Attach",
+      "label": "Marked Roof Layout"
+    },
+    {
+      "fieldname": "column_break_acfx",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "sld_draft",
+      "fieldtype": "Attach",
+      "label": "SLD Draft"
+    },
+    {
+      "fieldname": "column_break_mbtp",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "electrical_notes",
+      "fieldtype": "Attach",
+      "label": "Electrical Notes"
+    },
+    {
+      "fieldname": "site_photos_section",
+      "fieldtype": "Section Break",
+      "label": "Site Photos"
+    },
+    {
+      "fieldname": "front",
+      "fieldtype": "Attach",
+      "label": "Front"
+    },
+    {
+      "fieldname": "left",
+      "fieldtype": "Attach",
+      "label": "Left"
+    },
+    {
+      "fieldname": "back_right",
+      "fieldtype": "Attach",
+      "label": "Back Right"
+    },
+    {
+      "fieldname": "column_break_oddf",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "back",
+      "fieldtype": "Attach",
+      "label": "Back"
+    },
+    {
+      "fieldname": "front_right",
+      "fieldtype": "Attach",
+      "label": "Front Right"
+    },
+    {
+      "fieldname": "back_left",
+      "fieldtype": "Attach",
+      "label": "Back Left"
+    },
+    {
+      "fieldname": "column_break_crjl",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "right",
+      "fieldtype": "Attach",
+      "label": "Right"
+    },
+    {
+      "fieldname": "front_left",
+      "fieldtype": "Attach",
+      "label": "Front Left"
+    },
+    {
+      "fieldname": "front_down",
+      "fieldtype": "Attach",
+      "label": "Front Down"
+    },
+    {
+      "fieldname": "connections_tab",
+      "fieldtype": "Tab Break",
+      "label": "Connections"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-02-07 17:08:51.293987",
+  "modified_by": "Administrator",
+  "module": "Kaiten Erp",
+  "name": "Technical Survey",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Vendor Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Vendor Executive",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}

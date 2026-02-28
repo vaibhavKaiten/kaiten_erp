@@ -1,0 +1,225 @@
+Item Groups,Item Code,Item Name,HSN/SAC,UOM,Valuation Rate,Applicable GST (%)
+Panel,ADA-540-D,Adani Mono bifacial 540 DCR,85414300,watt,25,5%
+Panel,ADA-545-D,Adani Mono bifacial 545 DCR,85414300,watt,25,5%
+Panel,ADA-550-D,Adani Mono bifacial 550 DCR,85414300,watt,25,5%
+Panel,ADA-555-D,Adani Mono bifacial 550 DCR,85414300,watt,25,5%
+Panel,ADA-570-D,Adani bifacial topcon570 DCR,85414300,watt,26,5%
+Panel,ADA-575-D,Adani bifacial topcon 575 DCR,85414300,watt,26,5%
+Panel,ADA-580-D,Adani bifacial topcon 580 DCR,85414300,watt,26,5%
+Panel,ADA-605-D,Adani bifacial topcon 605 DCR,85414300,watt,27,5%
+Panel,ADA-610-D,Adani bifacial topcon 610 DCR,85414300,watt,27,5%
+Panel,ADA-615-D,Adani bifacial topcon 615 DCR,85414300,watt,27,5%
+Panel,ADA-620-D,Adani bifacial topcon 620 DCR,85414300,watt,27,5%
+Panel,ADA-540-N,Adani Mono bifacial 540 NDCR,85414300,watt,14,5%
+Panel,ADA-545-N,Adani Mono bifacial 545 NDCR,85414300,watt,14,5%
+Panel,ADA-550-N,Adani Mono bifacial 550 NDCR,85414300,watt,14,5%
+Panel,ADA-555-N,Adani Mono bifacial 555 NDCR,85414300,watt,14,5%
+Panel,ADA-570-N,Adani bifacial topcon 570 NDCR,85414300,watt,16,5%
+Panel,ADA-575-N,Adani bifacial topcon 575 NDCR,85414300,watt,16,5%
+Panel,ADA-580-N,Adani bifacial topcon 580 NDCR,85414300,watt,16,5%
+Panel,ADA-605-N,Adani bifacial topcon 605 NDCR,85414300,watt,16,5%
+Panel,ADA-610-N,Adani bifacial topcon 610 NDCR,85414300,watt,16,5%
+Panel,ADA-615-N,Adani bifacial topcon 615 NDCR,85414300,watt,16,5%
+Panel,ADA-620-N,Adani bifacial topcon 620 NDCR,85414300,watt,16,5%
+Panel,PME-540-D,Premier Energy bifacial 540 DCR,85414300,watt,24,5%
+Panel,PME-600-D,Premier Energy topcon 600 DCR,85414300,watt,25,5%
+Panel,PME-545-N,Premier Energy bifacial 545 NDCR,85414300,watt,14,5%
+Panel,PME-550-N,Premier Energy bifacial 550 NDCR,85414300,watt,14,5%
+Panel,PME-610-N,Premier Energy topcon 610 NDCR,85414300,watt,15,5%
+Panel,LMS-550-D,Luminous pv byfacial 550 DCR,85414300,watt,24.5,5%
+Panel,LMS-585-N,Luminous pv topcon 585 NDCR,85414300,watt,15,5%
+Panel,LMS-590-N,Luminous pv topcon 590 NDCR,85414300,watt,15,5%
+Panel,WRE-540-D,Waaree mono bifacial 540 DCR,85414300,watt,24.5,5%
+Panel,WRE-545-D,Waaree mono bifacial 545 DCR,85414300,watt,24.5,5%
+Panel,WRE-560-D,Waaree bifacial topcon 560 DCR,85414300,watt,26,5%
+Panel,WRE-570-D,Waaree bifacial topcon 570 DCR,85414300,watt,26,5%
+Panel,WRE-575-D,Waaree bifacial topcon 575 DCR,85414300,watt,26,5%
+Panel,WRE-580-D,Waaree bifacial topcon 580 DCR,85414300,watt,26,5%
+Panel,WRE-550-N,Waaree mono bifacial 550 NDCR,85414300,watt,15,5%
+Panel,WRE-700-N,Waaree bifacial topcon 700 NDCR,85414300,watt,18,5%
+Panel,WRE-590-N,Waaree bifacial topcon 590 NDCR,85414300,watt,18,5%
+Panel,INA-500-D,Ina mono bifacial 500 DCR,85414300,watt,23,5%
+Panel,INA-545-D,Ina mono bifacial 545 DCR,85414300,watt,23,5%
+Panel,INA-540-D,Ina mono bifacial 540 DCR,85414300,watt,23,5%
+Panel,INA-535-D,Ina mono bifacial 535 DCR,85414300,watt,23,5%
+Panel,INA-550-D,Ina mono bifacial 550 DCR,85414300,watt,23,5%
+Panel,INA-560-D,Ina bifacial topcon 560 DCR,85414300,watt,24,5%
+Panel,INA-570-D,Ina bifacial topcon 570 DCR,85414300,watt,24,5%
+Panel,INA-540-N,Ina mono bifacial 540 NDCR,85414300,watt,13,5%
+Panel,INA-335-N,Ina mono bifacial 335 NDCR,85414300,watt,16,5%
+Panel,INA-555-N,Ina bifacial topcon 555 NDCR,85414300,watt,14,5%
+Panel,INA-590-N,Ina bifacial topcon 590 NDCR,85414300,watt,14,5%
+Inverter,PONE-2-SP,Power one GTI 2 Kw 1p,85044090,Unit,13800,5%
+Inverter,PONE-3-SP,Power one GTI 3 Kw 1p,85044090,Unit,14000,5%
+Inverter,PONE-3.3-SP,Power one GTI 3.3Kw 1p,85044090,Unit,14000,5%
+Inverter,PONE-4-SP,Power one GTI 4 Kw 1p,85044090,Unit,19000,5%
+Inverter,PONE-5-SP,Power one GTI 5 Kw 1p,85044090,Unit,22500,5%
+Inverter,PONE-6-SP,Power one GTI 6 Kw 1p,85044090,Unit,25000,5%
+Inverter,PONE-5-TP,Power one GTI 5 Kw Tp,85044090,Unit,39000,5%
+Inverter,PONE-6-TP,Power one GTI 6 Kw Tp,85044090,Unit,40000,5%
+Inverter,PONE-8-TP,Power one GTI 8 Kw Tp,85044090,Unit,42000,5%
+Inverter,PONE-10-TP,Power one GTI 10 Kw Tp,85044090,Unit,43500,5%
+Inverter,PONE-12-TP,Power one GTI 12 Kw Tp,85044090,Unit,47000,5%
+Inverter,PONE-15-TP,Power one GTI 15 Kw Tp,85044090,Unit,53000,5%
+Inverter,PONE-20-TP,Power one GTI 20 Kw Tp,85044090,Unit,61000,5%
+Inverter,PONE-25-TP,Power one GTI 25 Kw Tp,85044090,Unit,69000,5%
+Inverter,PONE-30-TP,Power one GTI 30 Kw Tp,85044090,Unit,90000,5%
+Inverter,PONE-40-TP,Power one GTI 40 Kw Tp,85044090,Unit,122000,5%
+Inverter,PONE-50-TP,Power one GTI 50 Kw Tp,85044090,Unit,132000,5%
+Inverter,PONE-60-TP,Power one GTI 60 Kw Tp,85044090,Unit,143000,5%
+Inverter,PONE-80-TP,Power one GTI 80 Kw Tp,85044090,Unit,185000,5%
+Inverter,PONE-100-TP,Power one GTI 100 Kw Tp,85044090,Unit,225000,5%
+Inverter,PONE-110-TP,Power one GTI 110 Kw Tp,85044090,Unit,235000,5%
+Inverter,PONE-125-TP,Power one GTI 125 Kw Tp,85044090,Unit,270000,5%
+Inverter,PONE-136-TP,Power one GTI 136 Kw Tp,85044090,Unit,290000,5%
+Inverter,PONE-350-TP,Power one GTI 350 Kw Tp,85044090,Unit,450000,5%
+Inverter,LMS-3-SP,Luminious GTI 3 KW SP,85044090,Unit,17000,5%
+Inverter,LMS-4-SP,Luminious GTI 4 KW SP,85044090,Unit,27000,5%
+Inverter,LMS-5-SP,Luminious GTI 5 KW SP,85044090,Unit,29000,5%
+Inverter,LMS-5-TP,Luminious GTI 5 KW TP,85044090,Unit,43500,5%
+Inverter,LMS-6-TP,Luminious GTI 6 KW TP,85044090,Unit,48500,5%
+Inverter,LMS-8-TP,Luminious GTI 8 KW TP,85044090,Unit,54500,5%
+Inverter,LMS-10-TP,Luminious GTI 10 KW TP,85044090,Unit,56000,5%
+Inverter,LMS-12-TP,Luminious GTI 12 KW TP,85044090,Unit,60000,5%
+Inverter,LMS-15-TP,Luminious GTI 15 KW TP,85044090,Unit,63000,5%
+Inverter,LMS-20-TP,Luminious GTI 20 KW TP,85044090,Unit,75000,5%
+Inverter,LMS-25-TP,Luminious GTI 25 KW TP,85044090,Unit,92000,5%
+Inverter,LMS-30-TP,Luminious GTI 30 KW TP,85044090,Unit,105000,5%
+Inverter,LMS-50-TP,Luminious GTI 50 KW TP,85044090,Unit,145000,5%
+Inverter,LMS-60-TP,Luminious GTI 60 KW TP,85044090,Unit,152000,5%
+Inverter,LMS-80-TP,Luminious GTI 80 KW TP,85044090,Unit,240000,5%
+Inverter,LMS-100-TP,Luminious GTI 100 KW TP,85044090,Unit,255000,5%
+Inverter,VSOLE-2-SP,V-Sole 2 Kw SP,85044090,Unit,13500,5%
+Inverter,VSOLE-3-SP,V-Sole 3 Kw SP,85044090,Unit,14000,5%
+Inverter,VSOLE-4-SP,V-Sole 4 Kw SP,85044090,Unit,18000,5%
+Inverter,VSOLE-5-SP,V-Sole 5 Kw SP,85044090,Unit,24500,5%
+Inverter,VSOLE-6-SP,V-Sole 6 Kw SP,85044090,Unit,26000,5%
+Inverter,VSOLE-4-TP,V-Sole 4 Kw TP,85044090,Unit,40000,5%
+Inverter,VSOLE-5-TP,V-Sole 5 Kw TP,85044090,Unit,40500,5%
+Inverter,VSOLE-6-TP,V-Sole 6 Kw TP,85044090,Unit,42000,5%
+Inverter,VSOLE-7-TP,V-Sole 7 Kw TP,85044090,Unit,43500,5%
+Inverter,VSOLE-8-TP,V-Sole 8 Kw TP,85044090,Unit,44000,5%
+Inverter,VSOLE-10-TP,V-Sole 10 Kw TP,85044090,Unit,44500,5%
+Inverter,VSOLE-12-TP,V-Sole 12 Kw TP,85044090,Unit,52000,5%
+Inverter,VSOLE-15-TP,V-Sole 15 Kw TP,85044090,Unit,58000,5%
+Inverter,VSOLE-18-TP,V-Sole 18 Kw TP,85044090,Unit,66000,5%
+Inverter,VSOLE-20-TP,V-Sole 20 Kw TP,85044090,Unit,69000,5%
+Inverter,VSOLE-25-TP,V-Sole 25 Kw TP,85044090,Unit,77000,5%
+Inverter,VSOLE-30-TP,V-Sole 30 Kw TP,85044090,Unit,98000,5%
+Inverter,VSOLE-35-TP,V-Sole 35 Kw TP,85044090,Unit,109726,5%
+Inverter,VSOLE-40-TP,V-Sole 40 Kw TP,85044090,Unit,142000,5%
+Inverter,VSOLE-50-TP,V-Sole 50 Kw TP,85044090,Unit,150466,5%
+Inverter,VSOLE-60-TP,V-Sole 60 Kw TP,85044090,Unit,168000,5%
+Inverter,VSOLE-70-TP,V-Sole 70 Kw TP,85044090,Unit,186000,5%
+Inverter,VSOLE-80-TP,V-Sole 80 Kw TP,85044090,Unit,218000,5%
+Inverter,VSOLE-100-TP,V-Sole 100 Kw TP,85044090,Unit,247000,5%
+Inverter,VSOLE-110-TP,V-Sole 110 Kw TP,85044090,Unit,259000,5%
+Inverter,VSOLE-120-TP,V-Sole 120 Kw TP,85044090,Unit,281000,5%
+Inverter,VSOLE-125-TP,V-Sole 125 Kw TP,85044090,Unit,292000,5%
+Inverter,VSOLE-135-TP,V-Sole 135 Kw TP,85044090,Unit,313000,5%
+Inverter,PVB-3-SP,Pv Blink -3kw-SP,85044090,Unit,14000,5%
+Inverter,PVB-3.3-SP,Pv Blink -3.3kw-SP,85044090,Unit,14000,5%
+Inverter,PVB-3.6-SP,Pv Blink -3.6kw-SP,85044090,Unit,14800,5%
+Inverter,PVB-4-SP,Pv Blink -4kw-SP,85044090,Unit,18000,5%
+Inverter,PVB-4.6-SP,Pv Blink -4.6kw-SP,85044090,Unit,23500,5%
+Inverter,PVB-5-SP,Pv Blink -5kw-SP,85044090,Unit,24500,5%
+Inverter,PVB-6-SP,Pv Blink -6kw-SP,85044090,Unit,25500,5%
+Inverter,PVB-5-TP,Pv Blink -5kw-TP,85044090,Unit,40500,5%
+Inverter,PVB-6-TP,Pv Blink -6kw-TP,85044090,Unit,41500,5%
+Inverter,PVB-8-TP,Pv Blink -8kw-TP,85044090,Unit,43000,5%
+Inverter,PVB-10-TP,Pv Blink -10kw-TP,85044090,Unit,43500,5%
+Inverter,PVB-12-TP,Pv Blink -12kw-TP,85044090,Unit,51000,5%
+Inverter,PVB-15-TP,Pv Blink -15kw-TP,85044090,Unit,57000,5%
+Inverter,PVB-18-TP,Pv Blink -18kw-TP,85044090,Unit,65000,5%
+Inverter,PVB-20-TP,Pv Blink -20kw-TP,85044090,Unit,68500,5%
+Inverter,PVB-25-TP,Pv Blink -25kw-TP,85044090,Unit,78000,5%
+Inverter,PVB-30-TP,Pv Blink -30kw-TP,85044090,Unit,91000,5%
+Inverter,WARI-3-SP,Waaree-3ke-sp,85044090,Unit,17200,5%
+Inverter,WARI-4-SP,Waaree-4ke-sp,85044090,Unit,,5%
+Inverter,WARI-5-SP,Waaree-5ke-sp,85044090,Unit,30000,5%
+Inverter,WARI-5-TP,Waaree-5ke-TP,85044090,Unit,44500,5%
+Inverter,WARI-6-TP,Waaree-6ke-TP,85044090,Unit,,5%
+Inverter,WARI-8-TP,Waaree-8ke-TP,85044090,Unit,48400,5%
+Inverter,WARI-10-TP,Waaree-10ke-TP,85044090,Unit,52356,5%
+Inverter,WARI-12-TP,Waaree-12ke-TP,85044090,Unit,64133,5%
+Inverter,WARI-15-TP,Waaree-15ke-TP,85044090,Unit,65300,5%
+Inverter,WARI-20-TP,Waaree-20ke-TP,85044090,Unit,70400,5%
+Inverter,WARI-25-TP,Waaree-25ke-TP,85044090,Unit,80100,5%
+Inverter,WARI-30-TP,Waaree-30ke-TP,85044090,Unit,126531,5%
+Inverter,WARI-50-TP,Waaree-50ke-TP,85044090,Unit,176531,5%
+Inverter,WARI-60-TP,Waaree-60ke-TP,85044090,Unit,178531,5%
+Inverter,WARI-80-TP,Waaree-80ke-TP,85044090,Unit,295918,5%
+Inverter,WARI-100-TP,Waaree-100ke-TP,85044090,KG,302041,5%
+Structure,TATA-72/72,Tata -GP-72X72 MM,73066100,KG,72.5,18%
+Structure,TATA 60*40, TATA- GP- 60*40 MM,73066100,KG,72.5,18%
+Structure,TATA 60*62,TATA 60*60 MM,73066100,KG,72.5,18%
+Structure,Jindal 72*72,Jindal 72*72 MM,73066100,KG,70,18%
+Structure,Jindal 60*60,Jindal 60*60 MM,73066100,KG,70,18%
+Structure,Jindal 60*40,Jindal 60*40 MM,73066100,KG,70,18%
+Structure,Apollo 60*60, Apollo 60*60 MM,73066100,KG,72.5,18%
+Structure,Apollo 72*72,Apollo 72*72 MM,73066100,KG,72.5,18%
+Structure,Apollo 60*40,Apollo 60*40 MM,73066100,KG,72.5,18%
+Structure,Strut Channel 41*41,Strud Channel 41*41,73089090,KG,69,18%
+Nut Bolt,NB 100x12,NutBolt 4 inch 12 mm,73181500,KG,75,18%
+Nut Bolt,NB 150x12,NutBolt 6 inch 12 mm,73181500,KG,75,18%
+Nut Bolt,NB 250x12,NutBolt 10 inch 12 mm,73181500,KG,75,18%
+Structure,Base Plate 150 mm,Base Plate 150x150x6 mm,73181500,KG,58,18%
+Structure,Base Plate 200 mm,Base Plate 200x200x8 mm,73181500,Meter,58,18%
+Wiring,JMP ALU 6 X 2,JMP ALU Armd cable 6 sq mm 2 core,85446020,Meter,33,18%
+Wiring,JMP ALU 10 X 2,JMP ALU Armd cable 10 sq mm 2 core,85446020,Meter,45,18%
+Wiring,JMP ALU 6 X 4,JMP ALU Armd cable 6 sq mm 4 core,85446020,Meter,47,18%
+Wiring,JMP ALU 10 X 4,JMP ALU Armd cable 10 sq mm 4 core,85446020,Meter,63,18%
+Wiring,Ramson ALU 10 X 4,Ramson ALU Armd cable 10 sq mm 4 core,85446020,Meter,64.5,18%
+Wiring,Ramson ALU 06 X 2,Ramson ALU Armd cable 06 sq mm 2 core,85446020,Meter,31,18%
+Wiring,Ramson ALU 16,Ramson Alu Armd Cable 16 sq mm earthin ,85446020,Meter,20,18%
+Wiring,JMP ALU 10 X 4,JMP ALU Armd cable 10 sq mm 4 core,85446020,Meter,,18%
+Wiring,JMP ALU 16*4,JMP ALU Armd Cable 16 sq mm 4 cr ,85446020,Meter,91,18%
+Wiring,DC4MM,Dc Wire 4 sq mm ,85446090,Meter,43,18%
+Counduct Pipe,Conduit  20mm,Conduit  20mm,39172300,Meter,5.5,18%
+Wiring,JMP cop 2.5  mm,JMP Earthning Wire 2.5 sq mm,85446020,Meter,21,18%
+Wiring,JMP cop 4 mm,JMP Earthning Wire 4 sq mm,85446020,Meter,39,18%
+Wiring,JMP cop 6 mm,JMP Earthning Wire 6 sq mm,85446020,Meter,53,18%
+Wiring,Ramson cop 2.5 mm,Ramson Earthning Wire 2.5 sq mm,85446020,Meter,19.6,18%
+Wiring,Ramson cop 4 mm,Ramson Earthning Wire 4 sq mm,85446020,Meter,30,18%
+Wiring,Ramson cop 6  mm,Ramson  Earthning Wire 6 sq mm,85446020,Unit,45,18%
+Wiring,Earthing Rod 1,Earthning Rod 1 MTR,721590,Unit,150,18%
+Wiring,Earthing Rod 2,Earthning Rod 2 MTR,721590,Unit,400,18%
+Wiring,Earthing Rod 3,Earthning Rod 3 MTR,721590,Unit,800,18%
+LA,LA,Lightning Arrestor - 1 MTR,721590,KG,250,18%
+Panel Nut Bolt,Panel NB - SS,Panel Nut Bolt,73181500,Unit,75,18%
+MC4 Connector,MC4 connector,MC4 connector,85369090,Unit,23,18%
+ACDB ,ACDB 32 1P,Havells ACDB 32amp/ 1p,85369030,Unit,700,18%
+ACDB ,ACDB 32 3P,Havells ACDB 32amp/ 3p,85369030,Unit,1650,18%
+DCDB ,DCDB 600 VDC 1in1,DCDB 600 VDC 1in1 out,853790,Unit,700,18%
+DCDB ,DCDB 1000 VDC 1in1,DCDB 1000 VDC 1in1 out,853690,Unit,1000,18%
+DCDB ,DCDB 1000 VDC 2in2,DCDB 1000 VDC 2in2 out,853690,Unit,2500,18%
+ACDB ,ACDB 63 3P,Havells ACDB 63 amp/ 3p,85369030,Unit,2500,18%
+Earthing Chemical,Earthing Chemical,Earthing Chemical,38249900,Unit,200,18%
+Gi Spray,Gi Spray,Gi Spray,32089090,Box,75,18%
+Saddle,Saddle 10 mm,Saddle 10 mm,39269099,Packet,466,18%
+Saddle,Saddle 16 mm,Saddle 16 mm,39269099,Packet,150,18%
+Saddle,Saddle 20 mm,Saddle 20 mm,39269099,Packet,50,18%
+Saddle,Saddle 25 mm,Saddle 25 mm,39269099,Unit,67.8,18%
+Cable Trey,Cable Trey,Cable Trey 41x41 1 mtr,73089090,Packet,80,18%
+Belding Rode,Belding Rode,Belding Rode,83111000,Unit,360,18%
+Golden Fastner,Golden Fastner 100 x 10 mm,Golden Fastner 100 x 10 mm,73181500,Unit,15,18%
+Golden Fastner,Golden Fastner 150 x 10 mm,Golden Fastner 150 x 10mm,73181500,Unit,18,18%
+Silver Fastner,Silver Fastner 150 x 12 mm,Silver Fastner 150 x 12 mm,73181500,Unit,21,18%
+MIP Box,MIP Box 4x1.5,MIP Box 4x1.5,85381010,KG,3000,18%
+J-Hook,J-Hook 100 mm,J-Hook 4 inch,73269099,Packet,72,18%
+Cable TAI,Cable TAI 300 mm,Cable TAI 300 mm,39269099,Unit,62.5,18%
+Wire Tape,Tape- R,WIRE TAPE RED,39191000,Unit,9,18%
+Wire Tape,Tape -Y,WIRE TAPE YELLOW,39191000,Unit,9,18%
+Wire Tape,Tape -B,WIRE TAPE BLUE,39191000,Unit,9,18%
+Meter,Solar meter Genus -1P,Solar 1 ph Genus,90283010,Unit,1600,18%
+Meter,Solar meter Genus - 3P,Solar 3 ph Genus,90283010,Unit,3100,18%
+Meter,Net Meter Genus -1P,Net 1 ph Genus,90283010,Unit,2600,18%
+Meter,Net Meter Genus - 3P,Net 3 ph Genus,90283010,Unit,4100,18%
+Meter,Solar Meter HPL -1P,Solar 1 ph HPL,90283010,Unit,1700,18%
+Meter,Net Meter HPL -1P,Net 1 ph HPL,90283010,Unit,2600,18%
+Meter,Solar Meter HPL - 3P,Solar 3 ph Hpl,90283010,Unit,3000,18%
+Meter,Net Meter HPL - 3P,Net 3 ph Hpl,90283010,Unit,4000,18%
+Meter,Solar Meter L & T -1P,Solar 1 ph L&t,90283010,Unit,2000,18%
+Meter,Net Meter L & T - 1P,Net 1 ph L&T,90283010,Unit,2400,18%
+Meter,Solar Meter L & T - 3P,Solar 3 ph L&T,90283010,Unit,3200,18%
+Meter,Net Meter L & T - 3P,Net 3 ph L&T,90283010, Unit,4100,18%

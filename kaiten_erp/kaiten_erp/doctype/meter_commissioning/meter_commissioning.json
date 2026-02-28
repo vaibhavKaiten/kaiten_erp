@@ -1,0 +1,344 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-01-31 17:04:11.934427",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "basic_details_tab",
+    "customer_and_address_section",
+    "first_name",
+    "last_name",
+    "mobile_number",
+    "column_break_uahy",
+    "contact_number",
+    "whatsapp_number",
+    "email",
+    "column_break_oyaz",
+    "address_line_1",
+    "address_line_2",
+    "address_line_3",
+    "city__district",
+    "state",
+    "meter_commissioning_details_tab",
+    "assignment_and_commissioning_section",
+    "assigned_internal_user",
+    "column_break_ksoy",
+    "assigned_vendor",
+    "column_break_drep",
+    "commissioning_date",
+    "commissioning_details_section",
+    "inverter_sync_status",
+    "column_break_ofyi",
+    "grid_sync_status",
+    "column_break_qbog",
+    "prv__test_report",
+    "commissioning_notes_section",
+    "commissioning_notes",
+    "column_break_qque",
+    "execution_remarks",
+    "column_break_fulb",
+    "discom_interaction_notes",
+    "photo_attachments_section",
+    "meter_energized_photo",
+    "column_break_anex",
+    "no_file_chosen_inverter_sync_screen",
+    "column_break_uqkm",
+    "grid_connection_point",
+    "review_and_approval_section",
+    "reviewer",
+    "column_break_cwgf",
+    "review_decision",
+    "column_break_ueef",
+    "review_comments",
+    "gps_latitude",
+    "gps_longitude",
+    "gps_location",
+    "gps_map_link",
+    "location_log"
+  ],
+  "fields": [
+    {
+      "fieldname": "assignment_and_commissioning_section",
+      "fieldtype": "Section Break",
+      "label": "Assignment and Commissioning"
+    },
+    {
+      "fieldname": "assigned_internal_user",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Assigned Internal User"
+    },
+    {
+      "fieldname": "column_break_ksoy",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "assigned_vendor",
+      "fieldtype": "Data",
+      "label": "Assigned Vendor"
+    },
+    {
+      "fieldname": "column_break_drep",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "commissioning_date",
+      "fieldtype": "Date",
+      "label": "Commissioning Date"
+    },
+    {
+      "fieldname": "commissioning_details_section",
+      "fieldtype": "Section Break",
+      "label": "Commissioning Details"
+    },
+    {
+      "fieldname": "inverter_sync_status",
+      "fieldtype": "Select",
+      "label": "Inverter Sync Status"
+    },
+    {
+      "fieldname": "column_break_ofyi",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "grid_sync_status",
+      "fieldtype": "Select",
+      "label": "Grid Sync Status"
+    },
+    {
+      "fieldname": "column_break_qbog",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "prv__test_report",
+      "fieldtype": "Attach",
+      "label": " PRV / Test Report"
+    },
+    {
+      "fieldname": "basic_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Basic Details"
+    },
+    {
+      "fieldname": "meter_commissioning_details_tab",
+      "fieldtype": "Tab Break",
+      "label": "Meter Commissioning Details"
+    },
+    {
+      "fieldname": "customer_and_address_section",
+      "fieldtype": "Section Break",
+      "label": "Customer and Address"
+    },
+    {
+      "fieldname": "first_name",
+      "fieldtype": "Data",
+      "label": "First Name"
+    },
+    {
+      "fieldname": "last_name",
+      "fieldtype": "Data",
+      "label": "Last Name"
+    },
+    {
+      "fieldname": "mobile_number",
+      "fieldtype": "Data",
+      "label": "Mobile Number"
+    },
+    {
+      "fieldname": "column_break_uahy",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "contact_number",
+      "fieldtype": "Data",
+      "label": "Contact Number"
+    },
+    {
+      "fieldname": "whatsapp_number",
+      "fieldtype": "Data",
+      "label": "WhatsApp Number"
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email"
+    },
+    {
+      "fieldname": "column_break_oyaz",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "address_line_1",
+      "fieldtype": "Data",
+      "label": "Address Line 1"
+    },
+    {
+      "fieldname": "address_line_2",
+      "fieldtype": "Data",
+      "label": "Address Line 2"
+    },
+    {
+      "fieldname": "address_line_3",
+      "fieldtype": "Data",
+      "label": "Address Line 3"
+    },
+    {
+      "fieldname": "city__district",
+      "fieldtype": "Data",
+      "label": "City / District"
+    },
+    {
+      "fieldname": "state",
+      "fieldtype": "Data",
+      "label": "State"
+    },
+    {
+      "fieldname": "commissioning_notes_section",
+      "fieldtype": "Section Break",
+      "label": "Commissioning Notes"
+    },
+    {
+      "fieldname": "commissioning_notes",
+      "fieldtype": "Small Text",
+      "label": "Commissioning Notes"
+    },
+    {
+      "fieldname": "column_break_qque",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "execution_remarks",
+      "fieldtype": "Small Text",
+      "label": "Execution Remarks"
+    },
+    {
+      "fieldname": "column_break_fulb",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "discom_interaction_notes",
+      "fieldtype": "Small Text",
+      "label": "DISCOM Interaction Notes"
+    },
+    {
+      "fieldname": "photo_attachments_section",
+      "fieldtype": "Section Break",
+      "label": "Photo Attachments"
+    },
+    {
+      "fieldname": "meter_energized_photo",
+      "fieldtype": "Attach",
+      "label": "Meter Energized Photo"
+    },
+    {
+      "fieldname": "column_break_anex",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "no_file_chosen_inverter_sync_screen",
+      "fieldtype": "Attach",
+      "label": "No file chosen Inverter Sync Screen"
+    },
+    {
+      "fieldname": "column_break_uqkm",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "grid_connection_point",
+      "fieldtype": "Attach",
+      "label": "Grid Connection Point"
+    },
+    {
+      "fieldname": "review_and_approval_section",
+      "fieldtype": "Section Break",
+      "label": "Review and Approval"
+    },
+    {
+      "fieldname": "reviewer",
+      "fieldtype": "Data",
+      "label": "Reviewer"
+    },
+    {
+      "fieldname": "column_break_cwgf",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "review_decision",
+      "fieldtype": "Select",
+      "label": "Review Decision"
+    },
+    {
+      "fieldname": "column_break_ueef",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "review_comments",
+      "fieldtype": "Small Text",
+      "label": "Review Comments"
+    },
+    {
+      "fieldname": "gps_latitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Latitude"
+    },
+    {
+      "fieldname": "gps_longitude",
+      "fieldtype": "Float",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Longitude"
+    },
+    {
+      "fieldname": "gps_location",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Location"
+    },
+    {
+      "fieldname": "gps_map_link",
+      "fieldtype": "Data",
+      "hidden": 1,
+      "allow_on_submit": 1,
+      "label": "GPS Map Link"
+    },
+    {
+      "fieldname": "location_log",
+      "fieldtype": "Table",
+      "allow_on_submit": 1,
+      "read_only": 1,
+      "label": "Location Log",
+      "options": "Location Log"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2026-01-31 17:24:54.005425",
+  "modified_by": "Administrator",
+  "module": "Kaiten Erp",
+  "name": "Meter Commissioning",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}

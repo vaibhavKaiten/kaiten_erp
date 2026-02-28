@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-07 16:38:20.378091",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "payment_milestone",
+  "expected_amount",
+  "payment_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "payment_milestone",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payment Milestone",
+   "options": "Advance\nMid\nFinal"
+  },
+  {
+   "fieldname": "expected_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Expected Amount"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payment Status",
+   "options": "Received\nPending\nRejected"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-07 16:40:17.803018",
+ "modified_by": "Administrator",
+ "module": "Kaiten Erp",
+ "name": "Payment Control Child Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
