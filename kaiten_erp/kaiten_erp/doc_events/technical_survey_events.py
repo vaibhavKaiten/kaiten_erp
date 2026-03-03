@@ -26,8 +26,13 @@ def validate(doc, method=None):
         assign_to_vendor_managers_for_review(doc)
 
     # Check if workflow_state field has changed to "Approved"
-    if doc.has_value_changed("workflow_state") and doc.workflow_state == "Approved":
-        assign_to_sales_managers(doc)
+    if (
+        doc.doctype == "Technical Survey"
+        and doc.has_value_changed("workflow_state")
+        and doc.workflow_state == "Approved"
+    ):
+        link_technical_survey_to_opportunity(doc)
+        assign_final_quotation_todo(doc)
 
     # Check if workflow_state field has changed to "Completed"
     if doc.has_value_changed("workflow_state") and doc.workflow_state == "Completed":
@@ -853,3 +858,109 @@ def assign_to_sales_managers(doc):
             indicator="green",
             alert=True,
         )
+
+
+def link_technical_survey_to_opportunity(doc):
+    """
+    Set Opportunity.custom_technical_survey when a Technical Survey is approved.
+    - Uses Opportunity as the anchor to avoid reverse lookups.
+    - Does not overwrite existing links (idempotent).
+    """
+    opportunity_name = doc.get("custom_opportunity")
+    if not opportunity_name:
+        return
+
+    # Ensure Opportunity has the expected custom field; fail silently otherwise
+    if not frappe.db.has_column("Opportunity", "custom_technical_survey"):
+        frappe.logger("kaiten_erp").warning(
+            "Opportunity.custom_technical_survey is missing; skipping link for Technical Survey %s",
+            doc.name,
+        )
+        return
+
+    existing_link = frappe.db.get_value(
+        "Opportunity", opportunity_name, "custom_technical_survey"
+    )
+    if existing_link:
+        # Already linked; do not overwrite
+        return
+
+    frappe.db.set_value(
+        "Opportunity",
+        opportunity_name,
+        "custom_technical_survey",
+        doc.name,
+        update_modified=False,
+    )
+    frappe.logger("kaiten_erp").info(
+        "Linked Technical Survey %s to Opportunity %s", doc.name, opportunity_name
+    )
+
+
+def assign_final_quotation_todo(doc):
+    """
+    After Technical Survey approval, assign a ToDo to the initiating Sales Manager
+    (stored on the Job File) to create the Final Quotation from the same Opportunity.
+    - Prevents duplicates.
+    - Idempotent across re-saves.
+    """
+    opportunity_name = doc.get("custom_opportunity")
+    if not opportunity_name:
+        return
+
+    # Fetch Job File from Opportunity (anchor)
+    job_file_name = frappe.db.get_value(
+        "Opportunity", opportunity_name, "custom_job_file"
+    )
+    if not job_file_name:
+        return
+
+    # Sales Manager who initiated the Job File
+    sales_manager = frappe.db.get_value(
+        "Job File", job_file_name, "custom_job_file_owner"
+    )
+    if not sales_manager:
+        return
+
+    # Ensure user is enabled and still a Sales Manager
+    if not frappe.db.get_value("User", sales_manager, "enabled"):
+        return
+    has_role = frappe.db.exists(
+        "Has Role", {"parent": sales_manager, "role": "Sales Manager"}
+    )
+    if not has_role:
+        return
+
+    description = _(
+        "Technical Survey {0} approved. Please create Final Quotation from Opportunity {1}."
+    ).format(doc.name, opportunity_name)
+
+    existing_todo = frappe.db.exists(
+        "ToDo",
+        {
+            "reference_type": "Opportunity",
+            "reference_name": opportunity_name,
+            "allocated_to": sales_manager,
+            "description": description,
+            "status": "Open",
+        },
+    )
+    if existing_todo:
+        return
+
+    todo = frappe.get_doc(
+        {
+            "doctype": "ToDo",
+            "allocated_to": sales_manager,
+            "reference_type": "Opportunity",
+            "reference_name": opportunity_name,
+            "description": description,
+            "priority": "High",
+            "status": "Open",
+        }
+    )
+    todo.flags.ignore_permissions = True
+    todo.insert()
+    frappe.logger("kaiten_erp").info(
+        "Created Final Quotation ToDo for %s on Opportunity %s", sales_manager, opportunity_name
+    )
