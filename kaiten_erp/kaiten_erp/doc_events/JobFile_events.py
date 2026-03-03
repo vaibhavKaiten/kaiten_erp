@@ -177,13 +177,6 @@ def on_update(job_file, method):
                 job_file.custom_assigned_technical_supplier,
                 extra_data=technical_survey_data,
             )
-            
-            # Add technical survey reference to the opportunity
-            opportunity.custom_technical_survey = technical_survey.name
-            opportunity.flags.ignore_permissions = True
-            opportunity.save()
-            frappe.db.commit()
-            
             structure_mounting = create_execution(
                 "Structure Mounting",
                 "job_file",

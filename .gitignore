@@ -60,4 +60,6 @@ jspm_packages/
 temp/*
 
 test.py
-.csv
+*.csv
+
+Client Territory Data .csv
