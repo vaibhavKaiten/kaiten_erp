@@ -104,6 +104,7 @@
     "right",
     "front_left",
     "front_down",
+    "location_log",
     "connections_tab"
   ],
   "fields": [
@@ -589,6 +590,14 @@
       "fieldname": "front_down",
       "fieldtype": "Attach",
       "label": "Front Down"
+    },
+    {
+      "fieldname": "location_log",
+      "fieldtype": "Table",
+      "allow_on_submit": 1,
+      "read_only": 1,
+      "label": "Location Log",
+      "options": "Location Log"
     },
     {
       "fieldname": "connections_tab",
