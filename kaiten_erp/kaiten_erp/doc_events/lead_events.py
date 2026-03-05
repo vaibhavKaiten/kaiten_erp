@@ -372,37 +372,53 @@ def create_opportunity_from_lead(lead):
 
 
 def populate_execution_status(job_file, lead):
-    job_file.execution_status = []
+    """Initialize the Job Execution Status table with all six stages."""
+    # Reset Job Execution Status table
+    job_file.set("table_royw", [])
 
-    for stage, doctype, vendor_field in [
-        ("Technical Survey", "Technical Survey", "custom_assigned_technical_supplier")
-        # ("Structure Mounting", "Structure Mounting", "custom_assigned_technical_supplier"),
-        # ("Project Installation", "Project Installation", "custom_assigned_technical_supplier"),
-        # ("Meter Installation", "Meter Installation", "custom_assigned_meter_supplier"),
-        # ("Meter Commissioning", "Meter Commissioning", "custom_assigned_meter_supplier"),
-        # ("Verification Handover", "Verification Handover", "custom_assigned_technical_supplier"),
-    ]:
-        vendor = job_file.get(vendor_field)
+    # Define all six execution stages
+    stages = [
+        "Technical Survey",
+        "Structure Mounting", 
+        "Project Installation",
+        "Meter Installation",
+        "Meter Commissioning",
+        "Verification Handover"
+    ]
 
-        # Fetch related execution document if it exists
-        existing_doc = frappe.get_all(
-            doctype,
-            filters={"custom_job_file": job_file.name, "custom_lead": lead.name},
-            fields=["name", "workflow_state"],
-            limit=1,
-        )
-
-        status = existing_doc[0].workflow_state if existing_doc else "Not Created"
-
+    for stage in stages:
+        # At Job File creation time, execution documents don't exist yet
+        # They will be created when Job File workflow changes to "Job File Initiated"
+        # So we initialize all with "Not Created" status
         job_file.append(
             "table_royw",
             {
                 "stage": stage,
-                "supplier": vendor,
-                "status": status,
-                "referrence_doctype": doctype,
+                "supplier": None,  # Will be populated when execution documents are created
+                "status": "Not Created",
+                "referrence_doctype": None,  # Will be set to the actual document name when created
             },
         )
 
 
-8
+@frappe.whitelist()
+def refresh_execution_status(job_file_name):
+    """Refresh the execution status table for an existing Job File with all six stages."""
+    job_file = frappe.get_doc("Job File", job_file_name)
+    
+    # Get the linked Lead
+    lead = frappe.get_doc("Lead", job_file.lead) if job_file.lead else None
+    
+    # Re-populate the execution status table
+    populate_execution_status(job_file, lead)
+    
+    # Save the Job File
+    job_file.save(ignore_permissions=True)
+    
+    frappe.msgprint(
+        f"Execution status table refreshed for Job File {job_file_name}. Now showing all 6 stages.",
+        indicator="green",
+        alert=True
+    )
+    
+    return "Success"

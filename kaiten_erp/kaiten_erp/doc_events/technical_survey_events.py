@@ -167,6 +167,16 @@ def on_update(doc, method=None):
                     f"Failed to share Technical Survey {doc.name} with {user}: {str(e)}"
                 )
 
+    # Sync execution workflow state into parent Job File tracking table
+    # We do this unconditionally on update because at this hook stage
+    # has_value_changed("workflow_state") may already be False.
+    try:
+        sync_job_file_execution_status(doc)
+    except Exception as e:
+        frappe.logger("kaiten_erp").error(
+            f"Failed to sync Job File execution status for {doc.doctype} {doc.name}: {str(e)}"
+        )
+
 
 def assign_to_internal_user(doc):
     """
@@ -260,6 +270,83 @@ def assign_to_internal_user(doc):
         frappe.logger("kaiten_erp").error(
             f"Failed to share {doc.doctype} {doc.name} with {user}: {str(e)}"
         )
+
+
+def _get_job_file_name_from_doc(doc):
+    """Return linked Job File name from an execution document.
+
+    Supports both `custom_job_file` and `job_file` link fields so that
+    it works across Technical Survey, Structure Mounting, Project Installation,
+    Meter Installation, Meter Commissioning and Verification Handover.
+    """
+
+    job_file_name = None
+
+    if hasattr(doc, "custom_job_file") and doc.custom_job_file:
+        job_file_name = doc.custom_job_file
+    elif hasattr(doc, "job_file") and doc.job_file:
+        job_file_name = doc.job_file
+
+    return job_file_name
+
+
+def sync_job_file_execution_status(doc):
+    """Update the Job File's execution tracking table (table_royw).
+
+    For the given execution document (Technical Survey, Structure Mounting,
+    Project Installation, Meter Installation, Meter Commissioning or
+    Verification Handover), ensure there is a child row on the linked
+    Job File and keep its Status in sync with the document's workflow_state.
+    """
+
+    job_file_name = _get_job_file_name_from_doc(doc)
+    if not job_file_name:
+        return
+
+    if not doc.workflow_state:
+        return
+
+    # Load Job File
+    job_file = frappe.get_doc("Job File", job_file_name)
+
+    # Try to find an existing row for this execution document
+    target_row = None
+    for row in job_file.get("table_royw", []):
+        # Exact match by stored reference
+        if row.get("referrence_doctype") == doc.name:
+            target_row = row
+            break
+
+    # Fallback match by stage (rows created at Job File creation time)
+    if not target_row:
+        for row in job_file.get("table_royw", []):
+            if row.get("stage") == doc.doctype:
+                target_row = row
+                break
+
+    # Create new row if none found
+    if not target_row:
+        target_row = job_file.append("table_royw", {})
+        target_row.stage = doc.doctype
+
+    # Always store the concrete document name for future lookups
+    target_row.referrence_doctype = doc.name
+
+    # Update status and supplier
+    target_row.status = doc.workflow_state
+
+    supplier_value = None
+    if hasattr(doc, "assigned_vendor") and doc.assigned_vendor:
+        supplier_value = doc.assigned_vendor
+    elif hasattr(doc, "supplier") and doc.supplier:
+        supplier_value = doc.supplier
+
+    if supplier_value:
+        target_row.supplier = supplier_value
+
+    # Save without touching Job File workflow_state
+    job_file.flags.ignore_permissions = True
+    job_file.save(ignore_permissions=True)
 
 
 def assign_to_vendor_managers(doc):
