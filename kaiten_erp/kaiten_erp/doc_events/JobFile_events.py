@@ -221,7 +221,8 @@ def on_update(job_file, method):
             job_file.custom_verification_handover = verification_handover.name
             if frappe.db.has_column("Job File", "custom_opportunity"):
                 job_file.custom_opportunity = opportunity.name
-            job_file.save()
+            # Note: No need to call job_file.save() here since we're in on_update hook
+            # The document will be saved automatically after this hook completes
 
             # 6. Show success message
             opportunity_url = f"/app/opportunity/{opportunity.name}"
