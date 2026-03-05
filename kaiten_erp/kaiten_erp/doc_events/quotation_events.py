@@ -21,7 +21,7 @@ def _sync_links_from_opportunity(doc):
     opportunity = frappe.db.get_value(
         "Opportunity",
         doc.opportunity,
-        ["custom_job_file"],
+        ["custom_job_file", "custom_technical_survey"],
         as_dict=True,
     )
 
@@ -30,6 +30,20 @@ def _sync_links_from_opportunity(doc):
 
     if hasattr(doc, "custom_opportunity_link"):
         doc.custom_opportunity_link = doc.opportunity
+
+    # Phase 2: inherit approved Technical Survey link from Opportunity (idempotent)
+    if opportunity and opportunity.get("custom_technical_survey") and not doc.get(
+        "custom_technical_survey"
+    ):
+        doc.custom_technical_survey = opportunity.custom_technical_survey
+
+    # Default stage to Final Approved when a Technical Survey is present (do not override Phase 1)
+    if (
+        doc.is_new()
+        and not doc.get("custom_quotation_stage")
+        and doc.get("custom_technical_survey")
+    ):
+        doc.custom_quotation_stage = "Final Approved"
 
 
 def _validate_final_approved_requirements(doc):

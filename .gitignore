@@ -58,3 +58,8 @@ jspm_packages/
 
 #temp folder
 temp/*
+
+test.py
+*.csv
+
+Client Territory Data .csv
