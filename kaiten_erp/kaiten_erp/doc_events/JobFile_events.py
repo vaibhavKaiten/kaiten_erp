@@ -113,16 +113,22 @@ def on_update(job_file, method):
         print(f"New State: {job_file.workflow_state}")
         print(f"Current User: {frappe.session.user}")
 
+        # Set Job File Owner when "Start Job File" is clicked (Draft -> In Progress)
+        # This can be overridden by subsequent users until final initiation
+        if job_file.workflow_state == "In Progress":
+            print("\n>>> 'Start Job File' action detected - Setting Job File Owner (can be overridden) <<<")
+            set_initiating_sales_manager(job_file, allow_override=True, final=False)
+
         # Handle Approval Pending state - Create ToDo for Execution Managers
         if job_file.workflow_state == "Approval Pending":
             print("Triggering assign_to_execution_managers...")
             assign_to_execution_managers(job_file)
 
         if job_file.workflow_state == "Job File Initiated":
-            print("\n>>> Job File Initiated - Starting execution setup <<<")
+            print("\n>>> Job File Initiated - Setting FINAL Job File Owner <<<")
             
-            # Record which Sales Manager initiated the Job File FIRST (before validations)
-            set_initiating_sales_manager(job_file)
+            # Set the FINAL Job File Owner (always override - this is the last action)
+            set_initiating_sales_manager(job_file, allow_override=False, final=True)
 
             #  check for assigned supplier company before creating execution documents
             if not job_file.custom_assigned_technical_supplier:
@@ -398,10 +404,14 @@ def assign_sales_manager_owner_todo(job_file, opportunity):
     frappe.db.commit()
 
 
-def set_initiating_sales_manager(job_file):
+def set_initiating_sales_manager(job_file, allow_override=True, final=False):
     """
-    When a Sales Manager clicks "Start Job File", stamp their user id into
-    the custom Job File owner field (supports both single and double 'r').
+    Set Job File Owner to the current user.
+    
+    Args:
+        job_file: Job File document
+        allow_override: If True, only set if not already set. If False, always override.
+        final: If True, this is the final owner assignment (on Initiate)
     """
 
     current_user = frappe.session.user
@@ -409,6 +419,8 @@ def set_initiating_sales_manager(job_file):
     print(f"\n=== set_initiating_sales_manager called ===")
     print(f"Job File: {job_file.name}")
     print(f"Current User: {current_user}")
+    print(f"Allow Override: {allow_override}")
+    print(f"Final Assignment: {final}")
 
     # Detect which field exists
     owner_fields = ["custom_job_file_owner", "custom_job_file_ownerr"]
@@ -421,20 +433,26 @@ def set_initiating_sales_manager(job_file):
         return
     
     print(f"Target Field: {target_field}")
-    print(f"Current Value: {job_file.get(target_field)}")
+    current_owner = job_file.get(target_field)
+    print(f"Current Owner: {current_owner}")
 
-    # If already set, keep existing owner
-    if job_file.get(target_field):
-        print(f"Job File owner already set to: {job_file.get(target_field)}")
+    # If allow_override is True and owner is already set, don't change
+    if allow_override and current_owner:
+        print(f"Job File owner already set to: {current_owner}, not overriding")
         return
 
     # Set the value directly on the document
     job_file.db_set(target_field, current_user, update_modified=False)
     
-    print(f"✓ Job File owner set to: {current_user}")
+    action_type = "FINAL" if final else "temporary"
+    print(f"✓ Job File owner set to: {current_user} ({action_type})")
+    
+    message = f"Job File Owner set to {frappe.utils.get_fullname(current_user)}"
+    if final:
+        message += " (Final - Cannot be changed)"
     
     frappe.msgprint(
-        f"Job File Owner set to {frappe.utils.get_fullname(current_user)}",
+        message,
         indicator="green",
         alert=True,
     )
