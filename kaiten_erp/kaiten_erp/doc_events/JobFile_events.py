@@ -165,7 +165,7 @@ def on_update(job_file, method):
                 "proposed_system_kw__tier": job_file.get("proposed_system"),
                 "phase_type_copy": job_file.get("phase_type"),
                 # Potential extra fields (using .get() safely)
-                "k_number": job_file.get("k_number"),
+                "custom_k_number": job_file.get("k_number"),
                 "roof_area_sqft": job_file.get("roof_area_sqft"),
                 "roof_type": job_file.get("roof_type"),
                 "site_type": job_file.get("site_type"),
