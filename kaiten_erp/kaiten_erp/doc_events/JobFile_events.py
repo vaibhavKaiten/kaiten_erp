@@ -108,7 +108,10 @@ def on_update(job_file, method):
         )
 
     if job_file.has_value_changed("workflow_state"):
-        print(f"Workflow state changed to: {job_file.workflow_state}")
+        print(f"\n=== Workflow State Changed ===")
+        print(f"Job File: {job_file.name}")
+        print(f"New State: {job_file.workflow_state}")
+        print(f"Current User: {frappe.session.user}")
 
         # Handle Approval Pending state - Create ToDo for Execution Managers
         if job_file.workflow_state == "Approval Pending":
@@ -116,6 +119,10 @@ def on_update(job_file, method):
             assign_to_execution_managers(job_file)
 
         if job_file.workflow_state == "Job File Initiated":
+            print("\n>>> Job File Initiated - Starting execution setup <<<")
+            
+            # Record which Sales Manager initiated the Job File FIRST (before validations)
+            set_initiating_sales_manager(job_file)
 
             #  check for assigned supplier company before creating execution documents
             if not job_file.custom_assigned_technical_supplier:
@@ -126,9 +133,6 @@ def on_update(job_file, method):
 
             # Create Opportunity from Job File
             opportunity = create_opportunity(job_file)
-
-            # Record which Sales Manager initiated the Job File, if field exists
-            set_initiating_sales_manager(job_file)
 
             # Create ToDo for the Job File owner (Sales Manager) to prepare Quotation
             assign_sales_manager_owner_todo(job_file, opportunity)
@@ -401,6 +405,10 @@ def set_initiating_sales_manager(job_file):
     """
 
     current_user = frappe.session.user
+    
+    print(f"\n=== set_initiating_sales_manager called ===")
+    print(f"Job File: {job_file.name}")
+    print(f"Current User: {current_user}")
 
     # Detect which field exists
     owner_fields = ["custom_job_file_owner", "custom_job_file_ownerr"]
@@ -409,18 +417,26 @@ def set_initiating_sales_manager(job_file):
     )
 
     if not target_field:
+        print("ERROR: No Job File owner field found in database!")
         return
+    
+    print(f"Target Field: {target_field}")
+    print(f"Current Value: {job_file.get(target_field)}")
 
     # If already set, keep existing owner
     if job_file.get(target_field):
+        print(f"Job File owner already set to: {job_file.get(target_field)}")
         return
 
-    frappe.db.set_value(
-        "Job File",
-        job_file.name,
-        target_field,
-        current_user,
-        update_modified=False,
+    # Set the value directly on the document
+    job_file.db_set(target_field, current_user, update_modified=False)
+    
+    print(f"✓ Job File owner set to: {current_user}")
+    
+    frappe.msgprint(
+        f"Job File Owner set to {frappe.utils.get_fullname(current_user)}",
+        indicator="green",
+        alert=True,
     )
 
 
