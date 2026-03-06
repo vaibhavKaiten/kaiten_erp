@@ -21,12 +21,30 @@ def on_update(doc, method=None):
     # Only set default status for new leads if empty
     if not doc.status:
         doc.db_set("status", "Lead", update_modified=False)
+    
     # Check if workflow_state field has changed using has_value_changed
     if doc.has_value_changed("workflow_state"):
         new_workflow_state = doc.workflow_state
+        
+        print(f"\n=== Lead Workflow State Changed ===")
+        print(f"Lead: {doc.name}")
+        print(f"New State: {new_workflow_state}")
+        print(f"Current User: {frappe.session.user}")
 
-        # Check if changed TO "Qualified"
+        # Set Lead Owner when "Mark Contacted" is clicked (Draft/Reopen -> Contacted)
+        # This can be overridden by subsequent users until final qualification
+        if new_workflow_state == "Contacted":
+            print("\n>>> 'Mark Contacted' action detected - Setting Lead Owner (can be overridden) <<<")
+            set_lead_owner(doc, allow_override=True, final=False)
+
+        # Check if changed TO "Qualified" - FINAL action
         if new_workflow_state == "Qualified":
+            print("\n>>> 'Mark Qualified' action detected - Setting FINAL Lead Owner <<<")
+            
+            # Set the FINAL Lead Owner (always override - this is the last action)
+            set_lead_owner(doc, allow_override=False, final=True)
+            
+            # Create Job File from Lead
             create_job_file_from_lead(doc)
 
 
@@ -422,3 +440,47 @@ def refresh_execution_status(job_file_name):
     )
     
     return "Success"
+
+
+def set_lead_owner(lead, allow_override=True, final=False):
+    """
+    Set Lead Owner to the current user.
+    
+    Args:
+        lead: Lead document
+        allow_override: If True, only set if not already set. If False, always override.
+        final: If True, this is the final owner assignment (on Mark Qualified)
+    """
+
+    current_user = frappe.session.user
+    
+    print(f"\n=== set_lead_owner called ===")
+    print(f"Lead: {lead.name}")
+    print(f"Current User: {current_user}")
+    print(f"Allow Override: {allow_override}")
+    print(f"Final Assignment: {final}")
+
+    # Lead has a standard field 'lead_owner'
+    current_owner = lead.get("lead_owner")
+    print(f"Current Owner: {current_owner}")
+
+    # If allow_override is True and owner is already set, don't change
+    if allow_override and current_owner:
+        print(f"Lead owner already set to: {current_owner}, not overriding")
+        return
+
+    # Set the value directly on the document
+    lead.db_set("lead_owner", current_user, update_modified=False)
+    
+    action_type = "FINAL" if final else "temporary"
+    print(f"✓ Lead owner set to: {current_user} ({action_type})")
+    
+    message = f"Lead Owner set to {frappe.utils.get_fullname(current_user)}"
+    if final:
+        message += " (Final - Cannot be changed)"
+    
+    frappe.msgprint(
+        message,
+        indicator="green",
+        alert=True,
+    )
