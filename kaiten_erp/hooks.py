@@ -26,6 +26,7 @@ app_license = "mit"
 # Export fixtures to be installed during app installation
 DOCTYPES = [
     "Supplier Territory Child Table",
+    "Sales Person Territory Child Table",
     "Technical Survey",
     "Payment Control Child Table",
     "Job Execution Child Table",
@@ -65,6 +66,7 @@ fixtures = [
                 + [
                     "Lead",
                     "Sales Order",
+                    "Sales Person",
                     "Supplier",
                     "Material Request",
                     "Quotation",
@@ -252,7 +254,7 @@ has_permission = {
     "Meter Installation": "kaiten_erp.kaiten_erp.permissions.meter_installation_permissions.has_permission",
     "Meter Commissioning": "kaiten_erp.kaiten_erp.permissions.meter_commissioning_permissions.has_permission",
     "Verification Handover": "kaiten_erp.kaiten_erp.permissions.verification_handover_permissions.has_permission",
-    "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_has_permission",
+    "ToDo": "kaiten_erp.permissions.todo_permissions.todo_has_permission",
 }
 
 
