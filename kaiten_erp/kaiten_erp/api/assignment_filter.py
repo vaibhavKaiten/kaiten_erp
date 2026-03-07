@@ -105,3 +105,61 @@ def get_vendor_executive_details(vendor):
     )
     
     return users
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_active_sales_managers_for_territory(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Custom query for the custom_active_sales_manager Link field on Lead.
+
+    Returns Sales Persons who have the Lead's Territory in their
+    custom_sales_territory child table with status = 'Active'.
+
+    Args:
+        doctype  : 'Sales Person' (target doctype of the Link field)
+        txt      : search text entered by the user
+        searchfield: field to search in (name / sales_person_name)
+        start    : pagination offset
+        page_len : number of results to return
+        filters  : dict containing 'territory' key
+
+    Returns:
+        list of tuples – each tuple is (name, sales_person_name)
+    """
+    territory = (filters or {}).get("territory")
+
+    if not territory:
+        return []
+
+    query = """
+        SELECT DISTINCT
+            sp.name,
+            sp.sales_person_name
+        FROM
+            `tabSales Person` sp
+        INNER JOIN
+            `tabSales Person Territory Child Table` sptct
+            ON  sptct.parent      = sp.name
+            AND sptct.parenttype  = 'Sales Person'
+            AND sptct.territory   = %(territory)s
+            AND sptct.status      = 'Active'
+        WHERE
+            (
+                sp.name               LIKE %(txt)s
+                OR sp.sales_person_name LIKE %(txt)s
+            )
+        ORDER BY
+            sp.sales_person_name ASC
+        LIMIT %(start)s, %(page_len)s
+    """
+
+    return frappe.db.sql(
+        query,
+        {
+            "territory": territory,
+            "txt": f"%{txt}%",
+            "start": start,
+            "page_len": page_len,
+        }
+    )
