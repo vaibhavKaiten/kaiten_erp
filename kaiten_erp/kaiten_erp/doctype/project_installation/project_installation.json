@@ -12,7 +12,6 @@
     "mobile_number",
     "column_break_zucu",
     "contact_number",
-    "whatsapp_number",
     "email",
     "column_break_ilox",
     "address_line_1",
@@ -90,11 +89,6 @@
       "fieldname": "contact_number",
       "fieldtype": "Data",
       "label": "Contact Number"
-    },
-    {
-      "fieldname": "whatsapp_number",
-      "fieldtype": "Data",
-      "label": "WhatsApp Number"
     },
     {
       "fieldname": "email",
