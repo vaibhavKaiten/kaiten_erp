@@ -15,8 +15,29 @@ function prune_lead_toolbar(frm) {
 }
 
 frappe.ui.form.on('Lead', {
+    setup(frm) {
+        frm.set_query('custom_active_sales_manager', function() {
+            return {
+                query: 'kaiten_erp.kaiten_erp.api.assignment_filter.get_active_sales_managers_for_territory',
+                filters: { territory: frm.doc.territory || '' }
+            };
+        });
+    },
+
     refresh(frm) {
         prune_lead_toolbar(frm);
         setTimeout(() => prune_lead_toolbar(frm), 150);
+    },
+
+    territory(frm) {
+        if (frm.doc.custom_active_sales_manager) {
+            frm.set_value('custom_active_sales_manager', '');
+        }
+        frm.set_query('custom_active_sales_manager', function() {
+            return {
+                query: 'kaiten_erp.kaiten_erp.api.assignment_filter.get_active_sales_managers_for_territory',
+                filters: { territory: frm.doc.territory || '' }
+            };
+        });
     },
 });
