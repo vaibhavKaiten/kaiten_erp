@@ -242,7 +242,7 @@ permission_query_conditions = {
     "Meter Installation": "kaiten_erp.kaiten_erp.doctype.meter_installation.meter_installation_list.get_permission_query_conditions",
     "Meter Commissioning": "kaiten_erp.kaiten_erp.doctype.meter_commissioning.meter_commissioning_list.get_permission_query_conditions",
     "Verification Handover": "kaiten_erp.kaiten_erp.doctype.verification_handover.verification_handover_list.get_permission_query_conditions",
-    "ToDo": "kaiten_erp.permissions.todo_permissions.todo_permission_query",
+    "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_permission_query",
 }
 
 has_permission = {
