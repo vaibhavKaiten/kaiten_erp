@@ -26,7 +26,6 @@ app_license = "mit"
 # Export fixtures to be installed during app installation
 DOCTYPES = [
     "Supplier Territory Child Table",
-    "Sales Person Territory Child Table",
     "Technical Survey",
     "Payment Control Child Table",
     "Job Execution Child Table",
@@ -44,19 +43,6 @@ DOCTYPES = [
     "Procurement Shortage Log",
     "Stock Reservation Log",
     "Location Log",
-    # Sales & Lead related
-    "Lead",
-    "Sales Person",
-    "Sales Order",
-    "Quotation",
-    "Sales Invoice",
-    # Procurement & Inventory
-    "Supplier",
-    "Material Request",
-    "Purchase Order",
-    "Purchase Receipt",
-    "Delivery Note",
-    "Payment Entry",
 ]
 
 
@@ -71,7 +57,25 @@ fixtures = [
     # Property Setters (IMPORTANT FIX)
     {
         "dt": "Property Setter",
-        "filters": [["doc_type", "in", DOCTYPES]],
+        "filters": [
+            [
+                "doc_type",
+                "in",
+                DOCTYPES
+                + [
+                    "Lead",
+                    "Sales Order",
+                    "Supplier",
+                    "Material Request",
+                    "Quotation",
+                    "Sales Invoice",
+                    "Purchase Order",
+                    "Delivery Note",
+                    "Purchase Receipt",
+                    "Payment Entry",
+                ],
+            ]
+        ],
     },
     # -------------------------
     # Server Scripts
@@ -85,7 +89,8 @@ fixtures = [
     # Workflows
     # -------------------------
     {"dt": "Workflow" },
-    
+    {"dt": "Workflow State"},
+    {"dt": "Workflow Action"},
     # -------------------------
     # Custom Permissions
     # -------------------------
@@ -109,7 +114,6 @@ fixtures = [
         ],
     },
 ]
-
 # Includes in <head>
 # ------------------
 
