@@ -44,6 +44,19 @@ DOCTYPES = [
     "Procurement Shortage Log",
     "Stock Reservation Log",
     "Location Log",
+    # Sales & Lead related
+    "Lead",
+    "Sales Person",
+    "Sales Order",
+    "Quotation",
+    "Sales Invoice",
+    # Procurement & Inventory
+    "Supplier",
+    "Material Request",
+    "Purchase Order",
+    "Purchase Receipt",
+    "Delivery Note",
+    "Payment Entry",
 ]
 
 
@@ -58,26 +71,7 @@ fixtures = [
     # Property Setters (IMPORTANT FIX)
     {
         "dt": "Property Setter",
-        "filters": [
-            [
-                "doc_type",
-                "in",
-                DOCTYPES
-                + [
-                    "Lead",
-                    "Sales Order",
-                    "Sales Person",
-                    "Supplier",
-                    "Material Request",
-                    "Quotation",
-                    "Sales Invoice",
-                    "Purchase Order",
-                    "Delivery Note",
-                    "Purchase Receipt",
-                    "Payment Entry",
-                ],
-            ]
-        ],
+        "filters": [["doc_type", "in", DOCTYPES]],
     },
     # -------------------------
     # Server Scripts
@@ -254,7 +248,7 @@ has_permission = {
     "Meter Installation": "kaiten_erp.kaiten_erp.permissions.meter_installation_permissions.has_permission",
     "Meter Commissioning": "kaiten_erp.kaiten_erp.permissions.meter_commissioning_permissions.has_permission",
     "Verification Handover": "kaiten_erp.kaiten_erp.permissions.verification_handover_permissions.has_permission",
-    "ToDo": "kaiten_erp.permissions.todo_permissions.todo_has_permission",
+    "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_has_permission",
 }
 
 
