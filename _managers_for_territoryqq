@@ -1,0 +1,35 @@
+* [33mbc1c83f[m[33m ([m[1;31morigin/282-SalesPerson-lead[m[33m, [m[1;32mupdatedHooks[m[33m, [m[1;32m282-SalesPerson-lead[m[33m)[m fixtures file that have custom field on lead field name - custom_active_sales_manager
+* [33m7b5a6fa[m[33m ([m[1;31morigin/updatedHooks[m[33m)[m fix the hooks.py
+* [33mec388e3[m[33m ([m[1;32m0r[m[33m)[m chore: consolidate fixture DOCTYPES list in hooks.py (#282)
+* [33m3bc6c89[m refactor: move active sales manager filter from client script to lead.js (#282)
+* [33mda7a6f7[m feat: add active sales manager filter by territory on Lead (#282)
+[31m|[m * [33m0354782[m[33m ([m[1;31morigin/SalesPerson_Child[m[33m, [m[1;32mSalesPerson_Child[m[33m)[m Added Sales Person Territory customizations to fixtures
+[31m|[m[31m/[m  
+* [33md7cf0a1[m[33m ([m[1;32mmain[m[33m)[m Added Sales Person Territory customizations to fixtures
+* [33m12897bc[m[33m ([m[1;31morigin/255-KNO[m[33m, [m[1;32m255-KNO[m[33m)[m Fix: K Number not flowing to Technical Survey and Structure Mounting
+* [33mf72eb74[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m259-leadOwner[m[33m, [m[1;31morigin/259-leadOwner[m[33m)[m Implement Lead Owner auto-assignment on workflow actions
+* [33m00909df[m[33m ([m[1;31morigin/264-jobfileOwner[m[33m, [m[1;32m264-jobfileOwner[m[33m)[m Update Job File Owner logic with override capability
+* [33m4d90f1d[m Fix: Auto-populate Job File Owner when initiating job file
+[32m|[m * [33m5b23b60[m[33m ([m[1;31morigin/RemoveField-ProjectI[m[33m, [m[1;32mRemoveField-ProjectI[m[33m)[m remove extra field called whatsapp_number in project installation doctype because it have label as K Number and K Number already exist
+[32m|[m[32m/[m  
+* [33m2cd0e37[m Add location_log field to Technical Survey doctype
+*   [33mab174c2[m Merge branch '248-linkage-Opp' - Add Opportunity and Technical Survey linkage functionality
+[34m|[m[35m\[m  
+[34m|[m * [33mccecd15[m[33m ([m[1;31morigin/248-linkage-Opp[m[33m, [m[1;32m248-linkage-Opp[m[33m)[m add linkage of opp to ts for create sales order ticket no - 248 & 247
+[34m|[m * [33m50e5682[m add linkage of TS to opportunity
+[34m|[m [35m|[m * [33mde918e6[m[33m ([m[1;31morigin/JobFile-Naming[m[33m)[m fix the naming series of job file
+[34m|[m [35m|[m [36m|[m * [33m483bbf9[m[33m ([m[1;35mrefs/stash[m[33m)[m WIP on main: f88030b Merge branch '258-jobControl'
+[34m|[m [35m|[m[34m_[m[36m|[m[34m/[m[1;32m|[m 
+[34m|[m[34m/[m[35m|[m [36m|[m [1;32m|[m 
+[34m|[m [35m|[m [36m|[m * [33m908c4b1[m index on main: f88030b Merge branch '258-jobControl'
+[34m|[m [35m|[m[34m_[m[36m|[m[34m/[m  
+[34m|[m[34m/[m[35m|[m [36m|[m   
+* [35m|[m [36m|[m   [33mf88030b[m Merge branch '258-jobControl'
+[1;33m|[m[36m\[m [35m\[m [36m\[m  
+[1;33m|[m [36m|[m [35m|[m[36m/[m  
+[1;33m|[m [36m|[m[36m/[m[35m|[m   
+[1;33m|[m * [35m|[m [33mc408f50[m[33m ([m[1;31morigin/258-jobControl[m[33m, [m[1;32m258-jobControl[m[33m)[m fix job control show status of documents in job file
+[1;33m|[m [35m|[m[35m/[m  
+* [35m/[m [33m3217ba4[m update custom field fixture
+[35m|[m[35m/[m  
+* [33me0df40f[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m production code

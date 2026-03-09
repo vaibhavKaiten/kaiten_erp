@@ -537,11 +537,11 @@ def get_user_from_sales_person(sales_person_name):
 
 def assign_active_sales_manager(doc):
     """
-    Create ToDo for Active Sales Manager and set lead_owner.
+    Create ToDo for Active Sales Manager.
     - Resolves Sales Person → Employee → User
     - Closes any stale "Start Job File" ToDo for this Lead (when manager changes)
     - Creates new ToDo for the new manager
-    - Sets lead_owner to the resolved user
+    - Note: lead_owner is set separately by workflow button clicks (Contacted/Qualified)
     
     Args:
         doc: Lead document
@@ -624,13 +624,10 @@ def assign_active_sales_manager(doc):
             f"Created ToDo for Sales Manager {user} on Lead {doc.name}"
         )
     
-    # Set lead_owner to the resolved user
-    doc.db_set("lead_owner", user, update_modified=False)
-    
     # Show success message
     user_fullname = frappe.utils.get_fullname(user) or user
     frappe.msgprint(
-        _("Active Sales Manager assigned: {0}. ToDo created and Lead ownership updated.").format(
+        _("Active Sales Manager assigned: {0}. ToDo created.").format(
             user_fullname
         ),
         indicator="green",
