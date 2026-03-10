@@ -142,7 +142,7 @@ def on_update(job_file, method):
 
             # Create ToDo for the Job File owner (Sales Manager) to prepare Quotation
             assign_sales_manager_owner_todo(job_file, opportunity)
-
+          
             # 3. Technical vendor executions
 
             # Prepare data for Technical Survey
@@ -233,6 +233,9 @@ def on_update(job_file, method):
                 job_file.custom_opportunity = opportunity.name
             # Note: No need to call job_file.save() here since we're in on_update hook
             # The document will be saved automatically after this hook completes
+
+            # Create ToDo for Vendor Heads to start the Technical Survey
+            assign_vendor_head_todos(job_file, technical_survey.name)
 
             # 6. Show success message
             opportunity_url = f"/app/opportunity/{opportunity.name}"
@@ -395,6 +398,7 @@ def assign_sales_manager_owner_todo(job_file, opportunity):
             "reference_type": "Opportunity",
             "reference_name": opportunity.name,
             "description": description,
+            "role" : "Sales Manager",
             "priority": "High",
             "status": "Open",
         }
@@ -402,6 +406,7 @@ def assign_sales_manager_owner_todo(job_file, opportunity):
     todo.flags.ignore_permissions = True
     todo.insert()
     frappe.db.commit()
+
 
 
 def set_initiating_sales_manager(job_file, allow_override=True, final=False):
@@ -553,4 +558,82 @@ def assign_to_execution_managers(job_file):
             _("Some assignments failed. Check Error Log for details."),
             indicator="orange",
             alert=True,
+        )
+
+
+def assign_vendor_head_todos(job_file, technical_survey_name):
+    """
+    Create one ToDo per Vendor Head user for the Technical Survey document
+    created when a Job File is initiated. Instructs them to fill the Technical
+    Survey and assign a Vendor Executive in the 'Assigned Internal User' field.
+
+    Args:
+        job_file: Job File document
+        technical_survey_name: Name of the newly created Technical Survey document
+    """
+    vendor_heads = frappe.get_all(
+        "Has Role",
+        filters={"role": "Vendor Head", "parenttype": "User"},
+        fields=["parent"],
+    )
+
+    if not vendor_heads:
+        frappe.logger("kaiten_erp").warning(
+            f"No Vendor Head users found. Skipping ToDo assignment for Job File {job_file.name}"
+        )
+        return
+
+    assigned_count = 0
+
+    for head in vendor_heads:
+        user = head.parent
+
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+
+        # Duplicate guard
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": "Technical Survey",
+                "reference_name": technical_survey_name,
+                "allocated_to": user,
+                "status": "Open",
+            },
+        )
+        if existing:
+            continue
+
+        description = _("Initiate Technical Survey – {0}").format(technical_survey_name)
+        note = _(
+            "Technical Survey is created please fill required information, "
+            "assign to vendor executive and initiate the Technical Survey."
+        )
+
+        try:
+            todo = frappe.get_doc(
+                {
+                    "doctype": "ToDo",
+                    "allocated_to": user,
+                    "reference_type": "Technical Survey",
+                    "reference_name": technical_survey_name,
+                    "role" : "Vendor Head",
+                    "description": description + "\n\n" + note,
+                    "priority": "High",
+                    "status": "Open",
+                }
+            )
+            todo.flags.ignore_permissions = True
+            todo.insert()
+            assigned_count += 1
+        except Exception as e:
+            frappe.log_error(
+                f"Failed to create Vendor Head ToDo for {user} on Technical Survey {technical_survey_name}: {str(e)}",
+                "Vendor Head ToDo Assignment Error",
+            )
+
+    if assigned_count:
+        frappe.db.commit()
+        frappe.logger("kaiten_erp").info(
+            f"Created {assigned_count} Vendor Head ToDo(s) for Technical Survey {technical_survey_name}"
         )
