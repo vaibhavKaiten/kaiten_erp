@@ -18,10 +18,15 @@ def _sync_links_from_opportunity(doc):
     if not doc.opportunity:
         return
 
+    fields_to_fetch = ["custom_job_file"]
+    has_ts_column = frappe.db.has_column("Opportunity", "custom_technical_survey")
+    if has_ts_column:
+        fields_to_fetch.append("custom_technical_survey")
+
     opportunity = frappe.db.get_value(
         "Opportunity",
         doc.opportunity,
-        ["custom_job_file", "custom_technical_survey"],
+        fields_to_fetch,
         as_dict=True,
     )
 
@@ -32,7 +37,7 @@ def _sync_links_from_opportunity(doc):
         doc.custom_opportunity_link = doc.opportunity
 
     # Phase 2: inherit approved Technical Survey link from Opportunity (idempotent)
-    if opportunity and opportunity.get("custom_technical_survey") and not doc.get(
+    if has_ts_column and opportunity and opportunity.get("custom_technical_survey") and not doc.get(
         "custom_technical_survey"
     ):
         doc.custom_technical_survey = opportunity.custom_technical_survey

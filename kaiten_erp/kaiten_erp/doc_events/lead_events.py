@@ -196,7 +196,7 @@ def create_customer_from_lead(lead):
             "customer_name": customer_name,
             "customer_type": "Company" if lead.company_name else "Individual",
             "customer_group": "Commercial",
-            "territory": "India",
+            "territory": lead.territory,
             "gst_category": "Unregistered",
             # Contact details
             "mobile_no": lead.mobile_no,
