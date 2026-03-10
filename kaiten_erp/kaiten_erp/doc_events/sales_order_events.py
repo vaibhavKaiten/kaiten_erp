@@ -14,9 +14,9 @@ def validate(doc, method=None):
     Sales Order validate hook
     Called before Sales Order is saved
     """
-    enforce_final_approved_quotation_rule(doc)
     sync_links_from_source_quotation(doc)
     link_technical_survey_to_sales_order(doc)
+    enforce_final_approved_quotation_rule(doc)
 
 
 def on_submit(doc, method=None):
@@ -120,18 +120,41 @@ def enforce_final_approved_quotation_rule(sales_order):
     if not sales_order.is_new():
         return
 
+    # If the SO already has an approved TS (synced earlier in validate), allow it
+    so_ts = sales_order.get("custom_technical_survey")
+    if so_ts:
+        ts_state = frappe.db.get_value("Technical Survey", so_ts, "workflow_state")
+        if ts_state == "Approved":
+            return
+
     quotation_names = get_source_quotation_names(sales_order)
     if not quotation_names:
         frappe.throw(_("Sales Order can only be created from Final Approved Quotation."))
 
     for quotation_name in quotation_names:
-        stage = frappe.db.get_value(
-            "Quotation", quotation_name, "custom_quotation_stage"
+        quotation = frappe.db.get_value(
+            "Quotation",
+            quotation_name,
+            ["custom_quotation_stage", "custom_technical_survey"],
+            as_dict=True,
         )
-        if stage != "Final Approved":
+        if not quotation:
             frappe.throw(
                 _("Sales Order can only be created from Final Approved Quotation.")
             )
+
+        # Allow if the quotation has an approved Technical Survey linked
+        technical_survey = quotation.get("custom_technical_survey")
+        if technical_survey:
+            ts_state = frappe.db.get_value(
+                "Technical Survey", technical_survey, "workflow_state"
+            )
+            if ts_state == "Approved":
+                continue
+
+        frappe.throw(
+            _("Sales Order can only be created from Final Approved Quotation.")
+        )
 
 
 def sync_links_from_source_quotation(sales_order):
@@ -169,7 +192,11 @@ def get_source_quotation_name(sales_order):
 def get_source_quotation_names(sales_order):
     quotation_names = []
     for item in sales_order.get("items") or []:
-        quotation_name = item.get("quotation")
+        quotation_name = item.get("quotation") or (
+            item.get("prevdoc_docname")
+            if item.get("prevdoc_doctype") == "Quotation"
+            else None
+        )
         if quotation_name and quotation_name not in quotation_names:
             quotation_names.append(quotation_name)
     return quotation_names
