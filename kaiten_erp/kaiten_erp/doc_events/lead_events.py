@@ -22,10 +22,6 @@ def on_update(doc, method=None):
     if not doc.status:
         doc.db_set("status", "Lead", update_modified=False)
     
-    # Handle Active Sales Manager assignment - create ToDo and set lead_owner
-    if doc.has_value_changed("custom_active_sales_manager") and doc.get("custom_active_sales_manager"):
-        assign_active_sales_manager(doc)
-    
     # Check if workflow_state field has changed using has_value_changed
     if doc.has_value_changed("workflow_state"):
         new_workflow_state = doc.workflow_state
@@ -544,12 +540,20 @@ def assign_active_sales_manager(doc):
     - Sets lead_owner to the resolved user
     
     Args:
-        doc: Lead document
+        doc: Lead document (must have custom_job_file populated before calling)
     """
     sales_person = doc.get("custom_active_sales_manager")
     if not sales_person:
         return
-    
+
+    # Job File must already be created before this function is called
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        frappe.logger().warning(
+            f"No Job File linked to Lead {doc.name}. Cannot create ToDo for Sales Manager."
+        )
+        return
+
     # Resolve user from Sales Person
     user = get_user_from_sales_person(sales_person)
     if not user:
@@ -569,8 +573,8 @@ def assign_active_sales_manager(doc):
     existing_todos = frappe.get_all(
         "ToDo",
         filters={
-            "reference_type": "Lead",
-            "reference_name": doc.name,
+            "reference_type": "Job File",
+            "reference_name": job_file_name,
             "status": "Open",
             "description": ["like", "%Start Job File%"],
         },
@@ -578,28 +582,25 @@ def assign_active_sales_manager(doc):
     )
     
     for todo in existing_todos:
-        # Close old ToDos (whether same user or different user)
         frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
         frappe.logger().info(
-            f"Closed ToDo {todo.name} for Lead {doc.name} (manager changed/reassigned)"
+            f"Closed ToDo {todo.name} for Job File {job_file_name} (manager changed/reassigned)"
         )
     
-    # Duplicate guard: Check if an open ToDo already exists for this exact user + Lead combo
-    # (shouldn't happen after the cleanup above, but defensive check)
+    # Duplicate guard: check if an open ToDo already exists for this user + Job File
     existing_open_todo = frappe.db.exists(
         "ToDo",
         {
-            "reference_type": "Lead",
-            "reference_name": doc.name,
+            "reference_type": "Job File",
+            "reference_name": job_file_name,
             "allocated_to": user,
             "status": "Open",
         },
     )
     
     if existing_open_todo:
-        # Already have an open ToDo for this user - don't create duplicate
         frappe.logger().info(
-            f"Open ToDo already exists for user {user} on Lead {doc.name}. Skipping creation."
+            f"Open ToDo already exists for user {user} on Job File {job_file_name}. Skipping creation."
         )
     else:
         # Create new ToDo
@@ -609,8 +610,8 @@ def assign_active_sales_manager(doc):
             {
                 "doctype": "ToDo",
                 "allocated_to": user,
-                "reference_type": "Lead",
-                "reference_name": doc.name,
+                "reference_type": "Job File",
+                "reference_name": job_file_name,
                 "description": description,
                 "priority": "High",
                 "status": "Open",
@@ -621,7 +622,7 @@ def assign_active_sales_manager(doc):
         frappe.db.commit()
         
         frappe.logger().info(
-            f"Created ToDo for Sales Manager {user} on Lead {doc.name}"
+            f"Created ToDo for Sales Manager {user} on Job File {job_file_name}"
         )
     
     # Set lead_owner to the resolved user
