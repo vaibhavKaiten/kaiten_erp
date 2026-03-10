@@ -954,13 +954,23 @@ def link_technical_survey_to_opportunity(doc):
     - Does not overwrite existing links (idempotent).
     """
     opportunity_name = doc.get("custom_opportunity")
+
+    # Fallback: find opportunity linked to the same Job File
+    if not opportunity_name and doc.get("custom_job_file"):
+        opportunity_name = frappe.db.get_value(
+            "Opportunity", {"custom_job_file": doc.custom_job_file}, "name"
+        )
+
     if not opportunity_name:
+        frappe.logger("kaiten_erp").warning(
+            "link_technical_survey_to_opportunity: no opportunity found for Technical Survey %s", doc.name
+        )
         return
 
     # Ensure Opportunity has the expected custom field; fail silently otherwise
     if not frappe.db.has_column("Opportunity", "custom_technical_survey"):
-        frappe.throw(
-            _("Opportunity.custom_technical_survey is missing; skipping link for Technical Survey {0}").format(doc.name)
+        frappe.logger("kaiten_erp").warning(
+            "Opportunity.custom_technical_survey column missing; skipping link for Technical Survey %s", doc.name
         )
         return
 
@@ -991,22 +1001,35 @@ def assign_final_quotation_todo(doc):
     - Idempotent across re-saves.
     """
     opportunity_name = doc.get("custom_opportunity")
+
+    # Fallback: find opportunity linked to the same Job File
+    if not opportunity_name and doc.get("custom_job_file"):
+        opportunity_name = frappe.db.get_value(
+            "Opportunity", {"custom_job_file": doc.custom_job_file}, "name"
+        )
+
     if not opportunity_name:
+        frappe.logger("kaiten_erp").warning(
+            "assign_final_quotation_todo: no opportunity found for Technical Survey %s", doc.name
+        )
         return
 
     # Fetch Job File from Opportunity (anchor)
     job_file_name = frappe.db.get_value(
         "Opportunity", opportunity_name, "custom_job_file"
     )
+    if not job_file_name and doc.get("custom_job_file"):
+        job_file_name = doc.custom_job_file
     if not job_file_name:
         return
 
-    # Sales Manager who initiated the Job File
-    sales_manager = frappe.db.get_value(
-        "Job File", job_file_name, "custom_job_file_owner"
-    )
-    if not sales_manager:
-        return
+    # Sales Manager who initiated the Job File — check both possible field names
+    sales_manager = None
+    for owner_field in ("custom_job_file_owner", "custom_job_file_ownerr"):
+        if frappe.db.has_column("Job File", owner_field):
+            sales_manager = frappe.db.get_value("Job File", job_file_name, owner_field)
+            if sales_manager:
+                break
 
     # Ensure user is enabled and still a Sales Manager
     if not frappe.db.get_value("User", sales_manager, "enabled"):
