@@ -7,11 +7,33 @@ from frappe import _
 
 def validate(doc, method=None):
     _sync_links_from_opportunity(doc)
+    _fill_item_name_and_uom(doc)
 
     if doc.get("custom_quotation_stage") == "Final Approved":
         _validate_final_approved_requirements(doc)
         _ensure_single_commercial_item(doc)
         _lock_final_approved_item_structure(doc)
+
+
+def _fill_item_name_and_uom(doc):
+    """Auto-populate item_name and UOM from Item master for every row that has item_code."""
+    for item in doc.get("items") or []:
+        if not item.item_code:
+            continue
+        if item.item_name and item.uom:
+            continue
+        item_data = frappe.db.get_value(
+            "Item",
+            item.item_code,
+            ["item_name", "stock_uom"],
+            as_dict=True,
+        )
+        if not item_data:
+            continue
+        if not item.item_name:
+            item.item_name = item_data.item_name
+        if not item.uom:
+            item.uom = item_data.stock_uom
 
 
 def _sync_links_from_opportunity(doc):
