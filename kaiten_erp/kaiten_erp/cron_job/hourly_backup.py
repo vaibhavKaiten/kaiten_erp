@@ -3,9 +3,20 @@ import subprocess
 import zipfile
 from datetime import datetime
 import frappe
+import pytz
 
 
 def take_full_backup():
+    # Check if current time is within the allowed window (9 AM - 9 PM IST)
+    ist = pytz.timezone('Asia/Kolkata')
+    current_time_ist = datetime.now(ist)
+    current_hour = current_time_ist.hour
+    
+    # Only run between 9 AM (9) and 9 PM (21) IST
+    if current_hour < 9 or current_hour > 21:
+        frappe.logger().info(f"Backup skipped - outside allowed time window (9 AM - 9 PM IST). Current hour: {current_hour}")
+        return
+    
     site = frappe.local.site
 
     bench_path = "/home/ubuntu/frappe-bench"
