@@ -1,4 +1,10 @@
 frappe.ui.form.on('Quotation', {
+    onload: function (frm) {
+        if (frm.is_new()) {
+            frappe.after_ajax(() => fill_missing_item_details(frm));
+        }
+    },
+
     refresh: function (frm) {
         frm.trigger('apply_stage_ui');
         frm.trigger('set_technical_survey_query');
@@ -51,11 +57,19 @@ frappe.ui.form.on('Quotation', {
                 }
 
                 const row = frm.add_child('items');
-                row.item_code = r.custom_proposed_system;
-                row.qty = 1;
-                row.rate = r.opportunity_amount || 0;
-                frm.refresh_field('items');
+                frappe.model.set_value(row.doctype, row.name, 'item_code', r.custom_proposed_system)
+                    .then(() => {
+                        frappe.model.set_value(row.doctype, row.name, 'qty', 1);
+                        frappe.model.set_value(row.doctype, row.name, 'rate', r.opportunity_amount || 0);
+                        frm.script_manager.trigger('item_code', row.doctype, row.name);
+                        frm.refresh_field('items');
+                    });
             }
         );
     }
 });
+
+function fill_missing_item_details(frm) {
+    const needs_fill = (frm.doc.items || []).filter(row => row.item_code && (!row.item_name || !row.uom));
+    needs_fill.forEach(row => frm.script_manager.trigger('item_code', row.doctype, row.name));
+}

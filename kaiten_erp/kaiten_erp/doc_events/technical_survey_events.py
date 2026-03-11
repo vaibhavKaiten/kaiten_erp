@@ -969,8 +969,8 @@ def link_technical_survey_to_opportunity(doc):
 
     # Ensure Opportunity has the expected custom field; fail silently otherwise
     if not frappe.db.has_column("Opportunity", "custom_technical_survey"):
-        frappe.logger("kaiten_erp").warning(
-            "Opportunity.custom_technical_survey column missing; skipping link for Technical Survey %s", doc.name
+        frappe.throw(
+            _("Opportunity.custom_technical_survey is missing; skipping link for Technical Survey {0}").format(doc.name)
         )
         return
 
