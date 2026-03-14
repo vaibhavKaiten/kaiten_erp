@@ -237,6 +237,17 @@ def create_material_request_from_technical_survey(sales_order):
         )
         return
 
+    # Resolve warehouse once — validate SO's set_warehouse belongs to the same company
+    _item_warehouse = None
+    if sales_order.set_warehouse:
+        wh_company = frappe.db.get_value(
+            "Warehouse", sales_order.set_warehouse, "company"
+        )
+        if wh_company == sales_order.company:
+            _item_warehouse = sales_order.set_warehouse
+    if not _item_warehouse:
+        _item_warehouse = get_default_warehouse(sales_order.company)
+
     # Collect items from System Configuration
     items = []
 
@@ -259,8 +270,7 @@ def create_material_request_from_technical_survey(sales_order):
                         or "Nos",
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
-                        "warehouse": sales_order.set_warehouse
-                        or get_default_warehouse(sales_order.company),
+                        "warehouse": _item_warehouse,
                     }
                 )
         except (ValueError, TypeError):
@@ -287,8 +297,7 @@ def create_material_request_from_technical_survey(sales_order):
                         or "Nos",
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
-                        "warehouse": sales_order.set_warehouse
-                        or get_default_warehouse(sales_order.company),
+                        "warehouse": _item_warehouse,
                     }
                 )
         except (ValueError, TypeError):
@@ -315,8 +324,7 @@ def create_material_request_from_technical_survey(sales_order):
                         or "Nos",
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
-                        "warehouse": sales_order.set_warehouse
-                        or get_default_warehouse(sales_order.company),
+                        "warehouse": _item_warehouse,
                     }
                 )
         except (ValueError, TypeError):
@@ -342,8 +350,7 @@ def create_material_request_from_technical_survey(sales_order):
                                 or "Nos",
                                 "schedule_date": sales_order.delivery_date
                                 or frappe.utils.today(),
-                                "warehouse": sales_order.set_warehouse
-                                or get_default_warehouse(sales_order.company),
+                                "warehouse": _item_warehouse,
                             }
                         )
                 except (ValueError, TypeError):
@@ -361,6 +368,17 @@ def create_material_request_from_technical_survey(sales_order):
         )
         return
 
+    # Resolve target warehouse — validate SO's set_warehouse belongs to the same company
+    target_warehouse = None
+    if sales_order.set_warehouse:
+        wh_company = frappe.db.get_value(
+            "Warehouse", sales_order.set_warehouse, "company"
+        )
+        if wh_company == sales_order.company:
+            target_warehouse = sales_order.set_warehouse
+    if not target_warehouse:
+        target_warehouse = get_default_warehouse(sales_order.company)
+
     # Create Material Request
     material_request = frappe.get_doc(
         {
@@ -368,7 +386,7 @@ def create_material_request_from_technical_survey(sales_order):
             "material_request_type": "Material Transfer",
             "schedule_date": sales_order.delivery_date or frappe.utils.today(),
             "company": sales_order.company,
-            "set_warehouse": sales_order.set_warehouse or get_default_warehouse(sales_order.company),
+            "set_warehouse": target_warehouse,
             "items": items,
         }
     )
