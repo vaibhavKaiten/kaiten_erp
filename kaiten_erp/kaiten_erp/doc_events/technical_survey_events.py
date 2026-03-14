@@ -136,7 +136,7 @@ def on_update(doc, method=None):
     todos = frappe.get_all(
         "ToDo",
         filters={
-            "reference_type": "Technical Survey",
+            "reference_type": doc.doctype,
             "reference_name": doc.name,
             "status": ["!=", "Cancelled"],
         },
@@ -150,7 +150,7 @@ def on_update(doc, method=None):
         # Check if user already has share access
         existing_share = frappe.db.exists(
             "DocShare",
-            {"user": user, "share_name": doc.name, "share_doctype": "Technical Survey"},
+            {"user": user, "share_name": doc.name, "share_doctype": doc.doctype},
         )
 
         if existing_share:
@@ -165,11 +165,11 @@ def on_update(doc, method=None):
             # Create new share with write permission
             try:
                 frappe.share.add(
-                    "Technical Survey", doc.name, user=user, write=1, share=1, notify=0
+                    doc.doctype, doc.name, user=user, write=1, share=1, notify=0
                 )
             except Exception as e:
                 frappe.logger("kaiten_erp").error(
-                    f"Failed to share Technical Survey {doc.name} with {user}: {str(e)}"
+                    f"Failed to share {doc.doctype} {doc.name} with {user}: {str(e)}"
                 )
 
     # Sync execution workflow state into parent Job File tracking table
