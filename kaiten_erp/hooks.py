@@ -333,9 +333,11 @@ scheduler_events = {
     "daily": [
         "kaiten_erp.kaiten_erp.api.milestone_invoice_manager.check_advance_payments_daily"
     ],
-    "hourly": [
-        "kaiten_erp.kaiten_erp.cron_job.hourly_backup.take_full_backup"
-    ]
+    "cron": {
+        "0 9,12,15,18,21 * * *": [
+            "kaiten_erp.kaiten_erp.cron_job.hourly_backup.take_full_backup"
+        ]
+    }
 }
 
 
