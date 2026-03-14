@@ -9,6 +9,7 @@ from kaiten_erp.kaiten_erp.api.milestone_invoice_manager import (
     create_milestone_invoice,
     get_milestone_invoice,
     assign_todo_to_accounts_managers,
+    is_self_funding_order,
 )
 from kaiten_erp.kaiten_erp.api.gps import log_workflow_location
 
@@ -22,8 +23,11 @@ class MeterCommissioning(Document):
         Called when Meter Commissioning is updated
         Triggers final invoice creation when workflow_state changes to "Approved"
         """
-        # Check if workflow_state is "Approved"
-        if self.workflow_state == "Approved":
+        # Only fire once when the state actually transitions to "Approved"
+        if (
+            self.has_value_changed("workflow_state")
+            and self.workflow_state == "Approved"
+        ):
             self.create_final_milestone_invoice()
 
     def create_final_milestone_invoice(self):
@@ -41,6 +45,10 @@ class MeterCommissioning(Document):
                 alert=True,
                 indicator="orange",
             )
+            return
+
+        # Only create final invoice for self-funding orders
+        if not is_self_funding_order(sales_order):
             return
 
         # Check if final invoice already exists
