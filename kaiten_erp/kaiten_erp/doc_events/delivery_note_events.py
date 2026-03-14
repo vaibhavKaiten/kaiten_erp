@@ -14,19 +14,24 @@ from kaiten_erp.kaiten_erp.api.milestone_invoice_manager import (
     check_payment_status,
     get_milestone_invoice,
     assign_todo_to_accounts_managers,
+    is_self_funding_order,
 )
 
 
 def validate(doc, method=None):
     """
     Validate Delivery Note before submission
-    Block submission if advance invoice is not paid
+    Block submission if advance invoice is not paid (self-funding orders only)
     """
     # Get linked Sales Order
     sales_order = get_linked_sales_order(doc)
 
     if not sales_order:
         # If no Sales Order linked, allow submission (may be a direct Delivery Note)
+        return
+
+    # Only enforce payment gate for self-funding orders
+    if not is_self_funding_order(sales_order):
         return
 
     # Check if advance invoice exists
@@ -52,6 +57,7 @@ def validate(doc, method=None):
 def on_submit(doc, method=None):
     """
     Create delivery milestone invoice when Delivery Note is submitted
+    Only applies to self-funding orders.
     """
     # Get linked Sales Order
     sales_order = get_linked_sales_order(doc)
@@ -64,6 +70,10 @@ def on_submit(doc, method=None):
             alert=True,
             indicator="orange",
         )
+        return
+
+    # Only create delivery invoice for self-funding orders
+    if not is_self_funding_order(sales_order):
         return
 
     # Check if delivery invoice already exists

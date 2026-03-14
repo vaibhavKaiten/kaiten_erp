@@ -11,7 +11,7 @@ import frappe
 from frappe import _
 from frappe.utils import nowdate, flt, get_link_to_form, add_days, getdate
 
-SELF_FUNDING_TEMPLATE = "self fund"
+SELF_FUNDING_TEMPLATE = "Self Funding"
 
 
 def is_self_funding_order(sales_order_name):
@@ -192,7 +192,7 @@ def assign_todo_to_accounts_managers(
                 "reference_name": reference_doc.name,
                 "allocated_to": user,
                 "status": "Open",
-                "description": ["like", "%Collect Advance Payment%"],
+                "description": ["like", "%{0}%".format(milestone_name)],
             },
         )
 
@@ -204,8 +204,8 @@ def assign_todo_to_accounts_managers(
                 "doctype": "ToDo",
                 "allocated_to": user,
                 "description": _(
-                    "Collect Advance Payment for Sales Invoice {0}. {1}"
-                ).format(reference_doc.name, description),
+                    "Collect {0} for Sales Invoice {1}. {2}"
+                ).format(milestone_name, reference_doc.name, description),
                 "reference_type": "Sales Invoice",
                 "reference_name": reference_doc.name,
                 "priority": "High",
@@ -218,7 +218,7 @@ def assign_todo_to_accounts_managers(
         todo.insert()
 
     frappe.msgprint(
-        _("To-Do 'Collect Advance Payment' assigned to Accounts Managers"),
+        _("To-Do 'Collect {0}' assigned to Accounts Managers").format(milestone_name),
         alert=True,
         indicator="blue",
     )
@@ -694,14 +694,26 @@ def check_and_update_job_file_advance(invoice_name):
 
     # Handle Full Payment Workflow
     if status == "Paid":
-        # Close "Collect Advance Payment" To-Do
+        # Determine which milestone todo to close based on invoice milestone type
+        milestone_type = frappe.db.get_value(
+            "Sales Invoice", invoice_name, "custom_milestone_type"
+        )
+        # Map invoice milestone_type to the todo description fragment
+        milestone_name_map = {
+            "Advance Payment": "Advance Payment",
+            "Delivery": "Delivery Payment",
+            "Final Payment": "Final Payment",
+        }
+        milestone_name = milestone_name_map.get(milestone_type, milestone_type or "Payment")
+
+        # Close the corresponding Accounts Manager ToDo
         todos = frappe.get_all(
             "ToDo",
             filters={
                 "reference_type": "Sales Invoice",
                 "reference_name": invoice_name,
                 "status": "Open",
-                "description": ["like", "%Collect Advance Payment%"],
+                "description": ["like", "%{0}%".format(milestone_name)],
             },
         )
         for todo in todos:
