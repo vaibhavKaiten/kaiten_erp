@@ -11,6 +11,25 @@ import frappe
 from frappe import _
 from frappe.utils import nowdate, flt, get_link_to_form, add_days, getdate
 
+SELF_FUNDING_TEMPLATE = "self fund"
+
+
+def is_self_funding_order(sales_order_name):
+    """
+    Check if a Sales Order uses the 'self fund' Payment Terms Template.
+    All payment hard locks only apply to self-funding orders.
+
+    Args:
+        sales_order_name: Name of the Sales Order
+
+    Returns:
+        bool: True if the Sales Order uses the self-funding payment terms
+    """
+    if not sales_order_name:
+        return False
+    template = frappe.db.get_value("Sales Order", sales_order_name, "payment_terms_template")
+    return template == SELF_FUNDING_TEMPLATE
+
 
 def create_milestone_invoice(source_doc, milestone_type, items, description=""):
     """
@@ -394,8 +413,13 @@ def create_advance_invoice(doc, method=None):
     Create advance payment invoice when Sales Order is submitted
     Called via hook on Sales Order on_submit
 
+    Only applies when the 'self fund' Payment Terms Template is selected.
     Amount is calculated from Payment Terms Template (e.g., 10% of grand total)
     """
+    # Only create advance invoice for self-funding orders
+    if doc.payment_terms_template != SELF_FUNDING_TEMPLATE:
+        return
+
     # Check if advance invoice already exists
     if hasattr(doc, "custom_advance_invoice") and doc.custom_advance_invoice:
         return
@@ -537,6 +561,10 @@ def validate_advance_payment(doc, method=None):
 
     if not sales_order:
         # Try to find from custom fields or items
+        return
+
+    # Only enforce hard lock for self-funding orders
+    if not is_self_funding_order(sales_order):
         return
 
     # Check if advance invoice exists and is paid
@@ -707,6 +735,10 @@ def check_advance_payments_daily():
     )
 
     for so in sales_orders:
+        # Only process self-funding orders
+        if so.payment_terms_template != SELF_FUNDING_TEMPLATE:
+            continue
+
         if not so.custom_advance_invoice:
             # Check if Payment Terms requires advance
             if so.payment_terms_template:

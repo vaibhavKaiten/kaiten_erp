@@ -11,6 +11,7 @@ from frappe import _
 from kaiten_erp.kaiten_erp.api.milestone_invoice_manager import (
     check_payment_status,
     get_milestone_invoice,
+    is_self_funding_order,
 )
 
 
@@ -28,6 +29,10 @@ def validate_installation_payment(doc, method=None):
 
     if not sales_order:
         # If no Sales Order linked, allow submission (may be standalone execution)
+        return
+
+    # Only enforce hard lock for self-funding orders
+    if not is_self_funding_order(sales_order):
         return
 
     # Check if delivery invoice exists
@@ -65,6 +70,10 @@ def validate_verification_payment(doc, method=None):
 
     if not sales_order:
         # If no Sales Order linked, allow submission
+        return
+
+    # Only enforce hard lock for self-funding orders
+    if not is_self_funding_order(sales_order):
         return
 
     # Check if final invoice exists

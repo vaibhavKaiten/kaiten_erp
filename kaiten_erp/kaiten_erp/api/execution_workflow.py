@@ -5,6 +5,7 @@
 import frappe
 from frappe import _
 from frappe.utils import flt, nowdate
+from kaiten_erp.kaiten_erp.api.milestone_invoice_manager import is_self_funding_order
 
 
 # Execution sequence stages in order
@@ -53,6 +54,14 @@ def check_advance_payment_gate(job_file):
         }
 
     jf = frappe.get_doc("Job File", job_file)
+
+    # Only enforce advance payment gate for self-funding orders
+    if jf.sales_order and not is_self_funding_order(jf.sales_order):
+        return {
+            "verified": True,
+            "bypass": True,
+            "message": _("Non self-funding order - advance payment check skipped"),
+        }
 
     # Get linked quotation
     quotation = jf.quotation
