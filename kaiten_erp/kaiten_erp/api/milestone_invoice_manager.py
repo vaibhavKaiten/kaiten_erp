@@ -410,18 +410,20 @@ def update_payment_status_on_sales_order(sales_order_name):
                         )
 
                 if job_file_name:
-                    structure_mounting = frappe.db.get_value(
-                        "Job File", job_file_name, "custom_structure_mounting"
-                    )
-                    if structure_mounting:
-                        assign_todo_to_execution_managers(
-                            "Payment at the time of delivery is done. Action Required.",
-                            _(
-                                "Payment at the time of delivery is done by the customer. Take action on the structure mounting (linked to {0})."
-                            ).format(structure_mounting),
-                            "Structure Mounting",
-                            structure_mounting,
+                    # Notify execution managers if a Structure Mounting doc is linked
+                    if frappe.db.has_column("Job File", "custom_structure_mounting"):
+                        structure_mounting = frappe.db.get_value(
+                            "Job File", job_file_name, "custom_structure_mounting"
                         )
+                        if structure_mounting:
+                            assign_todo_to_execution_managers(
+                                "Payment at the time of delivery is done. Action Required.",
+                                _(
+                                    "Payment at the time of delivery is done by the customer. Take action on the structure mounting (linked to {0})."
+                                ).format(structure_mounting),
+                                "Structure Mounting",
+                                structure_mounting,
+                            )
 
     # Check final payment
     if (
