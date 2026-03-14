@@ -5,12 +5,36 @@ import frappe
 
 
 def execute():
-    # --- Delete conflicting ToDo workspace if it exists ---
-    if frappe.db.exists("Workspace", "ToDo"):
-        frappe.delete_doc("Workspace", "ToDo", ignore_permissions=True, force=True)
+    # --- Delete conflicting ToDo/To Do workspaces if they exist ---
+    for ws_name in ["ToDo", "To Do"]:
+        if frappe.db.exists("Workspace", ws_name):
+            frappe.delete_doc("Workspace", ws_name, ignore_permissions=True, force=True)
 
-    # --- Create Workspace Sidebar ---
-    if not frappe.db.exists("Workspace Sidebar", "ToDo"):
+    # --- Delete stale "To Do" (with space) Desktop Icon and Workspace Sidebar ---
+    if frappe.db.exists("Desktop Icon", "To Do"):
+        frappe.delete_doc("Desktop Icon", "To Do", ignore_permissions=True, force=True)
+    if frappe.db.exists("Workspace Sidebar", "To Do"):
+        frappe.delete_doc("Workspace Sidebar", "To Do", ignore_permissions=True, force=True)
+
+    # --- Create or fix Workspace Sidebar "ToDo" ---
+    if frappe.db.exists("Workspace Sidebar", "ToDo"):
+        sidebar = frappe.get_doc("Workspace Sidebar", "ToDo")
+        sidebar.header_icon = "check"
+        sidebar.app = "kaiten_erp"
+        sidebar.module = "Kaiten Erp"
+        sidebar.items = []
+        sidebar.append(
+            "items",
+            {
+                "label": "ToDo",
+                "type": "Link",
+                "link_type": "DocType",
+                "link_to": "ToDo",
+                "icon": "check",
+            },
+        )
+        sidebar.save(ignore_permissions=True)
+    else:
         frappe.get_doc(
             {
                 "doctype": "Workspace Sidebar",
@@ -32,8 +56,17 @@ def execute():
             }
         ).insert(ignore_permissions=True)
 
-    # --- Create Desktop Icon ---
-    if not frappe.db.exists("Desktop Icon", {"label": "ToDo", "standard": 0}):
+    # --- Create or fix Desktop Icon "ToDo" ---
+    if frappe.db.exists("Desktop Icon", "ToDo"):
+        icon = frappe.get_doc("Desktop Icon", "ToDo")
+        icon.icon_type = "Link"
+        icon.link_type = "Workspace Sidebar"
+        icon.link_to = "ToDo"
+        icon.icon = "check"
+        icon.app = "kaiten_erp"
+        icon.hidden = 0
+        icon.save(ignore_permissions=True)
+    else:
         frappe.get_doc(
             {
                 "doctype": "Desktop Icon",
