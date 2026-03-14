@@ -260,7 +260,7 @@ def create_material_request_from_technical_survey(sales_order):
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
                         "warehouse": sales_order.set_warehouse
-                        or get_default_warehouse(),
+                        or get_default_warehouse(sales_order.company),
                     }
                 )
         except (ValueError, TypeError):
@@ -288,7 +288,7 @@ def create_material_request_from_technical_survey(sales_order):
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
                         "warehouse": sales_order.set_warehouse
-                        or get_default_warehouse(),
+                        or get_default_warehouse(sales_order.company),
                     }
                 )
         except (ValueError, TypeError):
@@ -316,7 +316,7 @@ def create_material_request_from_technical_survey(sales_order):
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
                         "warehouse": sales_order.set_warehouse
-                        or get_default_warehouse(),
+                        or get_default_warehouse(sales_order.company),
                     }
                 )
         except (ValueError, TypeError):
@@ -343,7 +343,7 @@ def create_material_request_from_technical_survey(sales_order):
                                 "schedule_date": sales_order.delivery_date
                                 or frappe.utils.today(),
                                 "warehouse": sales_order.set_warehouse
-                                or get_default_warehouse(),
+                                or get_default_warehouse(sales_order.company),
                             }
                         )
                 except (ValueError, TypeError):
@@ -368,7 +368,7 @@ def create_material_request_from_technical_survey(sales_order):
             "material_request_type": "Material Transfer",
             "schedule_date": sales_order.delivery_date or frappe.utils.today(),
             "company": sales_order.company,
-            "set_warehouse": sales_order.set_warehouse or get_default_warehouse(),
+            "set_warehouse": sales_order.set_warehouse or get_default_warehouse(sales_order.company),
             "items": items,
         }
     )
@@ -406,9 +406,12 @@ def create_material_request_from_technical_survey(sales_order):
     frappe.db.commit()
 
 
-def get_default_warehouse():
+def get_default_warehouse(company=None):
     """
     Get default warehouse for the company
+
+    Args:
+        company: Company name to filter warehouses by
 
     Returns:
         str: Default warehouse name
@@ -418,8 +421,17 @@ def get_default_warehouse():
         "Stock Settings", "default_warehouse"
     )
 
+    # Verify it belongs to the correct company
+    if default_warehouse and company:
+        wh_company = frappe.db.get_value("Warehouse", default_warehouse, "company")
+        if wh_company and wh_company != company:
+            default_warehouse = None
+
     if not default_warehouse:
-        # Get any warehouse as fallback
-        default_warehouse = frappe.db.get_value("Warehouse", {"disabled": 0}, "name")
+        # Get a warehouse belonging to the specified company
+        filters = {"disabled": 0, "is_group": 0}
+        if company:
+            filters["company"] = company
+        default_warehouse = frappe.db.get_value("Warehouse", filters, "name")
 
     return default_warehouse
