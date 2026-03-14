@@ -58,7 +58,7 @@ jspm_packages/
 
 #temp folder
 temp/*
-
+kaiten_erp/kaiten_erp/temp/*
 test.py
 *.csv
 
