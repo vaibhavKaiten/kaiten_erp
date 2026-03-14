@@ -186,8 +186,8 @@ def process_stock_reservation(sales_order_doc):
     # Get Technical Survey reference
     technical_survey = sales_order_doc.get("custom_technical_survey")
 
-    # Default warehouse
-    default_warehouse = get_default_warehouse()
+    # Default warehouse (company-aware)
+    default_warehouse = get_default_warehouse(sales_order_doc.company)
 
     # Check stock for each BOM item
     for item in bom_items:
@@ -272,12 +272,12 @@ def get_bom_items_from_sales_order(sales_order_doc):
         return get_bom_items_traditional(sales_order_doc)
 
     # Fetch items from Technical Survey System Configuration
-    bom_items = get_bom_items_from_technical_survey(technical_survey_name)
+    bom_items = get_bom_items_from_technical_survey(technical_survey_name, company=sales_order_doc.company)
 
     return bom_items
 
 
-def get_bom_items_from_technical_survey(technical_survey_name):
+def get_bom_items_from_technical_survey(technical_survey_name, company=None):
     """
     Fetch detailed BOM items from Technical Survey System Configuration
 
@@ -300,8 +300,8 @@ def get_bom_items_from_technical_survey(technical_survey_name):
         )
         return []
 
-    # Get default warehouse
-    default_warehouse = get_default_warehouse()
+    # Get default warehouse (company-aware)
+    default_warehouse = get_default_warehouse(company)
 
     # 1. Add Panel (if exists)
     if ts.get("panel"):
@@ -389,7 +389,7 @@ def get_bom_items_traditional(sales_order_doc):
             )
         else:
             # Explode BOM and get components
-            components = explode_bom(bom_info["bom"], item.qty)
+            components = explode_bom(bom_info["bom"], item.qty, company=sales_order_doc.company)
             for comp in components:
                 comp["bom"] = bom_info["bom"]
                 bom_items.append(comp)
@@ -397,9 +397,22 @@ def get_bom_items_traditional(sales_order_doc):
     return bom_items
 
 
-def get_default_warehouse():
-    """Get default warehouse from stock settings"""
-    return frappe.db.get_single_value("Stock Settings", "default_warehouse") or None
+def get_default_warehouse(company=None):
+    """Get default warehouse from stock settings, filtered by company"""
+    default_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+
+    # Verify it belongs to the correct company
+    if default_warehouse and company:
+        wh_company = frappe.db.get_value("Warehouse", default_warehouse, "company")
+        if wh_company and wh_company != company:
+            default_warehouse = None
+
+    if not default_warehouse and company:
+        default_warehouse = frappe.db.get_value(
+            "Warehouse", {"disabled": 0, "is_group": 0, "company": company}, "name"
+        )
+
+    return default_warehouse
 
 
 def create_material_request_for_shortages(sales_order_doc, shortage_items):
@@ -541,7 +554,7 @@ def get_bom_for_so_item(so_item, sales_order_doc):
     return result
 
 
-def explode_bom(bom_name, qty_multiplier=1):
+def explode_bom(bom_name, qty_multiplier=1, company=None):
     """
     Explode BOM to get all component items
     Returns list of {item_code, required_qty, warehouse}
@@ -562,7 +575,7 @@ def explode_bom(bom_name, qty_multiplier=1):
 
         if sub_bom and item.item_code != bom_doc.item:
             # Recursively explode sub-BOM
-            sub_components = explode_bom(sub_bom, required_qty)
+            sub_components = explode_bom(sub_bom, required_qty, company=company)
             components.extend(sub_components)
         else:
             # Leaf component
@@ -572,7 +585,7 @@ def explode_bom(bom_name, qty_multiplier=1):
                     "item_name": item.item_name,
                     "required_qty": required_qty,
                     "qty": required_qty,
-                    "warehouse": item.source_warehouse or get_default_warehouse(),
+                    "warehouse": item.source_warehouse or get_default_warehouse(company),
                 }
             )
 
@@ -854,7 +867,7 @@ def get_stock_availability_for_bom(sales_order):
     if not bom_items:
         bom_items = get_bom_items_traditional(so_doc)
 
-    default_warehouse = get_default_warehouse()
+    default_warehouse = get_default_warehouse(so_doc.company)
     availability = []
 
     for item in bom_items:
