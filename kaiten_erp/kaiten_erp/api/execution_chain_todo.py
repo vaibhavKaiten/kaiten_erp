@@ -99,6 +99,7 @@ def _create_vendor_head_todos(doc, next_doctype):
             }
         )
         todo.flags.ignore_permissions = True
+        todo.flags.ignore_links = True
         todo.insert()
         created += 1
 
