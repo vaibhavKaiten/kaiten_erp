@@ -311,6 +311,69 @@ def assign_todo_to_execution_managers(
         todo.insert()
 
 
+def _assign_vendor_head_todo_for_structure_mounting(sales_order_name, customer):
+    """
+    Create a ToDo for every active Vendor Head user to start Structure Mounting
+    after delivery payment is completed.
+    """
+    vendor_heads = frappe.get_all(
+        "Has Role",
+        filters={"role": "Vendor Head", "parenttype": "User"},
+        fields=["parent as user"],
+    )
+
+    if not vendor_heads:
+        frappe.log_error(
+            "No users found with Vendor Head role for Structure Mounting ToDo",
+            "Milestone Invoice Manager",
+        )
+        return
+
+    description = _(
+        "Delivery payment received for Sales Order {0} (Customer: {1}). "
+        "Please start Structure Mounting."
+    ).format(sales_order_name, customer)
+
+    for vh in vendor_heads:
+        user = vh.user
+        if frappe.db.get_value("User", user, "enabled") == 0:
+            continue
+
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": "Sales Order",
+                "reference_name": sales_order_name,
+                "allocated_to": user,
+                "status": "Open",
+                "description": ["like", "%Structure Mounting%"],
+            },
+        )
+        if existing:
+            continue
+
+        todo = frappe.get_doc(
+            {
+                "doctype": "ToDo",
+                "allocated_to": user,
+                "description": description,
+                "reference_type": "Sales Order",
+                "reference_name": sales_order_name,
+                "priority": "High",
+                "status": "Open",
+                "date": nowdate(),
+            }
+        )
+        todo.flags.ignore_permissions = True
+        todo.insert()
+
+    frappe.msgprint(
+        _("ToDo 'Start Structure Mounting' assigned to Vendor Heads"),
+        alert=True,
+        indicator="blue",
+    )
+
+
 def get_milestone_invoice(sales_order_name, milestone_type):
     """
     Get the milestone invoice reference from Sales Order
@@ -384,46 +447,11 @@ def update_payment_status_on_sales_order(sales_order_name):
                 update_modified=False,
             )
 
-            # Trigger to-do for Structure Mounting if delivery paid
+            # Trigger to-do for Vendor Head to start Structure Mounting
             if delivery_paid:
-                job_file_name = frappe.db.get_value(
-                    "Job File", {"sales_order": sales_order_name}, "name"
+                _assign_vendor_head_todo_for_structure_mounting(
+                    sales_order_name, sales_order.customer
                 )
-
-                # Check 2: link on Sales Order
-                if not job_file_name:
-                    job_file_name = sales_order.get("custom_job_file")
-
-                # Check 3: Fallback - search by Customer
-                if not job_file_name and sales_order.customer:
-                    job_files = frappe.get_all(
-                        "Job File",
-                        filters={"customer": sales_order.customer},
-                        order_by="creation desc",
-                        limit=1,
-                    )
-                    if job_files:
-                        job_file_name = job_files[0].name
-                        frappe.msgprint(
-                            _("Job File found for customer: {0}").format(job_file_name),
-                            alert=True,
-                        )
-
-                if job_file_name:
-                    # Notify execution managers if a Structure Mounting doc is linked
-                    if frappe.db.has_column("Job File", "custom_structure_mounting"):
-                        structure_mounting = frappe.db.get_value(
-                            "Job File", job_file_name, "custom_structure_mounting"
-                        )
-                        if structure_mounting:
-                            assign_todo_to_execution_managers(
-                                "Payment at the time of delivery is done. Action Required.",
-                                _(
-                                    "Payment at the time of delivery is done by the customer. Take action on the structure mounting (linked to {0})."
-                                ).format(structure_mounting),
-                                "Structure Mounting",
-                                structure_mounting,
-                            )
 
     # Check final payment
     if (
