@@ -160,18 +160,44 @@ class MeterCommissioning(Document):
     def get_linked_sales_order(self):
         """
         Get linked Sales Order from Meter Commissioning
+        Tries multiple fallback methods to find the Sales Order.
 
         Returns:
             str: Sales Order name or None
         """
-        # Check custom field
+        # Method 1: Check custom_linked_sales_order field
         if (
             hasattr(self, "custom_linked_sales_order")
             and self.custom_linked_sales_order
         ):
             return self.custom_linked_sales_order
 
-        # Try to find via Job File or other linking mechanism
-        # This may need to be customized based on your data model
+        sales_order = None
 
-        return None
+        # Method 2: Via custom_job_file -> Job File -> sales_order
+        if hasattr(self, "custom_job_file") and self.custom_job_file:
+            sales_order = frappe.db.get_value(
+                "Job File", self.custom_job_file, "sales_order"
+            )
+
+        # Method 3: Via custom_lead -> Job File (by lead) -> sales_order
+        if not sales_order and hasattr(self, "custom_lead") and self.custom_lead:
+            job_file_name = frappe.db.get_value(
+                "Job File", {"lead": self.custom_lead}, "name"
+            )
+            if job_file_name:
+                sales_order = frappe.db.get_value(
+                    "Job File", job_file_name, "sales_order"
+                )
+
+        # Cache the result so future lookups are instant
+        if sales_order and hasattr(self, "custom_linked_sales_order"):
+            frappe.db.set_value(
+                "Meter Commissioning",
+                self.name,
+                "custom_linked_sales_order",
+                sales_order,
+                update_modified=False,
+            )
+
+        return sales_order

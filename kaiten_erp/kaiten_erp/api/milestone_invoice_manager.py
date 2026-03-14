@@ -13,6 +13,38 @@ from frappe.utils import nowdate, flt, get_link_to_form, add_days, getdate
 
 SELF_FUNDING_TEMPLATE = "Self Funding"
 
+MILESTONE_ITEMS = {
+    "Advance Payment": "Advance milestone payment item for Self Funding orders",
+    "Delivery Payment": "Delivery milestone payment item for Self Funding orders",
+    "Final Payment": "Final milestone payment item for Self Funding orders",
+}
+
+
+def ensure_milestone_item(item_code):
+    """
+    Ensure the milestone payment Item record exists.
+    Creates it automatically if missing.
+    """
+    if frappe.db.exists("Item", item_code):
+        return
+
+    description = MILESTONE_ITEMS.get(item_code, f"{item_code} for Self Funding orders")
+    item = frappe.get_doc(
+        {
+            "doctype": "Item",
+            "item_code": item_code,
+            "item_name": item_code,
+            "item_group": "Services",
+            "stock_uom": "Nos",
+            "is_stock_item": 0,
+            "gst_hsn_code": "999799",
+            "description": description,
+        }
+    )
+    item.flags.ignore_permissions = True
+    item.insert()
+    frappe.db.commit()
+
 
 def is_self_funding_order(sales_order_name):
     """
@@ -62,6 +94,12 @@ def create_milestone_invoice(source_doc, milestone_type, items, description=""):
             sales_order = source_doc.items[0].against_sales_order
     else:
         frappe.throw(_("Unsupported source document type: {0}").format(source_doctype))
+
+    # Ensure milestone item exists before creating the invoice
+    if items:
+        for item in items:
+            if item.get("item_code"):
+                ensure_milestone_item(item["item_code"])
 
     # Create Sales Invoice
     sales_invoice = frappe.get_doc(
