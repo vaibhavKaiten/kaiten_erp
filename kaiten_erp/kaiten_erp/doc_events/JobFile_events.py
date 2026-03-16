@@ -282,9 +282,13 @@ def create_execution(
 
     doc.insert()
 
-    # Ensure assigned_vendor is saved even if field is read-only
-    # if valid_vendor and doc.assigned_vendor != valid_vendor:
-    #     frappe.db.set_value(doctype, doc.name, "assigned_vendor", valid_vendor, update_modified=False)
+    
+    # Link execution doc back to Sales Order (for milestone invoice tracking)
+    if job_file.get("sales_order") and frappe.db.has_column(doctype, "custom_linked_sales_order"):
+        frappe.db.set_value(
+            doctype, doc.name, "custom_linked_sales_order",
+            job_file.sales_order, update_modified=False,
+        )
 
     frappe.db.commit()
 
