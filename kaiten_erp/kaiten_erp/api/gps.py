@@ -12,6 +12,7 @@ GPS_TEMP_FIELD_CANDIDATES = {
 }
 LOCATION_LOG_TABLE_CANDIDATES = (
     "custom_location_log",
+    "location_log",
     "custom_location_activity_log",
     "custom_location__history",
     "location_log",
