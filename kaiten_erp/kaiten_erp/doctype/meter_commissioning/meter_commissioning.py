@@ -65,12 +65,20 @@ class MeterCommissioning(Document):
         # Get Sales Order document to get grand total and payment terms
         so_doc = frappe.get_doc("Sales Order", sales_order)
 
-        # Calculate final amount from Payment Terms Template (third tranche)
+        # Calculate final amount from Sales Order payment_schedule (3rd tranche)
         final_amount = so_doc.grand_total  # Default to full amount
         final_percentage = 0
 
-        if so_doc.payment_terms_template:
-            # Get all payment terms
+        if so_doc.payment_schedule and len(so_doc.payment_schedule) >= 3:
+            # Use the actual scheduled 3rd tranche amount
+            third_row = so_doc.payment_schedule[2]
+            final_amount = flt(third_row.payment_amount)
+            final_percentage = flt(third_row.invoice_portion)
+            frappe.logger().info(
+                f"Final invoice for SO {sales_order}: {final_percentage}% = {final_amount} (from payment_schedule row 3)"
+            )
+        elif so_doc.payment_terms_template:
+            # Fallback: calculate from Payment Terms Template when schedule has < 3 rows
             payment_terms = frappe.get_all(
                 "Payment Terms Template Detail",
                 filters={"parent": so_doc.payment_terms_template},
@@ -78,16 +86,13 @@ class MeterCommissioning(Document):
                 order_by="idx asc",
             )
 
-            # Use the third term if it exists
             if payment_terms and len(payment_terms) >= 3:
                 final_percentage = flt(payment_terms[2].invoice_portion)
                 final_amount = (so_doc.grand_total * final_percentage) / 100
-
                 frappe.logger().info(
-                    f"Final invoice for SO {sales_order}: {final_percentage}% of {so_doc.grand_total} = {final_amount}"
+                    f"Final invoice for SO {sales_order}: {final_percentage}% of {so_doc.grand_total} = {final_amount} (from template)"
                 )
             elif payment_terms and len(payment_terms) == 2:
-                # If only two terms exist, use remaining amount
                 first_percentage = flt(payment_terms[0].invoice_portion)
                 second_percentage = flt(payment_terms[1].invoice_portion)
                 final_percentage = 100 - first_percentage - second_percentage
@@ -165,25 +170,25 @@ class MeterCommissioning(Document):
         Returns:
             str: Sales Order name or None
         """
-        # Method 1: Check custom_linked_sales_order field
+        # Method 1: Check custom_sales_order field
         if (
-            hasattr(self, "custom_linked_sales_order")
-            and self.custom_linked_sales_order
+            hasattr(self, "custom_sales_order")
+            and self.custom_sales_order
         ):
-            return self.custom_linked_sales_order
+            return self.custom_sales_order
 
         sales_order = None
 
-        # Method 2: Via custom_job_file -> Job File -> sales_order
-        if hasattr(self, "custom_job_file") and self.custom_job_file:
+        # Method 2: Via job_file -> Job File -> sales_order
+        if hasattr(self, "job_file") and self.job_file:
             sales_order = frappe.db.get_value(
-                "Job File", self.custom_job_file, "sales_order"
+                "Job File", self.job_file, "sales_order"
             )
 
-        # Method 3: Via custom_lead -> Job File (by lead) -> sales_order
-        if not sales_order and hasattr(self, "custom_lead") and self.custom_lead:
+        # Method 3: Via lead -> Job File (by lead) -> sales_order
+        if not sales_order and hasattr(self, "lead") and self.lead:
             job_file_name = frappe.db.get_value(
-                "Job File", {"lead": self.custom_lead}, "name"
+                "Job File", {"lead": self.lead}, "name"
             )
             if job_file_name:
                 sales_order = frappe.db.get_value(
@@ -191,11 +196,11 @@ class MeterCommissioning(Document):
                 )
 
         # Cache the result so future lookups are instant
-        if sales_order and hasattr(self, "custom_linked_sales_order"):
+        if sales_order and hasattr(self, "custom_sales_order"):
             frappe.db.set_value(
                 "Meter Commissioning",
                 self.name,
-                "custom_linked_sales_order",
+                "custom_sales_order",
                 sales_order,
                 update_modified=False,
             )

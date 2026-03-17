@@ -284,13 +284,11 @@ def create_execution(
 
     
     # Link execution doc back to Sales Order (for milestone invoice tracking)
-    if job_file.get("sales_order") and frappe.db.has_column(doctype, "custom_linked_sales_order"):
+    if job_file.get("sales_order") and frappe.db.has_column(doctype, "custom_sales_order"):
         frappe.db.set_value(
-            doctype, doc.name, "custom_linked_sales_order",
+            doctype, doc.name, "custom_sales_order",
             job_file.sales_order, update_modified=False,
         )
-
-    frappe.db.commit()
 
     return doc
 

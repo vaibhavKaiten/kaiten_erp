@@ -144,7 +144,7 @@ def setup_milestone_custom_fields():
         ],
         "Meter Commissioning": [
             {
-                "fieldname": "custom_linked_sales_order",
+                "fieldname": "custom_sales_order",
                 "label": "Linked Sales Order",
                 "fieldtype": "Link",
                 "options": "Sales Order",
@@ -183,7 +183,7 @@ def remove_milestone_custom_fields():
         # Delivery Note
         ("Delivery Note", "custom_linked_sales_order"),
         # Meter Commissioning
-        ("Meter Commissioning", "custom_linked_sales_order"),
+        ("Meter Commissioning", "custom_sales_order"),
     ]
 
     for dt, fieldname in fields_to_remove:
