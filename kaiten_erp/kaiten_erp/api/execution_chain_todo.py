@@ -17,12 +17,12 @@ from frappe import _
 from frappe.utils import nowdate
 
 # Ordered chain: current doctype → next doctype to start
-EXECUTION_CHAIN = {
-    "Structure Mounting": "Project Installation",
-    "Project Installation": "Meter Installation",
-    "Meter Installation": "Meter Commissioning",
-    "Meter Commissioning": "Verification Handover",
-}
+# EXECUTION_CHAIN = {
+#     "Structure Mounting": "Project Installation",
+#     "Project Installation": "Meter Installation",
+#     "Meter Installation": "Meter Commissioning",
+#     "Meter Commissioning": "Verification Handover",
+# }
 
 
 def on_update(doc, method=None):
@@ -44,11 +44,34 @@ def on_update(doc, method=None):
     _create_vendor_head_todos(doc, next_doctype)
 
 
+# Map next doctype → Job File field that holds its document name
+CHAIN_JOB_FILE_FIELD = {
+    "Project Installation": "custom_project_installation",
+    "Meter Installation": "custom_meter_installation",
+    "Meter Commissioning": "custom_meter_commissioning",
+    "Verification Handover": "custom_verification_handover",
+}
+
 def _create_vendor_head_todos(doc, next_doctype):
-    """
-    Create High-priority ToDo for every active Vendor Head user
-    to start the next execution doctype.
-    """
+    # Look up the actual existing document name from the Job File
+    job_file_name = doc.get("job_file")
+    if not job_file_name:
+        frappe.log_error(
+            f"No job_file field on {doc.doctype} {doc.name}",
+            "Execution Chain ToDo",
+        )
+        return
+
+    jf_field = CHAIN_JOB_FILE_FIELD.get(next_doctype)
+    next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
+
+    if not next_doc_name:
+        frappe.log_error(
+            f"Could not find {next_doctype} document on Job File {job_file_name}",
+            "Execution Chain ToDo",
+        )
+        return
+
     vendor_heads = frappe.get_all(
         "Has Role",
         filters={"role": "Vendor Head", "parenttype": "User"},
@@ -72,12 +95,11 @@ def _create_vendor_head_todos(doc, next_doctype):
         if frappe.db.get_value("User", user, "enabled") == 0:
             continue
 
-        # Prevent duplicate ToDos
         existing = frappe.db.exists(
             "ToDo",
             {
                 "reference_type": next_doctype,
-                "reference_name": next_doctype,
+                "reference_name": next_doc_name,   # actual doc name e.g. "PI-0001"
                 "allocated_to": user,
                 "status": "Open",
                 "description": ["like", f"%start {next_doctype} for {doc.customer}%"],
@@ -92,14 +114,13 @@ def _create_vendor_head_todos(doc, next_doctype):
                 "allocated_to": user,
                 "description": description,
                 "reference_type": next_doctype,
-                "reference_name": next_doctype,
+                "reference_name": next_doc_name,   # actual doc name
                 "priority": "High",
                 "status": "Open",
                 "date": nowdate(),
             }
         )
         todo.flags.ignore_permissions = True
-        todo.flags.ignore_links = True
         todo.insert()
         created += 1
 
