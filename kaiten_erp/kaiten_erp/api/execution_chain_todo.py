@@ -63,8 +63,8 @@ def _create_vendor_head_todos(doc, next_doctype):
         return
 
     description = _(
-        "{0} is approved please start {1}"
-    ).format(doc.doctype, next_doctype)
+        "{0} is approved please start {1} for {2}"
+    ).format(doc.doctype, next_doctype, doc.customer)
 
     created = 0
     for vh in vendor_heads:
@@ -76,11 +76,11 @@ def _create_vendor_head_todos(doc, next_doctype):
         existing = frappe.db.exists(
             "ToDo",
             {
-                "reference_type": doc.doctype,
-                "reference_name": doc.name,
+                "reference_type": next_doctype.doctype,
+                "reference_name": next_doctype.name,
                 "allocated_to": user,
                 "status": "Open",
-                "description": ["like", f"%start {next_doctype}%"],
+                "description": ["like", f"%start {next_doctype} for {doc.customer}%"],
             },
         )
         if existing:
@@ -91,8 +91,8 @@ def _create_vendor_head_todos(doc, next_doctype):
                 "doctype": "ToDo",
                 "allocated_to": user,
                 "description": description,
-                "reference_type": doc.doctype,
-                "reference_name": doc.name,
+                "reference_type": next_doctype.doctype,
+                "reference_name": next_doctype.name,
                 "priority": "High",
                 "status": "Open",
                 "date": nowdate(),

@@ -36,7 +36,113 @@ def validate(doc, method=None):
 
     # Check if workflow_state field has changed to "Completed"
     if doc.has_value_changed("workflow_state") and doc.workflow_state == "Completed":
+        if doc.doctype == "Technical Survey" and _is_completed_by_vendor_manager(doc):
+            assign_to_vendor_heads_for_technical_survey_approval(doc)
         assign_to_execution_managers_for_technical_survey(doc)
+
+
+def _is_completed_by_vendor_manager(doc) -> bool:
+    """Return True if the transition to Completed is performed by a Vendor Manager."""
+
+    actor = getattr(doc, "modified_by", None) or frappe.session.user
+    if not actor or actor in ("Guest",):
+        return False
+
+    try:
+        return "Vendor Manager" in frappe.get_roles(actor)
+    except Exception:
+        return False
+
+
+def assign_to_vendor_heads_for_technical_survey_approval(doc):
+    """Create approval ToDo for Vendor Head users once Vendor Manager completes the survey."""
+
+    if doc.doctype != "Technical Survey":
+        return
+
+    assigned_vendor = getattr(doc, "assigned_vendor", None) or getattr(doc, "supplier", None)
+
+    vendor_heads = []
+    if assigned_vendor:
+        try:
+            vendor_heads = get_supplier_users(assigned_vendor, role="Vendor Head") or []
+        except Exception:
+            vendor_heads = []
+
+    if not vendor_heads:
+        vendor_heads = [
+            r.parent
+            for r in frappe.get_all(
+                "Has Role",
+                filters={"role": "Vendor Head", "parenttype": "User"},
+                fields=["parent"],
+            )
+        ]
+
+    # Filter enabled users
+    vendor_heads = [
+        user
+        for user in set(vendor_heads)
+        if user not in ("Guest",) and frappe.db.get_value("User", user, "enabled")
+    ]
+
+    if not vendor_heads:
+        frappe.msgprint(
+            _("No Vendor Head users found to approve this Technical Survey."),
+            indicator="orange",
+            alert=True,
+        )
+        return
+
+    description = f"Approve Technical Survey {doc.name}"
+
+    created = 0
+    for user in vendor_heads:
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": doc.doctype,
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "description": description,
+                "status": ["!=", "Cancelled"],
+            },
+        )
+        if existing:
+            continue
+
+        # Ensure approver can act on the workflow by sharing with write permission
+        try:
+            if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
+                frappe.share.add(doc.doctype, doc.name, user=user, write=1, share=1, notify=0)
+        except Exception:
+            frappe.logger("kaiten_erp").exception(
+                f"Failed to share {doc.doctype} {doc.name} with Vendor Head {user}"
+            )
+
+        try:
+            assign_to.add(
+                {
+                    "assign_to": [user],
+                    "doctype": doc.doctype,
+                    "name": doc.name,
+                    "description": description,
+                    "priority": "High",
+                    "notify": 1,
+                }
+            )
+            created += 1
+        except Exception:
+            frappe.logger("kaiten_erp").exception(
+                f"Failed to create Vendor Head approval ToDo for {doc.doctype} {doc.name} -> {user}"
+            )
+
+    if created:
+        frappe.msgprint(
+            _("Created approval ToDo for {0} Vendor Head user(s).").format(created),
+            indicator="green",
+            alert=True,
+        )
 
 
 def assign_to_execution_managers_for_technical_survey(doc):
