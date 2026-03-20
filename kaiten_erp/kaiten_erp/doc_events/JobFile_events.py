@@ -222,14 +222,19 @@ def on_update(job_file, method):
                 job_file.custom_assigned_technical_supplier,
             )
             # Update Job File fields with created document names
-            job_file.custom_technical_survey = technical_survey.name
-            job_file.custom_structure_mounting = structure_mounting.name
-            job_file.custom_project_installation = project_installation.name
-            job_file.custom_meter_installation = meter_installation.name
-            job_file.custom_meter_commissioning = meter_commissioning.name
-            job_file.custom_verification_handover = verification_handover.name
+            update_data = {
+                "custom_technical_survey": technical_survey.name,
+                "custom_structure_mounting": structure_mounting.name,
+                "custom_project_installation": project_installation.name,
+                "custom_meter_installation": meter_installation.name,
+                "custom_meter_commissioning": meter_commissioning.name,
+                "custom_verification_handover": verification_handover.name,
+                "custom_opportunity" : 
+            }
             if frappe.db.has_column("Job File", "custom_opportunity"):
-                job_file.custom_opportunity = opportunity.name
+                update_data["custom_opportunity"] = opportunity.name
+
+            frappe.db.set_value("Job File", job_file.name, update_data, update_modified=False)
             # Note: No need to call job_file.save() here since we're in on_update hook
             # The document will be saved automatically after this hook completes
 
