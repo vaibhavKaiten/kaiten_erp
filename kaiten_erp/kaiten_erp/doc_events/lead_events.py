@@ -507,9 +507,6 @@ def get_user_from_sales_person(sales_person_name):
     # Primary: Get employee from Sales Person.employee field
     employee = frappe.db.get_value("Sales Person", sales_person_name, "employee")
     
-    # Fallback: Check if Employee has sales_person field pointing back
-    if not employee:
-        employee = frappe.db.get_value("Employee", {"sales_person": sales_person_name}, "name")
     
     if not employee:
         frappe.logger().warning(
