@@ -34,7 +34,7 @@ def _get_workflow_state_field(doctype: str) -> str:
 
 def on_update(doc, method=None):
     # ---- CHECKPOINT 1: hook is firing ----
-    print(
+    frappe.msgprint(
         f"on_update fired | doctype={doc.doctype} | name={doc.name}",
         "ExecChain DEBUG 1 – Hook Fired"
     )
@@ -43,7 +43,7 @@ def on_update(doc, method=None):
     current_state = doc.get(state_field)
 
     # ---- CHECKPOINT 2: what is the state field and value? ----
-    print(
+    frappe.msgprint(
         f"state_field={state_field} | current_state={current_state}",
         "ExecChain DEBUG 2 – State Field"
     )
@@ -53,23 +53,23 @@ def on_update(doc, method=None):
         changed = bool(doc.has_value_changed(state_field))
     except Exception as e:
         changed = True  # assume changed if we can't tell
-        print(
+        frappe.msgprint(
             f"has_value_changed error: {e} – assuming changed=True",
             "ExecChain DEBUG 2b – has_value_changed"
         )
 
     # ---- CHECKPOINT 3: did the state change? ----
-    print(
+    frappe.msgprint(
         f"state_field={state_field} | changed={changed} | value={current_state}",
         "ExecChain DEBUG 3 – Changed Check"
     )
 
     if not changed:
-        print("STOPPING – state did not change", "ExecChain DEBUG 3 – STOP")
+        frappe.msgprint("STOPPING – state did not change", "ExecChain DEBUG 3 – STOP")
         return
 
     if current_state != "Approved":
-        print(
+        frappe.msgprint(
             f"STOPPING – state is '{current_state}', not 'Approved'",
             "ExecChain DEBUG 3 – STOP"
         )
@@ -78,7 +78,7 @@ def on_update(doc, method=None):
     next_doctype = EXECUTION_CHAIN.get(doc.doctype)
 
     # ---- CHECKPOINT 4: is doctype in chain? ----
-    print(
+    frappe.msgprint(
         f"next_doctype={next_doctype}",
         "ExecChain DEBUG 4 – Next Doctype"
     )
@@ -91,7 +91,7 @@ def on_update(doc, method=None):
 
 def _create_vendor_head_todos(doc, next_doctype):
     # ---- CHECKPOINT 5: entering todo creation ----
-    print(
+    frappe.msgprint(
         f"Entered _create_vendor_head_todos | doc={doc.name} | next={next_doctype}",
         "ExecChain DEBUG 5 – Create Todos"
     )
@@ -99,7 +99,7 @@ def _create_vendor_head_todos(doc, next_doctype):
     # Step 1: get job file name
     job_file_name = doc.get("job_file") or doc.get("custom_job_file")
 
-    print(
+    frappe.msgprint(
         f"job_file_name={job_file_name} | doc.job_file={doc.get('job_file')} | doc.custom_job_file={doc.get('custom_job_file')}",
         "ExecChain DEBUG 6 – Job File Name"
     )
@@ -107,7 +107,7 @@ def _create_vendor_head_todos(doc, next_doctype):
     if not job_file_name:
         # Last resort: dump all field values to find the job file field
         all_fields = {k: v for k, v in doc.as_dict().items() if v and "job" in str(k).lower()}
-        print(
+        frappe.msgprint(
             f"STOPPING – no job_file found. Fields with 'job' in name: {all_fields}",
             "ExecChain DEBUG 6 – STOP No Job File"
         )
@@ -117,13 +117,13 @@ def _create_vendor_head_todos(doc, next_doctype):
     jf_field = CHAIN_JOB_FILE_FIELD[next_doctype]
     next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
 
-    print(
+    frappe.msgprint(
         f"jf_field={jf_field} | next_doc_name={next_doc_name}",
         "ExecChain DEBUG 7 – Next Doc Name"
     )
 
     if not next_doc_name:
-        print(
+        frappe.msgprint(
             f"STOPPING – Job File '{job_file_name}' has no value in '{jf_field}'",
             "ExecChain DEBUG 7 – STOP No Next Doc"
         )
@@ -139,13 +139,13 @@ def _create_vendor_head_todos(doc, next_doctype):
         fields=["parent as user"],
     )
 
-    print(
+    frappe.msgprint(
         f"vendor_heads found: {vendor_heads}",
         "ExecChain DEBUG 8 – Vendor Heads"
     )
 
     if not vendor_heads:
-        print(
+        frappe.msgprint(
             "STOPPING – no Vendor Head users found",
             "ExecChain DEBUG 8 – STOP"
         )
@@ -160,7 +160,7 @@ def _create_vendor_head_todos(doc, next_doctype):
         user = vh.user
         enabled = frappe.db.get_value("User", user, "enabled")
 
-        print(
+        frappe.msgprint(
             f"Processing user={user} | enabled={enabled}",
             "ExecChain DEBUG 9 – User Loop"
         )
@@ -175,7 +175,7 @@ def _create_vendor_head_todos(doc, next_doctype):
             "status": "Open",
         })
 
-        print(
+        frappe.msgprint(
             f"user={user} | existing_todo={existing}",
             "ExecChain DEBUG 10 – Duplicate Check"
         )
@@ -199,23 +199,23 @@ def _create_vendor_head_todos(doc, next_doctype):
             todo.insert()
             frappe.db.commit()
             created += 1
-            print(
+            frappe.msgprint(
                 f"SUCCESS – ToDo created for user={user} | todo={todo.name}",
                 "ExecChain DEBUG 11 – ToDo Created"
             )
         except Exception:
-            print(
+            frappe.msgprint(
                 frappe.get_traceback(),
                 f"ExecChain DEBUG 11 – FAILED insert for user={user}"
             )
 
-    print(
+    frappe.msgprint(
         f"Total ToDos created: {created}",
         "ExecChain DEBUG 12 – Done"
     )
 
     if created:
-        frappe.msgprint(
+        frappe.msgfrappe.msgprint(
             _("ToDo assigned to {0} Vendor Head(s): Start {1}").format(created, next_doctype),
             alert=True,
             indicator="blue",
