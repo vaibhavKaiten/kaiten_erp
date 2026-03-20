@@ -17,12 +17,20 @@ from frappe import _
 from frappe.utils import nowdate
 
 # Ordered chain: current doctype → next doctype to start
-# EXECUTION_CHAIN = {
-#     "Structure Mounting": "Project Installation",
-#     "Project Installation": "Meter Installation",
-#     "Meter Installation": "Meter Commissioning",
-#     "Meter Commissioning": "Verification Handover",
-# }
+EXECUTION_CHAIN = {
+    "Structure Mounting": "Project Installation",
+    "Project Installation": "Meter Installation",
+    "Meter Installation": "Meter Commissioning",
+    "Meter Commissioning": "Verification Handover",
+}
+
+# Map next doctype → Job File field that holds its document name
+CHAIN_JOB_FILE_FIELD = {
+    "Project Installation": "custom_project_installation",
+    "Meter Installation": "custom_meter_installation",
+    "Meter Commissioning": "custom_meter_commissioning",
+    "Verification Handover": "custom_verification_handover",
+}
 
 
 def on_update(doc, method=None):
@@ -37,20 +45,12 @@ def on_update(doc, method=None):
     if doc.workflow_state != "Approved":
         return
 
-    next_doctype = CHAIN_JOB_FILE_FIELD.get(doc.doctype)
+    next_doctype = EXECUTION_CHAIN.get(doc.doctype)
     if not next_doctype:
         return
 
     _create_vendor_head_todos(doc, next_doctype)
 
-
-# Map next doctype → Job File field that holds its document name
-CHAIN_JOB_FILE_FIELD = {
-    "Project Installation": "custom_project_installation",
-    "Meter Installation": "custom_meter_installation",
-    "Meter Commissioning": "custom_meter_commissioning",
-    "Verification Handover": "custom_verification_handover",
-}
 
 def _create_vendor_head_todos(doc, next_doctype):
     # Look up the actual existing document name from the Job File
