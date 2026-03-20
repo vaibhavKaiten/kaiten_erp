@@ -76,8 +76,8 @@ def _create_vendor_head_todos(doc, next_doctype):
         existing = frappe.db.exists(
             "ToDo",
             {
-                "reference_type": next_doctype.doctype,
-                "reference_name": next_doctype.name,
+                "reference_type": next_doctype,
+                "reference_name": next_doctype,
                 "allocated_to": user,
                 "status": "Open",
                 "description": ["like", f"%start {next_doctype} for {doc.customer}%"],
@@ -91,8 +91,8 @@ def _create_vendor_head_todos(doc, next_doctype):
                 "doctype": "ToDo",
                 "allocated_to": user,
                 "description": description,
-                "reference_type": next_doctype.doctype,
-                "reference_name": next_doctype.name,
+                "reference_type": next_doctype,
+                "reference_name": next_doctype,
                 "priority": "High",
                 "status": "Open",
                 "date": nowdate(),
