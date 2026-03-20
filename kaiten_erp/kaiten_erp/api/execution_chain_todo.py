@@ -33,23 +33,6 @@ CHAIN_JOB_FILE_FIELD = {
 }
 
 
-def _get_next_doc_name(doc, next_doctype):
-    """
-    Find next doctype document name by querying via Lead link.
-    All execution docs share the same Lead, so this is reliable.
-    """
-    # Get lead from current doc
-    lead_name = doc.get("lead") or doc.get("custom_lead")
-    if lead_name:
-        # Find next doc with same lead
-        return frappe.db.get_value(next_doctype, {"lead": lead_name}, "name")
-    
-    # Fallback: try job_file link
-    job_file_name = doc.get("job_file") or doc.get("custom_job_file")
-    if job_file_name:
-        return frappe.db.get_value(next_doctype, {"job_file": job_file_name}, "name")
-    
-    return None
 
 
 def on_update(doc, method=None):
@@ -72,12 +55,21 @@ def on_update(doc, method=None):
 
 
 def _create_vendor_head_todos(doc, next_doctype):
-    # Find next execution document via Lead linkage
-    next_doc_name = _get_next_doc_name(doc, next_doctype)
+    # Look up the actual existing document name from the Job File
+    job_file_name = doc.get("job_file")
+    if not job_file_name:
+        frappe.log_error(
+            f"No job_file field on {doc.doctype} {doc.name}",
+            "Execution Chain ToDo",
+        )
+        return
+
+    jf_field = CHAIN_JOB_FILE_FIELD.get(next_doctype)
+    next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
 
     if not next_doc_name:
         frappe.log_error(
-            f"Could not find {next_doctype} document for {doc.doctype} {doc.name} (Lead: {doc.get('lead')})",
+            f"Could not find {next_doctype} document on Job File {job_file_name}",
             "Execution Chain ToDo",
         )
         return
@@ -97,7 +89,7 @@ def _create_vendor_head_todos(doc, next_doctype):
 
     description = _(
         "{0} is approved please start {1} for {2}"
-    ).format(doc.doctype, next_doctype, doc.customer or "Customer")
+    ).format(doc.doctype, next_doctype, doc.customer)
 
     created = 0
     for vh in vendor_heads:
