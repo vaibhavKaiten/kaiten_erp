@@ -37,7 +37,7 @@ def on_update(doc, method=None):
     if doc.workflow_state != "Approved":
         return
 
-    next_doctype = EXECUTION_CHAIN.get(doc.doctype)
+    next_doctype = CHAIN_JOB_FILE_FIELD.get(doc.doctype)
     if not next_doctype:
         return
 
