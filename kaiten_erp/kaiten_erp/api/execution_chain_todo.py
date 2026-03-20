@@ -24,14 +24,6 @@ EXECUTION_CHAIN = {
     "Meter Commissioning": "Verification Handover",
 }
 
-# Map current doctype → Job File field that stores this doc's name (for reverse lookup)
-CURRENT_DOC_JF_FIELD = {
-    "Structure Mounting": "custom_structure_mounting",
-    "Project Installation": "custom_project_installation",
-    "Meter Installation": "custom_meter_installation",
-    "Meter Commissioning": "custom_meter_commissioning",
-}
-
 # Map next doctype → Job File field that holds its document name
 CHAIN_JOB_FILE_FIELD = {
     "Project Installation": "custom_project_installation",
@@ -39,6 +31,30 @@ CHAIN_JOB_FILE_FIELD = {
     "Meter Commissioning": "custom_meter_commissioning",
     "Verification Handover": "custom_verification_handover",
 }
+
+
+
+def _get_job_file_link_field(doctype):
+    """Return link fieldname in doctype that points to Job File, if any."""
+    meta = frappe.get_meta(doctype)
+    for field in meta.fields:
+        if field.fieldtype == "Link" and field.options == "Job File":
+            return field.fieldname
+    return None
+
+
+def _get_next_doc_name_from_job_file(job_file_name, next_doctype):
+    """Find next doctype doc name using Job File linkage."""
+    next_link_field = _get_job_file_link_field(next_doctype)
+    if next_link_field:
+        return frappe.db.get_value(next_doctype, {next_link_field: job_file_name}, "name")
+
+    # Fallback to Job File pointer fields if next doctype has no Job File link field.
+    jf_field = CHAIN_JOB_FILE_FIELD.get(next_doctype)
+    if jf_field and frappe.db.has_column("Job File", jf_field):
+        return frappe.db.get_value("Job File", job_file_name, jf_field)
+
+    return None
 
 
 def on_update(doc, method=None):
@@ -61,23 +77,22 @@ def on_update(doc, method=None):
 
 
 def _create_vendor_head_todos(doc, next_doctype):
-    # Reverse-lookup the Job File using the current doc's name
-    # (avoids relying on doc.job_file / doc.custom_job_file field name differences)
-    current_jf_field = CURRENT_DOC_JF_FIELD.get(doc.doctype)
-    job_file_name = frappe.db.get_value(
-        "Job File", {current_jf_field: doc.name}, "name"
-    ) if current_jf_field else None
+    # Resolve Job File from current execution doc via dynamic link field.
+    current_link_field = _get_job_file_link_field(doc.doctype)
+    job_file_name = doc.get(current_link_field) if current_link_field else None
+
+    # Backward compatibility for instances where fieldnames vary.
+    if not job_file_name:
+        job_file_name = doc.get("job_file") or doc.get("custom_job_file")
 
     if not job_file_name:
         frappe.log_error(
-            f"Could not find Job File for {doc.doctype} {doc.name}",
+            f"Could not find Job File link on {doc.doctype} {doc.name}",
             "Execution Chain ToDo",
         )
         return
 
-    # Look up the next execution doc's name from the Job File
-    jf_field = CHAIN_JOB_FILE_FIELD.get(next_doctype)
-    next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
+    next_doc_name = _get_next_doc_name_from_job_file(job_file_name, next_doctype)
 
     if not next_doc_name:
         frappe.log_error(
@@ -101,7 +116,7 @@ def _create_vendor_head_todos(doc, next_doctype):
 
     description = _(
         "{0} is approved please start {1} for {2}"
-    ).format(doc.doctype, next_doctype, doc.customer)
+    ).format(doc.doctype, next_doctype, doc.customer or "Customer")
 
     created = 0
     for vh in vendor_heads:

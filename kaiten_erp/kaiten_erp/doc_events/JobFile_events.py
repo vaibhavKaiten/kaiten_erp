@@ -125,8 +125,7 @@ def on_update(job_file, method):
             assign_to_execution_managers(job_file)
 
         if job_file.workflow_state == "Job File Initiated":
-            print("\n>>> Job File Initiated - Setting FINAL Job File Owner <<<")
-            
+          
             # Set the FINAL Job File Owner (always override - this is the last action)
             set_initiating_sales_manager(job_file, allow_override=False, final=True)
 
