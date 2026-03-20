@@ -1,22 +1,10 @@
 # Copyright (c) 2026, Kaiten Software and contributors
 # For license information, please see license.txt
 
-"""
-Execution Chain ToDo
-When an execution doctype's workflow_state transitions to "Approved",
-a ToDo is created for all Vendor Head users to start the next doctype
-in the execution chain.
-
-Chain order:
-  Structure Mounting → Project Installation → Meter Installation
-  → Meter Commissioning → Verification Handover
-"""
-
 import frappe
 from frappe import _
 from frappe.utils import nowdate
 
-# Ordered chain: current doctype → next doctype to start
 EXECUTION_CHAIN = {
     "Structure Mounting": "Project Installation",
     "Project Installation": "Meter Installation",
@@ -24,7 +12,6 @@ EXECUTION_CHAIN = {
     "Meter Commissioning": "Verification Handover",
 }
 
-# Map next doctype → the field on Job File that holds its document name
 CHAIN_JOB_FILE_FIELD = {
     "Project Installation": "custom_project_installation",
     "Meter Installation": "custom_meter_installation",
@@ -34,7 +21,6 @@ CHAIN_JOB_FILE_FIELD = {
 
 
 def _get_workflow_state_field(doctype: str) -> str:
-    """Return the active workflow state field for a DocType."""
     try:
         fieldname = frappe.db.get_value(
             "Workflow",
@@ -46,88 +32,122 @@ def _get_workflow_state_field(doctype: str) -> str:
         return "workflow_state"
 
 
-def _value_changed(doc, fieldname: str) -> bool:
-    if not fieldname:
-        return False
-    try:
-        return bool(doc.has_value_changed(fieldname))
-    except Exception:
-        try:
-            return doc.get_db_value(fieldname) != doc.get(fieldname)
-        except Exception:
-            return False
-
-
 def on_update(doc, method=None):
-    """
-    Fired on on_update for every execution doctype in the chain.
-    When workflow_state becomes "Approved", create a ToDo for all
-    Vendor Head users pointing at the next document in the chain.
-    """
-    state_field = _get_workflow_state_field(doc.doctype)
+    # ---- CHECKPOINT 1: hook is firing ----
+    print(
+        f"on_update fired | doctype={doc.doctype} | name={doc.name}",
+        "ExecChain DEBUG 1 – Hook Fired"
+    )
 
-    if not _value_changed(doc, state_field):
+    state_field = _get_workflow_state_field(doc.doctype)
+    current_state = doc.get(state_field)
+
+    # ---- CHECKPOINT 2: what is the state field and value? ----
+    print(
+        f"state_field={state_field} | current_state={current_state}",
+        "ExecChain DEBUG 2 – State Field"
+    )
+
+    # Check if value changed
+    try:
+        changed = bool(doc.has_value_changed(state_field))
+    except Exception as e:
+        changed = True  # assume changed if we can't tell
+        print(
+            f"has_value_changed error: {e} – assuming changed=True",
+            "ExecChain DEBUG 2b – has_value_changed"
+        )
+
+    # ---- CHECKPOINT 3: did the state change? ----
+    print(
+        f"state_field={state_field} | changed={changed} | value={current_state}",
+        "ExecChain DEBUG 3 – Changed Check"
+    )
+
+    if not changed:
+        print("STOPPING – state did not change", "ExecChain DEBUG 3 – STOP")
         return
 
-    if doc.get(state_field) != "Approved":
+    if current_state != "Approved":
+        print(
+            f"STOPPING – state is '{current_state}', not 'Approved'",
+            "ExecChain DEBUG 3 – STOP"
+        )
         return
 
     next_doctype = EXECUTION_CHAIN.get(doc.doctype)
+
+    # ---- CHECKPOINT 4: is doctype in chain? ----
+    print(
+        f"next_doctype={next_doctype}",
+        "ExecChain DEBUG 4 – Next Doctype"
+    )
+
     if not next_doctype:
-        return  # Verification Handover is the last step – nothing to chain
+        return
 
     _create_vendor_head_todos(doc, next_doctype)
 
 
 def _create_vendor_head_todos(doc, next_doctype):
-    # ------------------------------------------------------------------
-    # Step 1: Get the Job File name directly from the execution document.
-    #         Every execution doctype has either job_file or custom_job_file.
-    # ------------------------------------------------------------------
+    # ---- CHECKPOINT 5: entering todo creation ----
+    print(
+        f"Entered _create_vendor_head_todos | doc={doc.name} | next={next_doctype}",
+        "ExecChain DEBUG 5 – Create Todos"
+    )
+
+    # Step 1: get job file name
     job_file_name = doc.get("job_file") or doc.get("custom_job_file")
 
+    print(
+        f"job_file_name={job_file_name} | doc.job_file={doc.get('job_file')} | doc.custom_job_file={doc.get('custom_job_file')}",
+        "ExecChain DEBUG 6 – Job File Name"
+    )
+
     if not job_file_name:
-        frappe.log_error(
-            f"{doc.doctype} {doc.name} has no value in 'job_file' or 'custom_job_file'.",
-            "Execution Chain ToDo – Missing Job File",
+        # Last resort: dump all field values to find the job file field
+        all_fields = {k: v for k, v in doc.as_dict().items() if v and "job" in str(k).lower()}
+        print(
+            f"STOPPING – no job_file found. Fields with 'job' in name: {all_fields}",
+            "ExecChain DEBUG 6 – STOP No Job File"
         )
         return
 
-    # ------------------------------------------------------------------
-    # Step 2: From the Job File, get the next doctype's document name.
-    #         e.g. custom_project_installation → "PI-0001"
-    # ------------------------------------------------------------------
+    # Step 2: get next doc name from job file
     jf_field = CHAIN_JOB_FILE_FIELD[next_doctype]
     next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
 
+    print(
+        f"jf_field={jf_field} | next_doc_name={next_doc_name}",
+        "ExecChain DEBUG 7 – Next Doc Name"
+    )
+
     if not next_doc_name:
-        frappe.log_error(
-            (
-                f"Job File '{job_file_name}' field '{jf_field}' is empty. "
-                f"Cannot create ToDo for {next_doctype}."
-            ),
-            "Execution Chain ToDo – Missing Next Doc",
+        print(
+            f"STOPPING – Job File '{job_file_name}' has no value in '{jf_field}'",
+            "ExecChain DEBUG 7 – STOP No Next Doc"
         )
         return
 
-    # ------------------------------------------------------------------
-    # Step 3: Get customer name for the description (from Job File).
-    # ------------------------------------------------------------------
+    # Step 3: customer from job file
     customer = frappe.db.get_value("Job File", job_file_name, "customer") or job_file_name
 
-    # ------------------------------------------------------------------
-    # Step 4: Create one ToDo per enabled Vendor Head user.
-    # ------------------------------------------------------------------
+    # Step 4: get vendor heads
     vendor_heads = frappe.get_all(
         "Has Role",
         filters={"role": "Vendor Head", "parenttype": "User"},
         fields=["parent as user"],
     )
 
+    print(
+        f"vendor_heads found: {vendor_heads}",
+        "ExecChain DEBUG 8 – Vendor Heads"
+    )
+
     if not vendor_heads:
-        frappe.log_error(
-            "No users with 'Vendor Head' role found.",
-            "Execution Chain ToDo – No Vendor Heads",
+        print(
+            "STOPPING – no Vendor Head users found",
+            "ExecChain DEBUG 8 – STOP"
         )
         return
 
@@ -138,20 +158,29 @@ def _create_vendor_head_todos(doc, next_doctype):
     created = 0
     for vh in vendor_heads:
         user = vh.user
+        enabled = frappe.db.get_value("User", user, "enabled")
 
-        if not frappe.db.get_value("User", user, "enabled"):
+        print(
+            f"Processing user={user} | enabled={enabled}",
+            "ExecChain DEBUG 9 – User Loop"
+        )
+
+        if not enabled:
             continue
 
-        # Skip if an open ToDo already exists for this user + document
-        if frappe.db.exists(
-            "ToDo",
-            {
-                "reference_type": next_doctype,
-                "reference_name": next_doc_name,
-                "allocated_to": user,
-                "status": "Open",
-            },
-        ):
+        existing = frappe.db.exists("ToDo", {
+            "reference_type": next_doctype,
+            "reference_name": next_doc_name,
+            "allocated_to": user,
+            "status": "Open",
+        })
+
+        print(
+            f"user={user} | existing_todo={existing}",
+            "ExecChain DEBUG 10 – Duplicate Check"
+        )
+
+        if existing:
             continue
 
         try:
@@ -168,15 +197,24 @@ def _create_vendor_head_todos(doc, next_doctype):
             })
             todo.flags.ignore_permissions = True
             todo.insert()
+            frappe.db.commit()
             created += 1
+            print(
+                f"SUCCESS – ToDo created for user={user} | todo={todo.name}",
+                "ExecChain DEBUG 11 – ToDo Created"
+            )
         except Exception:
-            frappe.log_error(
+            print(
                 frappe.get_traceback(),
-                f"Execution Chain ToDo insert failed ({doc.doctype} {doc.name} → {next_doctype} {next_doc_name})",
+                f"ExecChain DEBUG 11 – FAILED insert for user={user}"
             )
 
+    print(
+        f"Total ToDos created: {created}",
+        "ExecChain DEBUG 12 – Done"
+    )
+
     if created:
-        frappe.db.commit()
         frappe.msgprint(
             _("ToDo assigned to {0} Vendor Head(s): Start {1}").format(created, next_doctype),
             alert=True,
