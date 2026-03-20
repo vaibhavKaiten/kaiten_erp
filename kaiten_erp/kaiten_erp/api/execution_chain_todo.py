@@ -33,27 +33,22 @@ CHAIN_JOB_FILE_FIELD = {
 }
 
 
-
-def _get_job_file_link_field(doctype):
-    """Return link fieldname in doctype that points to Job File, if any."""
-    meta = frappe.get_meta(doctype)
-    for field in meta.fields:
-        if field.fieldtype == "Link" and field.options == "Job File":
-            return field.fieldname
-    return None
-
-
-def _get_next_doc_name_from_job_file(job_file_name, next_doctype):
-    """Find next doctype doc name using Job File linkage."""
-    next_link_field = _get_job_file_link_field(next_doctype)
-    if next_link_field:
-        return frappe.db.get_value(next_doctype, {next_link_field: job_file_name}, "name")
-
-    # Fallback to Job File pointer fields if next doctype has no Job File link field.
-    jf_field = CHAIN_JOB_FILE_FIELD.get(next_doctype)
-    if jf_field and frappe.db.has_column("Job File", jf_field):
-        return frappe.db.get_value("Job File", job_file_name, jf_field)
-
+def _get_next_doc_name(doc, next_doctype):
+    """
+    Find next doctype document name by querying via Lead link.
+    All execution docs share the same Lead, so this is reliable.
+    """
+    # Get lead from current doc
+    lead_name = doc.get("lead") or doc.get("custom_lead")
+    if lead_name:
+        # Find next doc with same lead
+        return frappe.db.get_value(next_doctype, {"lead": lead_name}, "name")
+    
+    # Fallback: try job_file link
+    job_file_name = doc.get("job_file") or doc.get("custom_job_file")
+    if job_file_name:
+        return frappe.db.get_value(next_doctype, {"job_file": job_file_name}, "name")
+    
     return None
 
 
@@ -77,26 +72,12 @@ def on_update(doc, method=None):
 
 
 def _create_vendor_head_todos(doc, next_doctype):
-    # Resolve Job File from current execution doc via dynamic link field.
-    current_link_field = _get_job_file_link_field(doc.doctype)
-    job_file_name = doc.get(current_link_field) if current_link_field else None
-
-    # Backward compatibility for instances where fieldnames vary.
-    if not job_file_name:
-        job_file_name = doc.get("job_file") or doc.get("custom_job_file")
-
-    if not job_file_name:
-        frappe.log_error(
-            f"Could not find Job File link on {doc.doctype} {doc.name}",
-            "Execution Chain ToDo",
-        )
-        return
-
-    next_doc_name = _get_next_doc_name_from_job_file(job_file_name, next_doctype)
+    # Find next execution document via Lead linkage
+    next_doc_name = _get_next_doc_name(doc, next_doctype)
 
     if not next_doc_name:
         frappe.log_error(
-            f"Could not find {next_doctype} document on Job File {job_file_name}",
+            f"Could not find {next_doctype} document for {doc.doctype} {doc.name} (Lead: {doc.get('lead')})",
             "Execution Chain ToDo",
         )
         return
