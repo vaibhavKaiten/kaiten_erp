@@ -229,7 +229,6 @@ def on_update(job_file, method):
                 "custom_meter_installation": meter_installation.name,
                 "custom_meter_commissioning": meter_commissioning.name,
                 "custom_verification_handover": verification_handover.name,
-                "custom_opportunity" : 
             }
             if frappe.db.has_column("Job File", "custom_opportunity"):
                 update_data["custom_opportunity"] = opportunity.name
