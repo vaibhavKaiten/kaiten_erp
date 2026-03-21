@@ -1,0 +1,21 @@
+[
+ {
+  "allow_guest": 0,
+  "api_method": null,
+  "cron_format": null,
+  "disabled": 1,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "After Save",
+  "enable_rate_limit": 0,
+  "event_frequency": "All",
+  "modified": "2026-02-23 12:55:46.409911",
+  "module": "Kaiten Erp",
+  "name": "Mandatory Fields on TS",
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "reference_doctype": "Technical Survey",
+  "script": "if doc.proposed_system_kw__tier:\n    required_fields = [\n        \"panel\",\n        \"inverter\",\n        \"battery\",\n        \"battery_qty_bom\",\n        \"inverter_qty_bom\",\n        \"panel_qty_bom\",\n        # Direction fields\n        \"front\",\n        \"left\",\n        \"back_right\",\n        \"back\",\n        \"front_right\",\n        \"back_left\",\n        \"right\",\n        \"front_left\",\n        \"front_down\"\n    ]\n\n    for field in required_fields:\n        if not doc.get(field):\n            frappe.throw(f\"{field.replace('_', ' ').title()} is mandatory when Proposed System is selected.\")\n",
+  "script_type": "DocType Event"
+ }
+]

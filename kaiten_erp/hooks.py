@@ -51,6 +51,7 @@ fixtures = [
     # Custom Fields
     # -------------------------
     {"dt": "Custom Field", "filters": [["module", "=", "Kaiten Erp"]]},
+    
     # -------------------------
     # Property Setters
     # -------------------------
@@ -73,6 +74,7 @@ fixtures = [
                     "Delivery Note",
                     "Purchase Receipt",
                     "Payment Entry",
+                    "Sales Person",
                 ],
             ]
         ],
