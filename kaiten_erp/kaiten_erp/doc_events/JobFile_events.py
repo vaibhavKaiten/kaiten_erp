@@ -234,9 +234,7 @@ def on_update(job_file, method):
                 update_data["custom_opportunity"] = opportunity.name
 
             frappe.db.set_value("Job File", job_file.name, update_data, update_modified=False)
-            # Note: No need to call job_file.save() here since we're in on_update hook
-            # The document will be saved automatically after this hook completes
-
+           
             # Create ToDo for Vendor Heads to start the Technical Survey
             assign_vendor_head_todos(job_file, technical_survey.name)
 
@@ -277,6 +275,17 @@ def create_execution(
     if extra_data:
         data.update(extra_data)
 
+    # Ensure Job File + Lead links are always populated, regardless of which fieldnames
+    # the caller passes (some doctypes use `custom_job_file`, others use `job_file`,
+    # and similarly `custom_lead` vs `lead`).
+    meta = frappe.get_meta(doctype)
+    for fieldname in ("custom_job_file", "job_file"):
+        if meta.has_field(fieldname) and not data.get(fieldname):
+            data[fieldname] = job_file.name
+    for fieldname in ("custom_lead", "lead"):
+        if meta.has_field(fieldname) and not data.get(fieldname):
+            data[fieldname] = job_file.lead
+
     doc = frappe.get_doc(data)
 
     # Set flags to allow setting read-only fields
@@ -284,6 +293,17 @@ def create_execution(
     doc.flags.ignore_validate = False
 
     doc.insert()
+
+    # Backfill via DB in case meta/cache/custom-field mismatch caused the insert payload
+    # to miss these columns (or another hook cleared them).
+    if frappe.db.has_column(doctype, "custom_job_file") and not doc.get("custom_job_file"):
+        frappe.db.set_value(
+            doctype, doc.name, "custom_job_file", job_file.name, update_modified=False
+        )
+    if frappe.db.has_column(doctype, "job_file") and not doc.get("job_file"):
+        frappe.db.set_value(
+            doctype, doc.name, "job_file", job_file.name, update_modified=False
+        )
 
     
     # Link execution doc back to Sales Order (for milestone invoice tracking)
