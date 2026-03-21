@@ -2,17 +2,6 @@
  {
   "docstatus": 0,
   "doctype": "Client Script",
-  "dt": "Quotation",
-  "enabled": 0,
-  "modified": "2026-03-10 15:38:52.632052",
-  "module": "Kaiten Erp",
-  "name": "Quotation – Auto-fill Item Name and UOM",
-  "script": "frappe.ui.form.on(\"Quotation\", {\n    onload: function(frm) {\n        if (frm.is_new()) frappe.after_ajax(() => fill_missing_item_details(frm));\n    },\n    refresh: function(frm) {\n        if (frm.is_new()) setTimeout(() => fill_missing_item_details(frm), 300);\n    }\n});\n\nfunction fill_missing_item_details(frm) {\n    var needs_fill = (frm.doc.items || []).filter(row => row.item_code && (!row.item_name || !row.uom));\n    if (!needs_fill.length) return;\n    needs_fill.forEach(function(item) {\n        frm.script_manager.trigger(\"item_code\", item.doctype, item.name);\n    });\n}\n",
-  "view": "Form"
- },
- {
-  "docstatus": 0,
-  "doctype": "Client Script",
   "dt": "Job File",
   "enabled": 1,
   "modified": "2026-02-13 15:52:09.809591",
@@ -30,28 +19,6 @@
   "module": "Kaiten Erp",
   "name": "Technical Survey – Fetch From Job File",
   "script": "frappe.ui.form.on(\"Technical Survey\", {\n\n    onload: function(frm) {\n        if (frm.doc.custom_job_file && frm.is_new()) {\n            fetch_job_file_data(frm);\n        }\n    },\n\n    custom_job_file: function(frm) {\n        if (!frm.doc.custom_job_file) return;\n        fetch_job_file_data(frm);\n    }\n\n});\n\n\nfunction fetch_job_file_data(frm) {\n\n    frappe.db.get_value(\"Job File\", frm.doc.custom_job_file, [\n        \"monthly_consumption\",\n        \"existing_load_kw\",\n        \"required_load_kw\",\n        \"sanctioned_load_kw\",\n        \"phase_type\",\n        \"discom\",\n        \"proposed_system\",\n        \"roof_area_sqft\",\n        \"roof_type\",\n        \"site_type\",\n        \"area_suitability\",\n        \"preferred_visit_date\",\n        \"preferred_time_slot\"\n    ]).then(r => {\n\n        if (!r.message) return;\n\n        let d = r.message;\n\n        frm.set_value({\n            monthly_consumption: d.monthly_consumption,\n            existing_load_kw: d.existing_load_kw,\n            required_load_kw: d.required_load_kw,\n            sanctioned_load_kw: d.sanctioned_load_kw,\n            discom: d.discom,\n            phase_type_copy: d.phase_type,\n            proposed_system_kw__tier: d.proposed_system,\n            roof_area_sqft: d.roof_area_sqft,\n            roof_type: d.roof_type,\n            site_type: d.site_type,\n            area_suitability: d.area_suitability,\n            data_ycke: d.preferred_visit_date,\n            data_tila: d.preferred_time_slot\n        });\n\n    });\n\n}\n",
-  "view": "Form"
- },
- {
-  "docstatus": 0,
-  "doctype": "Client Script",
-  "dt": "Quotation",
-  "enabled": 1,
-  "modified": "2026-03-16 19:36:13.295862",
-  "module": "Kaiten Erp",
-  "name": "GST Circular 163/19/2021 — 70% Goods @ 5%, 30% Services @ 18%",
-  "script": "// Solar EPC GST — INCLUSIVE price\n// User enters final price (e.g. ₹100), system extracts tax from within it\n// Net = EnteredPrice ÷ 1.089  |  Grand Total = EnteredPrice\n\nvar _adjusting = false;\n\nfrappe.ui.form.on('Quotation Item', {\n    rate: function(frm, cdt, cdn) {\n        if (_adjusting) return;\n        var row = locals[cdt][cdn];\n        if (!flt(row.rate)) return;\n\n        var inclusive = flt(row.rate);\n        var net = flt(inclusive / 1.089, 2);\n\n        _adjusting = true;\n        frappe.model.set_value(cdt, cdn, 'rate', net)\n            .then(function() {\n                return frappe.model.set_value(cdt, cdn, 'qty', flt(row.qty || 1));\n            })\n            .then(function() {\n                setTimeout(function() {\n                    _adjusting = false;\n                    solar_fill_taxes(frm);\n                }, 400);\n            });\n    },\n    qty:          function(frm) { if (!_adjusting) solar_fill_taxes(frm); },\n    items_remove: function(frm) { solar_fill_taxes(frm); }\n});\n\nfrappe.ui.form.on('Quotation', {\n    taxes_and_charges: function(frm) {\n        setTimeout(function() { solar_fill_taxes(frm); }, 600);\n    },\n    refresh: function(frm) { solar_fill_taxes(frm); }\n});\n\nfunction solar_fill_taxes(frm) {\n    if (!frm.doc.taxes || !frm.doc.items) return;\n\n    var net = frm.doc.items.reduce(function(s, r) {\n        return s + flt(r.amount || (flt(r.rate) * flt(r.qty || 1)));\n    }, 0);\n    if (!net) return;\n\n    var tax_map = {\n        'solar equipment cgst': flt(net * 0.70 * 0.025, 2),\n        'solar equipment sgst': flt(net * 0.70 * 0.025, 2),\n        'solar services cgst':  flt(net * 0.30 * 0.09,  2),\n        'solar services sgst':  flt(net * 0.30 * 0.09,  2)\n    };\n\n    frm.doc.taxes.forEach(function(t) {\n        var key = (t.description || '').toLowerCase().trim();\n        if (tax_map.hasOwnProperty(key)) {\n            frappe.model.set_value(t.doctype, t.name, 'tax_amount', tax_map[key]);\n        }\n    });\n\n    frm.refresh_field('taxes');\n}",
-  "view": "Form"
- },
- {
-  "docstatus": 0,
-  "doctype": "Client Script",
-  "dt": "Sales Invoice",
-  "enabled": 1,
-  "modified": "2026-03-16 19:38:00.762787",
-  "module": "Kaiten Erp",
-  "name": "Solar EPC GST Auto-Calculator — Sales Invoice",
-  "script": "var _adjusting = false;\n\nfrappe.ui.form.on('Sales Invoice Item', {\n    rate: function(frm, cdt, cdn) {\n        if (_adjusting) return;\n        var row = locals[cdt][cdn];\n        if (!flt(row.rate)) return;\n\n        var inclusive = flt(row.rate);\n        var net = flt(inclusive / 1.089, 2);\n\n        _adjusting = true;\n        frappe.model.set_value(cdt, cdn, 'rate', net)\n            .then(function() {\n                return frappe.model.set_value(cdt, cdn, 'qty', flt(row.qty || 1));\n            })\n            .then(function() {\n                setTimeout(function() {\n                    _adjusting = false;\n                    solar_fill_taxes(frm);\n                }, 400);\n            });\n    },\n    qty:          function(frm) { if (!_adjusting) solar_fill_taxes(frm); },\n    items_remove: function(frm) { solar_fill_taxes(frm); }\n});\n\nfrappe.ui.form.on('Sales Invoice', {\n    taxes_and_charges: function(frm) {\n        setTimeout(function() { solar_fill_taxes(frm); }, 600);\n    },\n    refresh: function(frm) { solar_fill_taxes(frm); }\n});\n\nfunction solar_fill_taxes(frm) {\n    if (!frm.doc.taxes || !frm.doc.items) return;\n\n    var net = frm.doc.items.reduce(function(s, r) {\n        return s + flt(r.amount || (flt(r.rate) * flt(r.qty || 1)));\n    }, 0);\n    if (!net) return;\n\n    var tax_map = {\n        'solar equipment cgst': flt(net * 0.70 * 0.025, 2),\n        'solar equipment sgst': flt(net * 0.70 * 0.025, 2),\n        'solar services cgst':  flt(net * 0.30 * 0.09,  2),\n        'solar services sgst':  flt(net * 0.30 * 0.09,  2)\n    };\n\n    frm.doc.taxes.forEach(function(t) {\n        var key = (t.description || '').toLowerCase().trim();\n        if (tax_map.hasOwnProperty(key)) {\n            frappe.model.set_value(t.doctype, t.name, 'tax_amount', tax_map[key]);\n        }\n    });\n\n    frm.refresh_field('taxes');\n}",
   "view": "Form"
  }
 ]
