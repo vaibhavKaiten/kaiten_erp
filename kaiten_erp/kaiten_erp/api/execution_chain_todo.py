@@ -113,8 +113,8 @@ def _create_vendor_head_todos(doc, next_doctype):
         )
         return
 
-    description = _("{0} is approved. Please start {1} for {2}.").format(
-        doc.doctype, next_doctype, customer
+    description = _("Initiate {0} for {1}.").format(
+        next_doctype, customer
     )
 
     created = 0
