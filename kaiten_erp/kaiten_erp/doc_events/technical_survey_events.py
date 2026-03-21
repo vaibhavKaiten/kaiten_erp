@@ -199,7 +199,7 @@ def assign_to_execution_managers_for_technical_survey(doc):
                     "allocated_to": user,
                     "reference_type": "Technical Survey",
                     "reference_name": doc.name,
-                    "description": f"Technical Survey {doc.name} is completed. Please take execution action.",
+                    "description": f"Technical Survey {doc.name} is completed. Please take action.",
                     "priority": "High",
                     "status": "Open",
                 }

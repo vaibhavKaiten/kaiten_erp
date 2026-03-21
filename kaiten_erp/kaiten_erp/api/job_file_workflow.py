@@ -68,7 +68,7 @@ def test_execution_manager_assignment(job_file_name):
                         "allocated_to": user,
                         "reference_type": "Job File",
                         "reference_name": job_file.name,
-                        "description": f"Job File {job_file.name} requires approval. Negotiated Amount (₹{job_file.negotiated_amount or 0:,.2f}) is less than MRP (₹{job_file.mrp or 0:,.2f}).",
+                        "description": f"Job File requires approval. Negotiated Amount is less than MRP.",
                         "priority": "High",
                         "status": "Open",
                     }
