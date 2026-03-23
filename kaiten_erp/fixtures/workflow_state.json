@@ -75,37 +75,10 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-05 13:50:49.763623",
-  "name": "Assigned to Vendor",
-  "style": "",
-  "workflow_state_name": "Assigned to Vendor"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-03-05 13:51:24.077978",
-  "name": "Submitted",
-  "style": "",
-  "workflow_state_name": "Submitted"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
   "modified": "2026-03-03 17:08:35.629239",
   "name": "Contacted",
   "style": "",
   "workflow_state_name": "Contacted"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-03-03 17:08:40.679520",
-  "name": "Qualified",
-  "style": "",
-  "workflow_state_name": "Qualified"
  },
  {
   "docstatus": 0,
@@ -124,6 +97,33 @@
   "name": "Completed",
   "style": "",
   "workflow_state_name": "Completed"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:50:49.763623",
+  "name": "Assigned to Vendor",
+  "style": "",
+  "workflow_state_name": "Assigned to Vendor"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:51:24.077978",
+  "name": "Submitted",
+  "style": "",
+  "workflow_state_name": "Submitted"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-03 17:08:40.679520",
+  "name": "Qualified",
+  "style": "",
+  "workflow_state_name": "Qualified"
  },
  {
   "docstatus": 0,
