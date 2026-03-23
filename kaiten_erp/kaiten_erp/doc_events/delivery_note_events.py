@@ -195,10 +195,15 @@ def populate_items_from_technical_survey(doc, method=None):
     # ERPNext has already populated doc.items from the SO at this point;
     # read the SO reference before we potentially clear the table.
     sales_order_name = None
+    item_debug = [(item.get("item_code"), item.get("against_sales_order")) for item in doc.get("items") or []]
+    frappe.log_error(f"[DN TS Populate] items at before_insert: {item_debug}", "DN TS Debug")
+
     for item in doc.get("items") or []:
         if item.get("against_sales_order"):
             sales_order_name = item.against_sales_order
             break
+
+    frappe.log_error(f"[DN TS Populate] sales_order_name resolved: {sales_order_name}", "DN TS Debug")
 
     if not sales_order_name:
         # No SO linked — leave items untouched (direct Delivery Note)
@@ -208,6 +213,7 @@ def populate_items_from_technical_survey(doc, method=None):
     technical_survey_name = frappe.db.get_value(
         "Sales Order", sales_order_name, "custom_technical_survey"
     )
+    frappe.log_error(f"[DN TS Populate] technical_survey_name: {technical_survey_name}", "DN TS Debug")
 
     if not technical_survey_name:
         # SO has no Technical Survey — leave items untouched
@@ -316,8 +322,8 @@ def populate_items_from_technical_survey(doc, method=None):
                     {
                         "item_code": bom_row.item_code,
                         "qty": qty,
-                        "uom": bom_row.uom or "Nos",
-                        "warehouse": bom_row.warehouse or _warehouse,
+                        "uom": getattr(bom_row, "uom", None) or "Nos",
+                        "warehouse": getattr(bom_row, "warehouse", None) or _warehouse,
                     }
                 )
         except (ValueError, TypeError):
