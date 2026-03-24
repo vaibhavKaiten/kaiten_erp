@@ -51,7 +51,7 @@ fixtures = [
     # Custom Fields
     # -------------------------
     {"dt": "Custom Field", "filters": [["module", "=", "Kaiten Erp"]]},
-    
+    {"dt": "DocType", "filters": [["module", "=", "Kaiten Erp"]]},
     # -------------------------
     # Property Setters
     # -------------------------
@@ -272,7 +272,7 @@ doc_events = {
         "on_submit": [
             "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_submit",
             "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_submit",
-            "kaiten_erp.kaiten_erp.api.milestone_invoice_manager.create_advance_invoice",
+            
         ],
         "on_cancel": "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_cancel",
     },
@@ -281,18 +281,8 @@ doc_events = {
     },
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
-        "validate": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.validate",
-        "on_submit": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_submit",
     },
-    "Material Request": {
-        "validate": "kaiten_erp.kaiten_erp.api.milestone_invoice_manager.validate_advance_payment",
-    },
-    "Payment Entry": {
-        "on_submit": "kaiten_erp.kaiten_erp.api.milestone_invoice_manager.update_payment_status",
-    },
-    "Stock Entry": {
-        "validate": "kaiten_erp.kaiten_erp.api.milestone_invoice_manager.validate_advance_payment",
-    },
+    
     # Execution DocTypes (Technical Survey , Structure Mounting, Project Installation, Meter Installation, Meter Commissioning, Verification Handover) - Workflow Validation & Vendor Continuity
     "Technical Survey": {
         "validate": "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
@@ -349,9 +339,6 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-    "daily": [
-        "kaiten_erp.kaiten_erp.api.milestone_invoice_manager.check_advance_payments_daily"
-    ],
     "cron": {
         "0 9,12,15,18,21 * * *": [
             "kaiten_erp.kaiten_erp.cron_job.hourly_backup.take_full_backup"
