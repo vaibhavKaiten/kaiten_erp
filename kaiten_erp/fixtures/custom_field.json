@@ -26950,7 +26950,7 @@
   "name": "Job File-custom_finance_type",
   "no_copy": 0,
   "non_negative": 0,
-  "options": "Self Funding \nBank Loan\nHybrid",
+  "options": "Self Funding\nBank Loan\nHybrid",
   "permlevel": 0,
   "placeholder": null,
   "precision": "",
