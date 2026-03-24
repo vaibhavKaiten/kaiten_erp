@@ -51,7 +51,7 @@ fixtures = [
     # Custom Fields
     # -------------------------
     {"dt": "Custom Field", "filters": [["module", "=", "Kaiten Erp"]]},
-    
+    {"dt": "DocType", "filters": [["module", "=", "Kaiten Erp"]]},
     # -------------------------
     # Property Setters
     # -------------------------
