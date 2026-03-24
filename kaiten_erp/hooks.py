@@ -281,8 +281,6 @@ doc_events = {
     },
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
-        "validate": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.validate",
-        "on_submit": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_submit",
     },
     
     # Execution DocTypes (Technical Survey , Structure Mounting, Project Installation, Meter Installation, Meter Commissioning, Verification Handover) - Workflow Validation & Vendor Continuity
