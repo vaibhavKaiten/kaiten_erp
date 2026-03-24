@@ -8,11 +8,6 @@ Validates payment milestones before allowing execution document submission
 
 import frappe
 from frappe import _
-from kaiten_erp.kaiten_erp.api.milestone_invoice_manager import (
-    check_payment_status,
-    get_milestone_invoice,
-    is_self_funding_order,
-)
 
 
 def validate_installation_payment(doc, method=None):
@@ -31,29 +26,9 @@ def validate_installation_payment(doc, method=None):
         # If no Sales Order linked, allow submission (may be standalone execution)
         return
 
-    # Only enforce hard lock for self-funding orders
-    if not is_self_funding_order(sales_order):
-        return
+    
 
-    # Check if delivery invoice exists
-    delivery_invoice = get_milestone_invoice(sales_order, "delivery")
-
-    if not delivery_invoice:
-        frappe.throw(
-            _(
-                "Cannot submit {0}. Delivery invoice not yet created for Sales Order {1}"
-            ).format(doc.doctype, sales_order),
-            title=_("Delivery Invoice Required"),
-        )
-
-    # Check if delivery invoice is paid
-    if not check_payment_status(delivery_invoice):
-        frappe.throw(
-            _(
-                "Cannot submit {0}. Delivery payment not received for Sales Invoice {1}. Please collect payment before proceeding with installation activities."
-            ).format(doc.doctype, delivery_invoice),
-            title=_("Payment Required"),
-        )
+    
 
 
 def validate_verification_payment(doc, method=None):
@@ -72,29 +47,8 @@ def validate_verification_payment(doc, method=None):
         # If no Sales Order linked, allow submission
         return
 
-    # Only enforce hard lock for self-funding orders
-    if not is_self_funding_order(sales_order):
-        return
-
-    # Check if final invoice exists
-    final_invoice = get_milestone_invoice(sales_order, "final")
-
-    if not final_invoice:
-        frappe.throw(
-            _(
-                "Cannot submit {0}. Final invoice not yet created for Sales Order {1}. Please ensure Meter Commissioning is approved."
-            ).format(doc.doctype, sales_order),
-            title=_("Final Invoice Required"),
-        )
-
-    # Check if final invoice is paid
-    if not check_payment_status(final_invoice):
-        frappe.throw(
-            _(
-                "Cannot submit {0}. Final payment not received for Sales Invoice {1}. Please collect payment before proceeding with verification and closure."
-            ).format(doc.doctype, final_invoice),
-            title=_("Payment Required"),
-        )
+  
+    
 
 
 def get_linked_sales_order_from_execution_doc(doc):

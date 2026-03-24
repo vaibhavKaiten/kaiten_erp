@@ -9,14 +9,6 @@ Validates advance payment and creates delivery milestone invoice
 import frappe
 from frappe import _
 from frappe.utils import flt
-from kaiten_erp.kaiten_erp.api.milestone_invoice_manager import (
-    create_milestone_invoice,
-    check_payment_status,
-    get_milestone_invoice,
-    assign_todo_to_accounts_managers,
-    is_self_funding_order,
-)
-
 
 def validate(doc, method=None):
     """
@@ -30,29 +22,10 @@ def validate(doc, method=None):
         # If no Sales Order linked, allow submission (may be a direct Delivery Note)
         return
 
-    # Only enforce payment gate for self-funding orders
-    if not is_self_funding_order(sales_order):
-        return
+    
 
-    # Check if advance invoice exists
-    advance_invoice = get_milestone_invoice(sales_order, "advance")
 
-    if not advance_invoice:
-        frappe.throw(
-            _(
-                "Cannot submit Delivery Note. Advance invoice not yet created for Sales Order {0}"
-            ).format(sales_order)
-        )
-
-    # Check if advance invoice is paid
-    if not check_payment_status(advance_invoice):
-        frappe.throw(
-            _(
-                "Cannot submit Delivery Note. Advance payment not received for Sales Invoice {0}. Please collect payment before proceeding with delivery."
-            ).format(advance_invoice),
-            title=_("Payment Required"),
-        )
-
+    
 
 def on_submit(doc, method=None):
     # """
