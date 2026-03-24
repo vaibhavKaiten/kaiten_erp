@@ -7,3 +7,4 @@
 
 
 kaiten_erp.patches.remove_sales_order_invoice_fields
+kaiten_erp.patches.remove_sales_order_custom_fields
