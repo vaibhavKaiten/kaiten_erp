@@ -307,6 +307,7 @@ doc_events = {
     },
     "Project Installation": {
         "validate": [
+            "kaiten_erp.kaiten_erp.doc_events.project_installation_events.validate",
             "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
             "kaiten_erp.kaiten_erp.api.execution_payment_validation.validate_installation_payment",
         ],
