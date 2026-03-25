@@ -140,6 +140,7 @@ app_include_css = "/assets/kaiten_erp/css/quick_hide.css"
 
 # include js in doctype views
 doctype_js = {
+    "Delivery Note": "public/js/delivery_note.js",
     "Supplier": "public/js/supplier.js",
     "Job File": "public/js/JobFile.js",
     "Sales Order": "public/js/sales_order.js",
