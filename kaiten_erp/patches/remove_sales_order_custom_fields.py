@@ -2,29 +2,24 @@ import frappe
 
 
 def execute():
+    # Only remove fields that belong to kaiten_erp and are no longer used.
+    # Do NOT include india_compliance GST fields (gst_category, place_of_supply,
+    # billing_address_gstin, company_gstin, gst_section, gst_col_break,
+    # ecommerce_gstin, ecommerce_supply_type, is_reverse_charge, is_export_with_gst)
+    # — those are owned by india_compliance and must remain on Sales Order.
+    # Do NOT include custom_technical_survey or custom_job_file — they are actively
+    # used by delivery_note_events, sales_order_events, JobFile_events, etc.
     fields_to_remove = [
-        "gst_col_break",
-        "ecommerce_supply_type",
-        "ecommerce_gstin",
         "custom_stock_reserved",
         "custom_reservation_timestamp",
         "custom_linked_material_request",
         "custom_procurement_status",
-        "company_gstin",
-        "place_of_supply",
-        "gst_category",
-        "billing_address_gstin",
-        "gst_breakup_table",
-        "section_gst_breakup",
         "custom_payment_milestones_tab",
-        "is_export_with_gst",
-        "is_reverse_charge",
-        "custom_job_file",
-        "custom_technical_survey",
-        "gst_section",
         "custom_milestone_column_break_2",
         "custom_milestone_column_break_1",
         "custom_milestone_invoices_section",
+        "section_gst_breakup",
+        "gst_breakup_table",
     ]
 
     for fieldname in fields_to_remove:

@@ -44,7 +44,6 @@ def validate_material_request(doc, method):
                 INNER JOIN `tabSales Order` so ON so.name = psl.sales_order
                 WHERE psl.item_code = %s
                 AND psl.status IN ('Pending', 'Partially Fulfilled')
-                AND so.custom_procurement_status = 'Pending Procurement'
                 AND so.docstatus = 1
             """, (item.item_code,), as_dict=True)
             

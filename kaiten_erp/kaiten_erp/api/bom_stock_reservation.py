@@ -27,41 +27,16 @@ def on_sales_order_submit(doc, method):
         result = process_stock_reservation(doc)
 
         if result["fully_available"]:
-            # Case A: All stock available - mark as Confirmed
-            frappe.db.set_value(
-                "Sales Order",
-                doc.name,
-                "custom_procurement_status",
-                "Confirmed",
-                update_modified=False,
-            )
             _log_so_action(
                 doc.name,
                 "Stock Reserved",
                 f"All BOM materials reserved. {len(result['reserved_items'])} items.",
             )
         else:
-            # Case B: Shortages exist - mark as Pending Procurement
-            frappe.db.set_value(
-                "Sales Order",
-                doc.name,
-                "custom_procurement_status",
-                "Pending Procurement",
-                update_modified=False,
-            )
-
             # Create Material Request for shortages
             mr = create_material_request_for_shortages(doc, result["shortage_items"])
 
             if mr:
-                frappe.db.set_value(
-                    "Sales Order",
-                    doc.name,
-                    "custom_linked_material_request",
-                    mr.name,
-                    update_modified=False,
-                )
-
                 # Create shortage logs for audit
                 create_shortage_logs(doc, result["shortage_items"], mr.name)
 
@@ -70,18 +45,6 @@ def on_sales_order_submit(doc, method):
                     "Pending Procurement",
                     f"Material Request {mr.name} created for {len(result['shortage_items'])} shortage items.",
                 )
-
-        # Mark SO as having reservations
-        frappe.db.set_value(
-            "Sales Order", doc.name, "custom_stock_reserved", 1, update_modified=False
-        )
-        frappe.db.set_value(
-            "Sales Order",
-            doc.name,
-            "custom_reservation_timestamp",
-            now_datetime(),
-            update_modified=False,
-        )
 
     except Exception as e:
         frappe.log_error(
@@ -727,31 +690,20 @@ def check_and_update_so_status_after_receipt(purchase_receipt_doc):
         )
 
         if pending_shortages == 0 and partial_reservations == 0:
-            # All items are now available
-            current_status = frappe.db.get_value(
-                "Sales Order", so, "custom_procurement_status"
+            # All shortage items received
+            _log_so_action(
+                so,
+                "Ready for Delivery",
+                f"All shortage items received. PR: {purchase_receipt_doc.name}",
             )
-            if current_status == "Pending Procurement":
-                frappe.db.set_value(
-                    "Sales Order",
-                    so,
-                    "custom_procurement_status",
-                    "Ready for Delivery",
-                    update_modified=False,
-                )
-                _log_so_action(
-                    so,
-                    "Ready for Delivery",
-                    f"All shortage items received. PR: {purchase_receipt_doc.name}",
-                )
 
-                frappe.msgprint(
-                    _("Sales Order {0} is now Ready for Delivery").format(
-                        frappe.utils.get_link_to_form("Sales Order", so)
-                    ),
-                    title=_("Procurement Complete"),
-                    indicator="green",
-                )
+            frappe.msgprint(
+                _("Sales Order {0} is now Ready for Delivery").format(
+                    frappe.utils.get_link_to_form("Sales Order", so)
+                ),
+                title=_("Procurement Complete"),
+                indicator="green",
+            )
 
 
 # =============================================================================

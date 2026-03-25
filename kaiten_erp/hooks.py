@@ -43,6 +43,7 @@ DOCTYPES = [
     "Procurement Shortage Log",
     "Stock Reservation Log",
     "Location Log",
+    "Payment Milestone",
 ]
 
 
