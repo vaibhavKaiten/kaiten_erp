@@ -85,7 +85,7 @@ def get_remaining_ts_items(sales_order_name):
         WHERE dn.docstatus = 1
           AND (
               dni.against_sales_order = %(so)s
-              OR dn.custom_linked_sales_order = %(so)s
+              OR dn.against_sales_order = %(so)s
           )
         GROUP BY dni.item_code
         """,
@@ -229,9 +229,8 @@ def populate_items_from_technical_survey(doc, method=None):
         return
 
     # ── 5. Build delivered qty map from submitted DNs ─────────────────────────
-    # Match by against_sales_order on item rows OR by custom_linked_sales_order
-    # on the DN header (our before_insert hook creates items that may not have
-    # against_sales_order set on older DNs).
+    # Match by against_sales_order on item rows OR by against_sales_order
+    # on the DN header.
     delivered_rows = frappe.db.sql(
         """
         SELECT dni.item_code, SUM(dni.qty) AS delivered_qty
@@ -240,7 +239,7 @@ def populate_items_from_technical_survey(doc, method=None):
         WHERE dn.docstatus = 1
           AND (
               dni.against_sales_order = %(so)s
-              OR dn.custom_linked_sales_order = %(so)s
+              OR dn.against_sales_order = %(so)s
           )
         GROUP BY dni.item_code
         """,
@@ -278,16 +277,11 @@ def populate_items_from_technical_survey(doc, method=None):
         )
         return
 
-    # ── 8. Ensure custom_linked_sales_order is set on DN header ─────────────
-    # We do NOT set against_sales_order / so_detail on item rows because our
-    # items are BOM components from the Technical Survey — they don't exist as
-    # individual Sales Order Item rows.  ERPNext validate requires both fields
-    # together, but the SO typically has only the parent BOM item (e.g.
-    # "Solar System 2") while the TS explodes it into components (panel,
-    # inverter, clamps, etc.).  Instead we track the SO link on the DN header
-    # via custom_linked_sales_order.
-    if hasattr(doc, "custom_linked_sales_order") and not doc.custom_linked_sales_order:
-        doc.custom_linked_sales_order = sales_order_name
+    # ── 8. Ensure against_sales_order is set on DN header ─────────────────
+    if not doc.against_sales_order:
+        doc.against_sales_order = sales_order_name
+
+
 
     # ── 9. Append remaining items ─────────────────────────────────────────────
     for item_data in remaining_items:
@@ -305,22 +299,18 @@ def populate_items_from_technical_survey(doc, method=None):
 
 def get_linked_sales_order(delivery_note):
     """Get linked Sales Order name from a Delivery Note document."""
-    if (
-        hasattr(delivery_note, "custom_linked_sales_order")
-        and delivery_note.custom_linked_sales_order
-    ):
-        return delivery_note.custom_linked_sales_order
+    if delivery_note.against_sales_order:
+        return delivery_note.against_sales_order
 
     for item in delivery_note.items or []:
-        if hasattr(item, "against_sales_order") and item.against_sales_order:
-            if hasattr(delivery_note, "custom_linked_sales_order"):
-                frappe.db.set_value(
-                    "Delivery Note",
-                    delivery_note.name,
-                    "custom_linked_sales_order",
-                    item.against_sales_order,
-                    update_modified=False,
-                )
+        if item.get("against_sales_order"):
+            frappe.db.set_value(
+                "Delivery Note",
+                delivery_note.name,
+                "against_sales_order",
+                item.against_sales_order,
+                update_modified=False,
+            )
             return item.against_sales_order
 
     return None

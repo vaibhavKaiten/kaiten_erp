@@ -62,9 +62,9 @@ def get_linked_sales_order_from_execution_doc(doc):
     Returns:
         str: Sales Order name or None
     """
-    # Method 1: Check custom field
-    if hasattr(doc, "custom_linked_sales_order") and doc.custom_linked_sales_order:
-        return doc.custom_linked_sales_order
+    # Method 1: Check against_sales_order field
+    if hasattr(doc, "against_sales_order") and doc.against_sales_order:
+        return doc.against_sales_order
 
     # Method 2: Check custom_sales_order field (if exists)
     if hasattr(doc, "custom_sales_order") and doc.custom_sales_order:
