@@ -271,6 +271,7 @@ def create_material_request_from_technical_survey(sales_order):
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
                         "warehouse": _item_warehouse,
+                        "sales_order": sales_order.name,
                     }
                 )
         except (ValueError, TypeError):
@@ -298,6 +299,7 @@ def create_material_request_from_technical_survey(sales_order):
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
                         "warehouse": _item_warehouse,
+                        "sales_order": sales_order.name,
                     }
                 )
         except (ValueError, TypeError):
@@ -325,6 +327,7 @@ def create_material_request_from_technical_survey(sales_order):
                         "schedule_date": sales_order.delivery_date
                         or frappe.utils.today(),
                         "warehouse": _item_warehouse,
+                        "sales_order": sales_order.name,
                     }
                 )
         except (ValueError, TypeError):
@@ -351,6 +354,7 @@ def create_material_request_from_technical_survey(sales_order):
                                 "schedule_date": sales_order.delivery_date
                                 or frappe.utils.today(),
                                 "warehouse": _item_warehouse,
+                                "sales_order": sales_order.name,
                             }
                         )
                 except (ValueError, TypeError):
