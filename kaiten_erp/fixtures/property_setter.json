@@ -1,6 +1,38 @@
 [
  {
   "default_value": null,
+  "doc_type": "Delivery Note",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocType",
+  "field_name": null,
+  "is_system_generated": 0,
+  "modified": "2026-03-26 12:43:54.600967",
+  "module": null,
+  "name": "Delivery Note-main-field_order",
+  "property": "field_order",
+  "property_type": "Data",
+  "row_name": null,
+  "value": "[\"naming_series\", \"customer\", \"tax_id\", \"customer_name\", \"ewaybill\", \"column_break1\", \"posting_date\", \"posting_time\", \"custom_against_sales_order\", \"set_posting_time\", \"is_reverse_charge\", \"is_export_with_gst\", \"column_break_10\", \"company\", \"amended_from\", \"is_return\", \"issue_credit_note\", \"return_against\", \"accounting_dimensions_section\", \"cost_center\", \"column_break_18\", \"project\", \"dimension_col_break\", \"currency_and_price_list\", \"currency\", \"conversion_rate\", \"col_break23\", \"selling_price_list\", \"price_list_currency\", \"plc_conversion_rate\", \"ignore_pricing_rule\", \"items_section\", \"scan_barcode\", \"last_scanned_warehouse\", \"col_break_warehouse\", \"set_warehouse\", \"set_target_warehouse\", \"section_break_30\", \"items\", \"section_break_31\", \"total_qty\", \"total_net_weight\", \"column_break_35\", \"base_total\", \"base_net_total\", \"column_break_33\", \"total\", \"net_total\", \"taxes_section\", \"tax_category\", \"taxes_and_charges\", \"column_break_43\", \"shipping_rule\", \"column_break_39\", \"incoterm\", \"named_place\", \"section_break_41\", \"taxes\", \"section_break_44\", \"base_total_taxes_and_charges\", \"column_break_47\", \"total_taxes_and_charges\", \"totals_section\", \"grand_total\", \"in_words\", \"column_break3\", \"disable_rounded_total\", \"rounding_adjustment\", \"rounded_total\", \"base_totals_section\", \"base_grand_total\", \"base_in_words\", \"base_rounding_adjustment\", \"base_rounded_total\", \"section_break_49\", \"apply_discount_on\", \"base_discount_amount\", \"column_break_51\", \"additional_discount_percentage\", \"discount_amount\", \"sec_tax_breakup\", \"other_charges_calculation\", \"item_wise_tax_details\", \"section_gst_breakup\", \"gst_breakup_table\", \"packing_list\", \"packed_items\", \"product_bundle_help\", \"pricing_rule_details\", \"pricing_rules\", \"address_and_contact_tab\", \"contact_info\", \"customer_address\", \"address_display\", \"billing_address_gstin\", \"gst_category\", \"place_of_supply\", \"col_break21\", \"contact_person\", \"contact_display\", \"contact_mobile\", \"contact_email\", \"shipping_address_section\", \"shipping_address_name\", \"shipping_address\", \"port_address\", \"column_break_95\", \"dispatch_address_name\", \"dispatch_address\", \"company_address_section\", \"company_address\", \"company_gstin\", \"company_address_display\", \"column_break_101\", \"company_contact_person\", \"terms_tab\", \"tc_name\", \"terms\", \"more_info_tab\", \"section_break_83\", \"per_billed\", \"status\", \"column_break_112\", \"per_installed\", \"installation_status\", \"column_break_89\", \"per_returned\", \"transporter_info\", \"transporter\", \"gst_transporter_id\", \"lr_no\", \"delivery_trip\", \"driver\", \"col_break34\", \"transporter_name\", \"mode_of_transport\", \"lr_date\", \"gst_vehicle_type\", \"gst_section\", \"ecommerce_gstin\", \"gst_col_break\", \"port_code\", \"shipping_bill_number\", \"shipping_bill_date\", \"ecommerce_supply_type\", \"vehicle_no\", \"distance\", \"driver_name\", \"customer_po_details\", \"po_no\", \"column_break_17\", \"po_date\", \"sales_team_section_break\", \"sales_partner\", \"amount_eligible_for_commission\", \"column_break7\", \"commission_rate\", \"total_commission\", \"section_break1\", \"sales_team\", \"subscription_section\", \"auto_repeat\", \"printing_details\", \"letter_head\", \"print_without_amount\", \"group_same_items\", \"column_break_88\", \"select_print_heading\", \"language\", \"utm_analytics_section\", \"utm_source\", \"utm_medium\", \"column_break_neoj\", \"utm_campaign\", \"utm_content\", \"more_info\", \"is_internal_customer\", \"represents_company\", \"inter_company_reference\", \"customer_group\", \"territory\", \"column_break5\", \"excise_page\", \"instructions\", \"connections_tab\"]"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Procurement Consolidation",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "naming_series",
+  "is_system_generated": 1,
+  "modified": "2026-03-26 14:06:10.034019",
+  "module": null,
+  "name": "Procurement Consolidation-naming_series-options",
+  "property": "options",
+  "property_type": "Text",
+  "row_name": null,
+  "value": "PROC-CONS-.YYYY.-"
+ },
+ {
+  "default_value": null,
   "doc_type": "Quotation",
   "docstatus": 0,
   "doctype": "Property Setter",
