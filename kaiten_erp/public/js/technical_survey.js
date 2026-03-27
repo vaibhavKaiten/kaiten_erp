@@ -223,7 +223,9 @@ frappe.ui.form.on('Technical Survey', {
     back_height_m: function(frm) {
         calculate_tilt_degree(frm);
     },
-
+    custom_distance: function(frm) {
+        calculate_tilt_degree(frm);
+    },
     before_workflow_action: async function(frm) {
         await capture_workflow_gps_technical_survey(frm);
     }
@@ -242,52 +244,58 @@ function auto_load_bom_if_missing(frm) {
         fetch_bom_for_proposed_system(frm);
     }
 }
-
 function calculate_tilt_degree(frm, options) {
     const opts = options || {};
     const show_warning = opts.show_warning !== false;
-    const PANEL_LENGTH_FT = 7.2;
 
     const front_raw = frm.doc.front_height_m;
     const back_raw = frm.doc.back_height_m;
+    const distance_raw = frm.doc.custom_distance;
 
-    if (!front_raw || !back_raw) {
+    if (!front_raw || !back_raw || !distance_raw) {
         frm.set_value('tilt_deg', '');
         return;
     }
 
     const front_height = parseFloat(front_raw);
     const back_height = parseFloat(back_raw);
+    const distance = parseFloat(distance_raw);
 
-    if (Number.isNaN(front_height) || Number.isNaN(back_height)) {
+    if (Number.isNaN(front_height) || Number.isNaN(back_height) || Number.isNaN(distance)) {
         frm.set_value('tilt_deg', '');
         if (show_warning) {
             frappe.show_alert({
-                message: __('Front Height and Back Height must be numeric values.'),
+                message: __('Front Height, Back Height, and Distance must be numeric values.'),
                 indicator: 'orange'
             }, 5);
         }
         return;
     }
 
-    if (back_height <= front_height) {
+    if (distance <= 0) {
         frm.set_value('tilt_deg', '');
         if (show_warning) {
             frappe.show_alert({
-                message: __('Back Height must be greater than Front Height.'),
+                message: __('Distance between pillars must be greater than zero.'),
                 indicator: 'orange'
             }, 5);
         }
         return;
     }
 
-    const height_difference = back_height - front_height;
-    const tilt_radians = Math.atan(height_difference / PANEL_LENGTH_FT);
+    const height_difference = Math.abs(back_height - front_height);
+
+    if (height_difference === 0) {
+        frm.set_value('tilt_deg', '0.00');
+        return;
+    }
+    const tilt_radians = Math.atan(height_difference / distance);
     const tilt_degree = tilt_radians * (180 / Math.PI);
     const rounded_tilt_degree = Math.round(tilt_degree * 100) / 100;
 
     frm.set_value('tilt_deg', rounded_tilt_degree.toFixed(2));
 }
+
 
 function setup_custom_location_log_link_formatter(frm) {
     const table_field_name = (frm.fields_dict && frm.fields_dict.custom_location_log)
