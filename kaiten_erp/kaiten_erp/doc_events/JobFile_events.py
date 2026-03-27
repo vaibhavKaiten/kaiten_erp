@@ -23,100 +23,13 @@ def _normalize_select_value(doctype, fieldname, value):
 
 
 def on_update(job_file, method):
-    # Handle Advance Override Approval
-    if (
-        job_file.has_value_changed("advance_override_approved")
-        and job_file.advance_override_approved
-    ):
-        # 1. Permission Check
-        if "Execution Manager" not in frappe.get_roles(
-            frappe.session.user
-        ) and "System Manager" not in frappe.get_roles(frappe.session.user):
-            frappe.throw(_("Only Execution Managers can approve Advance Override."))
-
-        # 2. Validation Check (Must be Partly Paid)
-        # We rely on advance_invoice_status field which is updated by Payment Entry
-        if job_file.advance_invoice_status != "Partly Paid":
-            frappe.throw(
-                _(
-                    "Overview Approval allowed only for Partly Paid invoices. Current Status: {0}"
-                ).format(job_file.advance_invoice_status)
-            )
-
-        # 3. Update Audit Fields
-        frappe.db.set_value(
-            "Job File",
-            job_file.name,
-            {
-                "advance_override_approved_by": frappe.session.user,
-                "advance_override_approved_on": frappe.utils.now(),
-                "override_notification_sent": 1,
-            },
-            update_modified=False,
-        )
-
-        # 4. Close 'Advance Partially Paid' ToDos
-        todos = frappe.get_all(
-            "ToDo",
-            filters={
-                "reference_type": "Job File",
-                "reference_name": job_file.name,
-                "status": "Open",
-                "description": ["like", "%Advance Partially Paid%"],
-            },
-        )
-        for todo in todos:
-            frappe.db.set_value("ToDo", todo.name, "status", "Closed")
-
-        # 5. Notify Accounts Managers
-        msg = _(
-            "Dispatch approved with partial advance payment. Outstanding: {0}"
-        ).format(
-            frappe.utils.fmt_money(
-                job_file.advance_outstanding_amount or 0,
-                currency=job_file.currency or "INR",
-            )
-        )
-
-        # Add a timeline comment
-        job_file.add_comment(
-            "Info", f"Advance Override Approved by {frappe.session.user}. {msg}"
-        )
-
-        # Send system notification to Accounts Managers
-        accounts_managers = frappe.get_all(
-            "Has Role",
-            filters={"role": "Accounts Manager", "parenttype": "User"},
-            fields=["parent"],
-        )
-        for mgr in accounts_managers:
-            if mgr.parent != frappe.session.user:
-                frappe.publish_realtime(
-                    "msgprint",
-                    {
-                        "message": msg,
-                        "title": "Override Approved",
-                        "indicator": "green",
-                    },
-                    user=mgr.parent,
-                )
-
-        frappe.msgprint(
-            _("Advance Override Approved. Notification sent to Accounts Team."),
-            indicator="green",
-            alert=True,
-        )
 
     if job_file.has_value_changed("workflow_state"):
-        print(f"\n=== Workflow State Changed ===")
-        print(f"Job File: {job_file.name}")
-        print(f"New State: {job_file.workflow_state}")
-        print(f"Current User: {frappe.session.user}")
+       
 
         # Set Job File Owner when "Start Job File" is clicked (Draft -> In Progress)
         # This can be overridden by subsequent users until final initiation
         if job_file.workflow_state == "In Progress":
-            print("\n>>> 'Start Job File' action detected - Setting Job File Owner (can be overridden) <<<")
             set_initiating_sales_manager(job_file, allow_override=True, final=False)
 
         # Handle Approval Pending state - Create ToDo for Execution Managers
@@ -446,11 +359,7 @@ def set_initiating_sales_manager(job_file, allow_override=True, final=False):
 
     current_user = frappe.session.user
     
-    print(f"\n=== set_initiating_sales_manager called ===")
-    print(f"Job File: {job_file.name}")
-    print(f"Current User: {current_user}")
-    print(f"Allow Override: {allow_override}")
-    print(f"Final Assignment: {final}")
+
 
     # Detect which field exists
     owner_fields = ["custom_job_file_owner", "custom_job_file_ownerr"]
@@ -462,31 +371,15 @@ def set_initiating_sales_manager(job_file, allow_override=True, final=False):
         print("ERROR: No Job File owner field found in database!")
         return
     
-    print(f"Target Field: {target_field}")
+   
     current_owner = job_file.get(target_field)
-    print(f"Current Owner: {current_owner}")
+  
 
-    # If allow_override is True and owner is already set, don't change
-    if allow_override and current_owner:
-        print(f"Job File owner already set to: {current_owner}, not overriding")
-        return
-
+   
     # Set the value directly on the document
     job_file.db_set(target_field, current_user, update_modified=False)
-    
     action_type = "FINAL" if final else "temporary"
-    print(f"✓ Job File owner set to: {current_user} ({action_type})")
     
-    message = f"Job File Owner set to {frappe.utils.get_fullname(current_user)}"
-    if final:
-        message += " (Final - Cannot be changed)"
-    
-    frappe.msgprint(
-        message,
-        indicator="green",
-        alert=True,
-    )
-
 
 def assign_to_execution_managers(job_file):
     """
