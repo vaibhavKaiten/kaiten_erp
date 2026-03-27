@@ -7,12 +7,13 @@ from kaiten_erp.kaiten_erp.api.gps import log_workflow_location
 
 
 class ProjectInstallation(Document):
-	def autoname(self):
+    def autoname(self):
         k_no = self.custom_k_number
 
         if not k_no:
             frappe.throw("K Number is required")
         series = make_autoname(".####")
         self.name = f"{self.first_name}-{k_no}-{series}"
-	def validate(self):
-		log_workflow_location(self)
+
+    def validate(self):
+        log_workflow_location(self)
