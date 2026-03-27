@@ -89,16 +89,19 @@ def get_flattened_items(bom_name):
     try:
         # Try fetching from BOM Explosion Item (pre-calculated flattened list)
         # Using stock_qty as the quantity field
+        # ignore_permissions: Vendor Manager/Executive roles lack BOM read access
+        # but need BOM data to populate Technical Survey component dropdowns
         exploded_items = frappe.get_all(
             "BOM Explosion Item",
             filters={"parent": bom_name},
             fields=["item_code", "stock_qty", "description", "rate", "amount"],
+            ignore_permissions=True,
         )
 
         if exploded_items:
             result = []
             for row in exploded_items:
-                item_doc = frappe.get_cached_doc("Item", row.item_code)
+                item_doc = frappe.get_doc("Item", row.item_code, ignore_permissions=True)
                 result.append(
                     {
                         "item_code": row.item_code,
@@ -126,7 +129,7 @@ def recurse_bom_items(bom_name, qty_multiplier=1):
     """
     items = []
     try:
-        bom_doc = frappe.get_doc("BOM", bom_name)
+        bom_doc = frappe.get_doc("BOM", bom_name, ignore_permissions=True)
         for row in bom_doc.items:
             # If item has a BOM (sub-assembly/phantom), recurse
             if row.bom_no:
@@ -134,7 +137,7 @@ def recurse_bom_items(bom_name, qty_multiplier=1):
                 items.extend(sub_items)
             else:
                 # Leaf item
-                item_doc = frappe.get_cached_doc("Item", row.item_code)
+                item_doc = frappe.get_doc("Item", row.item_code, ignore_permissions=True)
                 items.append(
                     {
                         "item_code": row.item_code,
@@ -196,6 +199,77 @@ def find_active_bom(item_code):
     )
 
     return draft_bom[0].name if draft_bom else None
+
+
+@frappe.whitelist()
+def get_bom_component_items(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Server-side query for panel/inverter/battery dropdowns.
+    Returns only items from the BOM that belong to the specified item groups.
+    Works regardless of the caller's BOM/Item read permissions.
+    Note: @validate_and_sanitize_search_inputs is intentionally omitted because
+    Vendor Manager/Executive roles lack Item select permission. Inputs are
+    sanitised manually (parameterised SQL, frappe.db.escape, int casts).
+    """
+    bom_name = filters.get("bom_reference") if filters else None
+    if not bom_name:
+        proposed_system = filters.get("proposed_system") if filters else None
+        if proposed_system:
+            bom_name = find_active_bom(proposed_system)
+
+    item_groups = frappe.parse_json(filters.get("item_groups", "[]")) if filters else []
+
+    if not bom_name or not item_groups:
+        return []
+
+    item_group_str = ", ".join([frappe.db.escape(g) for g in item_groups])
+
+    # Try BOM Explosion Item first (flattened list for submitted BOMs)
+    results = frappe.db.sql(
+        """
+        SELECT DISTINCT i.name, i.item_name
+        FROM `tabBOM Explosion Item` bei
+        INNER JOIN `tabItem` i ON i.name = bei.item_code
+        WHERE bei.parent = %(bom_name)s
+        AND i.item_group IN ({item_groups})
+        AND (i.name LIKE %(txt)s OR i.item_name LIKE %(txt)s)
+        ORDER BY i.name
+        LIMIT %(start)s, %(page_len)s
+    """.format(
+            item_groups=item_group_str
+        ),
+        {
+            "bom_name": bom_name,
+            "txt": f"%{txt}%",
+            "start": int(start),
+            "page_len": int(page_len),
+        },
+    )
+
+    if results:
+        return results
+
+    # Fallback to BOM Item (for draft BOMs or when explosion table is empty)
+    return frappe.db.sql(
+        """
+        SELECT DISTINCT i.name, i.item_name
+        FROM `tabBOM Item` bi
+        INNER JOIN `tabItem` i ON i.name = bi.item_code
+        WHERE bi.parent = %(bom_name)s
+        AND i.item_group IN ({item_groups})
+        AND (i.name LIKE %(txt)s OR i.item_name LIKE %(txt)s)
+        ORDER BY i.name
+        LIMIT %(start)s, %(page_len)s
+    """.format(
+            item_groups=item_group_str
+        ),
+        {
+            "bom_name": bom_name,
+            "txt": f"%{txt}%",
+            "start": int(start),
+            "page_len": int(page_len),
+        },
+    )
 
 
 @frappe.whitelist()

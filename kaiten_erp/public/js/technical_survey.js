@@ -154,45 +154,46 @@ frappe.ui.form.on('Technical Survey', {
             };
         });
         
-        // Store available BOM items for filtering
-        frm.bom_panel_options = [];
-        frm.bom_inverter_options = [];
-        frm.bom_battery_options = [];
-        
-        // Filter panel field to only show panels from the selected BOM
+        // Filter panel field to only show panels from the selected BOM (server-side)
         frm.set_query('panel', function() {
-            if (frm.bom_panel_options.length > 0) {
-                return {
-                    filters: [
-                        ['Item', 'name', 'in', frm.bom_panel_options]
-                    ]
-                };
-            }
-            return {};
+            const proposed = frm.doc.proposed_system_kw__tier;
+            if (!proposed) return {};
+            return {
+                query: 'kaiten_erp.kaiten_erp.api.technical_survey_bom.get_bom_component_items',
+                filters: {
+                    bom_reference: frm.doc.bom_reference || '',
+                    proposed_system: proposed,
+                    item_groups: JSON.stringify(['Panel', 'Panels'])
+                }
+            };
         });
         
-        // Filter inverter field to only show inverters from the selected BOM
+        // Filter inverter field to only show inverters from the selected BOM (server-side)
         frm.set_query('inverter', function() {
-            if (frm.bom_inverter_options.length > 0) {
-                return {
-                    filters: [
-                        ['Item', 'name', 'in', frm.bom_inverter_options]
-                    ]
-                };
-            }
-            return {};
+            const proposed = frm.doc.proposed_system_kw__tier;
+            if (!proposed) return {};
+            return {
+                query: 'kaiten_erp.kaiten_erp.api.technical_survey_bom.get_bom_component_items',
+                filters: {
+                    bom_reference: frm.doc.bom_reference || '',
+                    proposed_system: proposed,
+                    item_groups: JSON.stringify(['Inverter', 'Inverters'])
+                }
+            };
         });
         
-        // Filter battery field to only show batteries from the selected BOM
+        // Filter battery field to only show batteries from the selected BOM (server-side)
         frm.set_query('battery', function() {
-            if (frm.bom_battery_options.length > 0) {
-                return {
-                    filters: [
-                        ['Item', 'name', 'in', frm.bom_battery_options]
-                    ]
-                };
-            }
-            return {};
+            const proposed = frm.doc.proposed_system_kw__tier;
+            if (!proposed) return {};
+            return {
+                query: 'kaiten_erp.kaiten_erp.api.technical_survey_bom.get_bom_component_items',
+                filters: {
+                    bom_reference: frm.doc.bom_reference || '',
+                    proposed_system: proposed,
+                    item_groups: JSON.stringify(['Battery', 'Batteries'])
+                }
+            };
         });
     },
     
@@ -239,9 +240,18 @@ function auto_load_bom_if_missing(frm) {
         Array.isArray(frm.doc.table_vctx) && frm.doc.table_vctx.length > 0;
     const has_bom_reference = !!frm.doc.bom_reference;
 
-    // Load BOM once when proposed system exists but dependent fields are blank.
-    if (has_proposed_system && !has_components && !has_bom_rows && !has_bom_reference) {
+    if (!has_proposed_system) {
+        return;
+    }
+
+    if (!has_components && !has_bom_rows && !has_bom_reference) {
+        // Nothing filled yet — do a full BOM load (sets fields + filter arrays).
         fetch_bom_for_proposed_system(frm);
+    } else {
+        // Components already filled (e.g. form reload). Only populate the
+        // filter arrays so dropdowns stay scoped to panel/inverter/battery
+        // items from the BOM when the user clears and re-selects a value.
+        load_bom_options_only(frm);
     }
 }
 function calculate_tilt_degree(frm, options) {
@@ -500,6 +510,36 @@ kaiten_erp.technical_survey.retry_todo_assignments = function () {
     );
 };
 
+// Lightweight BOM fetch that only populates filter arrays and frm.bom_data
+// without touching existing field values or the child table.
+// Called on form refresh when components are already filled.
+function load_bom_options_only(frm) {
+    const proposed_system = frm.doc.proposed_system_kw__tier;
+    if (!proposed_system) {
+        return;
+    }
+
+    frappe.call({
+        method: 'kaiten_erp.kaiten_erp.api.technical_survey_bom.get_bom_payload',
+        args: {
+            proposed_system_item_code: proposed_system
+        },
+        async: true,
+        callback: function(r) {
+            if (r.message && !r.message.error) {
+                const data = r.message;
+
+                frm.bom_data = {
+                    panel_candidates: data.panel_candidates || [],
+                    inverter_candidates: data.inverter_candidates || [],
+                    battery_candidates: data.battery_candidates || [],
+                    other_items: data.other_items || []
+                };
+            }
+        }
+    });
+}
+
 // Function to fetch BOM items for the selected proposed system
 function fetch_bom_for_proposed_system(frm) {
     const proposed_system = frm.doc.proposed_system_kw__tier;
@@ -536,51 +576,6 @@ function fetch_bom_for_proposed_system(frm) {
                     battery_candidates: data.battery_candidates || [],
                     other_items: data.other_items || []
                 };
-                
-                // Store available options for filtering
-                frm.bom_panel_options = data.panel_candidates ? data.panel_candidates.map(p => p.item_code) : [];
-                frm.bom_inverter_options = data.inverter_candidates ? data.inverter_candidates.map(i => i.item_code) : [];
-                frm.bom_battery_options = data.battery_candidates ? data.battery_candidates.map(b => b.item_code) : [];
-                
-                console.log('Panel options:', frm.bom_panel_options);
-                console.log('Inverter options:', frm.bom_inverter_options);
-                console.log('Battery options:', frm.bom_battery_options);
-                console.log('BOM data stored:', frm.bom_data);
-                
-                // Refresh the queries for the fields
-                frm.fields_dict['panel'].get_query = null;
-                frm.fields_dict['inverter'].get_query = null;
-                frm.fields_dict['battery'].get_query = null;
-                frm.set_query('panel', function() {
-                    if (frm.bom_panel_options.length > 0) {
-                        return {
-                            filters: [
-                                ['Item', 'name', 'in', frm.bom_panel_options]
-                            ]
-                        };
-                    }
-                    return {};
-                });
-                frm.set_query('inverter', function() {
-                    if (frm.bom_inverter_options.length > 0) {
-                        return {
-                            filters: [
-                                ['Item', 'name', 'in', frm.bom_inverter_options]
-                            ]
-                        };
-                    }
-                    return {};
-                });
-                frm.set_query('battery', function() {
-                    if (frm.bom_battery_options.length > 0) {
-                        return {
-                            filters: [
-                                ['Item', 'name', 'in', frm.bom_battery_options]
-                            ]
-                        };
-                    }
-                    return {};
-                });
                 
                 // Set BOM reference
                 if (data.bom) {
