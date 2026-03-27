@@ -75,6 +75,7 @@
     "column_break_pnvk",
     "tilt_deg",
     "back_height_m",
+    "distance",
     "column_break_dssp",
     "shading_level",
     "measurement_notes",
@@ -299,7 +300,7 @@
     {
       "fieldname": "data_tila",
       "fieldtype": "Select",
-      "options" : "9 AM-12 PM\n12 PM-3 PM\n3 PM-6 PM",
+      "options": "9 AM-12 PM\n12 PM-3 PM\n3 PM-6 PM",
       "label": "Schedule Slot"
     },
     {
@@ -348,8 +349,9 @@
     },
     {
       "fieldname": "roof_type",
-      "fieldtype": "Data",
-      "label": "Roof Type"
+      "fieldtype": "Select",
+      "label": "Roof Type",
+      "options": "RCC\nTin Shed\nAsbestos\nMixed\nOther"
     },
     {
       "fieldname": "area_suitability",
@@ -451,6 +453,11 @@
       "fieldname": "back_height_m",
       "fieldtype": "Data",
       "label": "Back Height (m)"
+    },
+    {
+      "fieldname": "distance",
+      "fieldtype": "Data",
+      "label": "Distance"
     },
     {
       "fieldname": "column_break_dssp",
