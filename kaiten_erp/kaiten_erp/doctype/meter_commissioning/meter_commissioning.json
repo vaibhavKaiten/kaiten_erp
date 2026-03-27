@@ -31,8 +31,6 @@
     "inverter_sync_status",
     "column_break_ofyi",
     "grid_sync_status",
-    "column_break_qbog",
-    "prv__test_report",
     "commissioning_notes_section",
     "commissioning_notes",
     "column_break_qque",
@@ -106,15 +104,7 @@
       "fieldtype": "Select",
       "label": "Grid Sync Status"
     },
-    {
-      "fieldname": "column_break_qbog",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "prv__test_report",
-      "fieldtype": "Attach",
-      "label": " PRV / Test Report"
-    },
+
     {
       "fieldname": "basic_details_tab",
       "fieldtype": "Tab Break",
