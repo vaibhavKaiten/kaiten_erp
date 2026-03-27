@@ -1710,7 +1710,6 @@
   "unique": 0,
   "width": null
  },
-
  {
   "alignment": "",
   "allow_in_quick_entry": 0,
@@ -38054,5 +38053,18 @@
   "translatable": 1,
   "unique": 0,
   "width": null
+ },
+ {
+  "default_value": "0",
+  "dt": "Material Request",
+  "fieldname": "custom_consolidated",
+  "fieldtype": "Check",
+  "hidden": 1,
+  "insert_after": "status",
+  "label": "Consolidated",
+  "name": "Material Request-custom_consolidated",
+  "read_only": 1,
+  "allow_on_submit": 1,
+  "doctype": "Custom Field"
  }
 ]
