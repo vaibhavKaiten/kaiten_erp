@@ -58,18 +58,6 @@
     "table_royw",
     "payment_control_tab",
     "payment_control_section",
-    "advance_invoice_number",
-    "advance_invoice_amount",
-    "advance_paid_amount",
-    "advance_outstanding_amount",
-    "advance_invoice_status",
-    "column_break_pc1",
-    "advance_override_approved",
-    "advance_override_remark",
-    "column_break_pc2",
-    "advance_override_approved_by",
-    "advance_override_approved_on",
-    "override_notification_sent",
     "connection_tab"
   ],
   "fields": [
@@ -336,76 +324,6 @@
       "fieldname": "payment_control_section",
       "fieldtype": "Section Break",
       "label": ""
-    },
-    {
-      "fieldname": "advance_invoice_number",
-      "fieldtype": "Link",
-      "label": "Advance Invoice Number",
-      "options": "Sales Invoice",
-      "read_only": 1
-    },
-    {
-      "fieldname": "advance_invoice_amount",
-      "fieldtype": "Currency",
-      "label": "Advance Invoice Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "advance_paid_amount",
-      "fieldtype": "Currency",
-      "label": "Advance Paid Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "advance_outstanding_amount",
-      "fieldtype": "Currency",
-      "label": "Advance Outstanding Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "advance_invoice_status",
-      "fieldtype": "Read Only",
-      "label": "Advance Invoice Status"
-    },
-    {
-      "fieldname": "column_break_pc1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "advance_override_approved",
-      "fieldtype": "Check",
-      "label": "Advance Override Approved",
-      "permlevel": 1
-    },
-    {
-      "fieldname": "advance_override_remark",
-      "fieldtype": "Small Text",
-      "label": "Advance Override Remark",
-      "permlevel": 1,
-      "mandatory_depends_on": "eval:doc.advance_override_approved == 1"
-    },
-    {
-      "fieldname": "column_break_pc2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "advance_override_approved_by",
-      "fieldtype": "Link",
-      "label": "Advance Override Approved By",
-      "options": "User",
-      "read_only": 1
-    },
-    {
-      "fieldname": "advance_override_approved_on",
-      "fieldtype": "Datetime",
-      "label": "Advance Override Approved On",
-      "read_only": 1
-    },
-    {
-      "fieldname": "override_notification_sent",
-      "fieldtype": "Check",
-      "label": "Override Notification Sent",
-      "read_only": 1
     }
   ],
   "grid_page_length": 50,

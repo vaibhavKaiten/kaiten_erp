@@ -174,7 +174,7 @@
       "fieldname": "meter_type",
       "fieldtype": "Select",
       "label": "Meter Type",
-      "options": "\nSingle Phase\nThree Phase"
+      "options": "Single Phase\nThree Phase"
     },
     {
       "fieldname": "column_break_izco",
