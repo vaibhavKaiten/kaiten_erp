@@ -4,9 +4,16 @@
 import frappe
 from frappe.model.document import Document
 from kaiten_erp.kaiten_erp.api.gps import log_workflow_location
-
+from frappe.model.naming import make_autoname
 
 class TechnicalSurvey(Document):
+    def autoname(self):
+        k_no = self.custom_k_number
+
+        if not k_no:
+            frappe.throw("K Number is required")
+        series = make_autoname(".####")
+        self.name = f"{self.first_name}-{k_no}-{series}"
     def validate(self):
         self._normalize_schedule_slot()
         log_workflow_location(self)

@@ -3,7 +3,13 @@
 
 
 from frappe.model.document import Document
-
+from frappe.model.naming import make_autoname
 
 class MeterCommissioning(Document):
-    pass
+    def autoname(self):
+        k_no = self.custom_k_number
+
+        if not k_no:
+            frappe.throw("K Number is required")
+        series = make_autoname(".####")
+        self.name = f"{self.first_name}-{k_no}-{series}"
