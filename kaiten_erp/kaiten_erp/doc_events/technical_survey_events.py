@@ -8,37 +8,119 @@ import frappe.share
 from kaiten_erp.kaiten_erp.permissions.vendor_permissions import get_supplier_users
 
 
+# ---------------------------------------------------------------------------
+# Private helpers
+# ---------------------------------------------------------------------------
+
+
+def _get_vendor_field(doc):
+    """Return the name of the first vendor/supplier field found on the document, or None."""
+    for field in ("assigned_vendor", "supplier", "vendor", "assigned_supplier"):
+        if hasattr(doc, field):
+            return field
+    return None
+
+
+def _get_customer_first_name(doc):
+    """Return the customer's first name for display in ToDo descriptions.
+
+    Resolution order:
+    1. doc.first_name (most execution doctypes carry this directly)
+    2. doc.customer Link -> Customer.customer_name (first word)
+    3. linked Job File first_name
+    4. linked Job File customer -> Customer.customer_name (first word)
+    5. Fallback: doc.name
+    """
+    first_name = getattr(doc, "first_name", None)
+    if first_name:
+        return first_name
+
+    customer = getattr(doc, "customer", None)
+    if customer:
+        cname = frappe.db.get_value("Customer", customer, "customer_name")
+        if cname:
+            return cname.split()[0]
+
+    job_file_name = _get_job_file_name_from_doc(doc)
+    if job_file_name:
+        jf_first_name = frappe.db.get_value("Job File", job_file_name, "first_name")
+        if jf_first_name:
+            return jf_first_name
+
+        jf_customer = frappe.db.get_value("Job File", job_file_name, "customer")
+        if jf_customer:
+            cname = frappe.db.get_value("Customer", jf_customer, "customer_name")
+            if cname:
+                return cname.split()[0]
+
+    return doc.name
+
+
+def _format_todo_description(doc, action_text):
+    """Return a standardised ToDo description: '{first_name} - {doc.name} - {action_text}'."""
+    first_name = _get_customer_first_name(doc)
+    return f"{first_name} - {doc.name} - {action_text}"
+
+
+def close_open_todos_by_role(doc, role):
+    """Close all Open ToDos for this document that are allocated to users with the given role."""
+    todos = frappe.db.sql(
+        """
+        SELECT DISTINCT t.name
+        FROM `tabToDo` t
+        INNER JOIN `tabHas Role` hr ON hr.parent = t.allocated_to AND hr.parenttype = 'User'
+        WHERE t.reference_type = %(doctype)s
+            AND t.reference_name = %(name)s
+            AND t.status = 'Open'
+            AND hr.role = %(role)s
+        """,
+        {"doctype": doc.doctype, "name": doc.name, "role": role},
+        as_dict=True,
+    )
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} open {role} ToDo(s) for {doc.doctype} {doc.name}"
+        )
+
+
 def validate(doc, method=None):
     """
-    Technical Survey validate hook - Auto-assign to Vendor Managers when workflow_state changes to 'Assigned to Vendor'
-    Also creates Quotation when workflow_state changes to 'Approved'
+    Technical Survey validate hook.
+    Creates role-targeted ToDos on workflow state change and closes the previous role's open ToDos.
     """
+    if not doc.has_value_changed("workflow_state"):
+        return
 
-    # Check if workflow_state field has changed to "Assigned to Vendor"
-    if (
-        doc.has_value_changed("workflow_state")
-        and doc.workflow_state == "Assigned to Vendor"
-    ):
+    state = doc.workflow_state
+
+    if state == "Assigned to Vendor":
+        close_open_todos_by_role(doc, "Vendor Head")
         assign_to_vendor_managers(doc)
 
-    # Check if workflow_state field has changed to "Submitted"
-    if doc.has_value_changed("workflow_state") and doc.workflow_state == "Submitted":
+    elif state == "In Progress":
+        close_open_todos_by_role(doc, "Vendor Manager")
+        assign_to_vendor_executives_on_in_progress(doc)
+
+    elif state == "Submitted":
+        close_open_todos_by_role(doc, "Vendor Executive")
         assign_to_vendor_managers_for_review(doc)
 
-    # Check if workflow_state field has changed to "Approved"
-    if (
-        doc.doctype == "Technical Survey"
-        and doc.has_value_changed("workflow_state")
-        and doc.workflow_state == "Approved"
-    ):
+    elif state == "Completed":
+        close_open_todos_by_role(doc, "Vendor Manager")
+        assign_to_vendor_heads_for_approval(doc)
+
+    elif state == "Approved":
+        close_open_todos_by_role(doc, "Vendor Head")
         link_technical_survey_to_opportunity(doc)
         assign_final_quotation_todo(doc)
 
-    # Check if workflow_state field has changed to "Completed"
-    if doc.has_value_changed("workflow_state") and doc.workflow_state == "Completed":
-        if doc.doctype == "Technical Survey" and _is_completed_by_vendor_manager(doc):
-            assign_to_vendor_heads_for_technical_survey_approval(doc)
-        assign_to_execution_managers_for_technical_survey(doc)
+    elif state == "Rejected":
+        close_open_todos_by_role(doc, "Vendor Manager")
+        assign_to_vendor_executives_on_rejected(doc)
+
+
 
 
 def _is_completed_by_vendor_manager(doc) -> bool:
@@ -53,181 +135,6 @@ def _is_completed_by_vendor_manager(doc) -> bool:
     except Exception:
         return False
 
-
-def assign_to_vendor_heads_for_technical_survey_approval(doc):
-    """Create approval ToDo for Vendor Head users once Vendor Manager completes the survey."""
-
-    if doc.doctype != "Technical Survey":
-        return
-
-    assigned_vendor = getattr(doc, "assigned_vendor", None) or getattr(doc, "supplier", None)
-
-    vendor_heads = []
-    if assigned_vendor:
-        try:
-            vendor_heads = get_supplier_users(assigned_vendor, role="Vendor Head") or []
-        except Exception:
-            vendor_heads = []
-
-    if not vendor_heads:
-        vendor_heads = [
-            r.parent
-            for r in frappe.get_all(
-                "Has Role",
-                filters={"role": "Vendor Head", "parenttype": "User"},
-                fields=["parent"],
-            )
-        ]
-
-    # Filter enabled users
-    vendor_heads = [
-        user
-        for user in set(vendor_heads)
-        if user not in ("Guest",) and frappe.db.get_value("User", user, "enabled")
-    ]
-
-    if not vendor_heads:
-        frappe.msgprint(
-            _("No Vendor Head users found to approve this Technical Survey."),
-            indicator="orange",
-            alert=True,
-        )
-        return
-
-    description = f"Approve Technical Survey {doc.name}"
-
-    created = 0
-    for user in vendor_heads:
-        existing = frappe.db.exists(
-            "ToDo",
-            {
-                "reference_type": doc.doctype,
-                "reference_name": doc.name,
-                "allocated_to": user,
-                "description": description,
-                "status": ["!=", "Cancelled"],
-            },
-        )
-        if existing:
-            continue
-
-        # Ensure approver can act on the workflow by sharing with write permission
-        try:
-            if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
-                frappe.share.add(doc.doctype, doc.name, user=user, write=1, share=1, notify=0)
-        except Exception:
-            frappe.logger("kaiten_erp").exception(
-                f"Failed to share {doc.doctype} {doc.name} with Vendor Head {user}"
-            )
-
-        try:
-            assign_to.add(
-                {
-                    "assign_to": [user],
-                    "doctype": doc.doctype,
-                    "name": doc.name,
-                    "description": description,
-                    "priority": "High",
-                    "notify": 1,
-                }
-            )
-            created += 1
-        except Exception:
-            frappe.logger("kaiten_erp").exception(
-                f"Failed to create Vendor Head approval ToDo for {doc.doctype} {doc.name} -> {user}"
-            )
-
-    if created:
-        frappe.msgprint(
-            _("Created approval ToDo for {0} Vendor Head user(s).").format(created),
-            indicator="green",
-            alert=True,
-        )
-
-
-def assign_to_execution_managers_for_technical_survey(doc):
-    """
-    Assign Technical Survey to all users with Execution Manager role
-    Creates ToDo for each Execution Manager when Technical Survey is completed
-    """
-    # Get all users with Execution Manager role
-    execution_managers = frappe.get_all(
-        "Has Role",
-        filters={"role": "Execution Manager", "parenttype": "User"},
-        fields=["parent"],
-    )
-
-    if not execution_managers:
-        frappe.msgprint(
-            _(
-                f"No Execution Managers found to assign this Technical Survey for execution"
-            ),
-            indicator="orange",
-            alert=True,
-        )
-        return
-
-    assigned_count = 0
-    errors = []
-
-    for manager in execution_managers:
-        user = manager.parent
-
-        # Check if user is enabled
-        user_enabled = frappe.db.get_value("User", user, "enabled")
-        if not user_enabled:
-            continue
-
-        # Check if ToDo already exists for this user and document
-        existing_todo = frappe.db.exists(
-            "ToDo",
-            {
-                "reference_type": "Technical Survey",
-                "reference_name": doc.name,
-                "allocated_to": user,
-                "status": "Open",
-            },
-        )
-
-        if existing_todo:
-            continue
-
-        try:
-            todo = frappe.get_doc(
-                {
-                    "doctype": "ToDo",
-                    "allocated_to": user,
-                    "reference_type": "Technical Survey",
-                    "reference_name": doc.name,
-                    "description": f"Technical Survey {doc.name} is completed. Please take action.",
-                    "priority": "High",
-                    "status": "Open",
-                }
-            )
-            todo.flags.ignore_permissions = True
-            todo.insert()
-            frappe.db.commit()
-            assigned_count += 1
-        except Exception as e:
-            error_msg = f"Failed to create ToDo for {user}: {str(e)}"
-            errors.append(error_msg)
-            frappe.log_error(error_msg, "Technical Survey ToDo Assignment Error")
-
-    if assigned_count > 0:
-        frappe.msgprint(
-            _(
-                f"Technical Survey assigned to {assigned_count} Execution Manager(s) for execution action"
-            ),
-            indicator="green",
-            alert=True,
-        )
-
-    if errors:
-        frappe.msgprint(
-            _(f"Some assignments failed. Check Error Log for details."),
-            indicator="orange",
-            alert=True,
-        )
 
 
 def on_update(doc, method=None):
@@ -329,14 +236,7 @@ def assign_to_internal_user(doc):
         )
         return
 
-    # Build description dynamically
-    vendor = (
-        getattr(doc, "assigned_vendor", None)
-        or getattr(doc, "supplier", None)
-        or "supplier"
-    )
-
-    description = f"{doc.doctype} for {vendor}"
+    description = _format_todo_description(doc, f"Execute {doc.doctype}")
 
     # Create ToDo assignment
     try:
@@ -540,10 +440,7 @@ def assign_to_vendor_managers(doc):
         try:
             user_full_name = frappe.db.get_value("User", user, "full_name") or user
 
-            # Dynamic description without assuming first_name field
-            display_name = getattr(doc, "first_name", None) or doc.name
-
-            description = _(f"Complete {doc.doctype} - {display_name}")
+            description = _format_todo_description(doc, f"Start {doc.doctype}")
 
             # Dynamic permission check
             if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
@@ -873,65 +770,55 @@ def get_vendor_users_for_assignment(
     return [[user] for user in vendor_executives[:page_len]]
 
 
-def assign_to_vendor_managers_for_review(doc):
-    """
-    Assign Technical Survey to all Vendor Managers for review when submitted
-    """
-    assigned_vendor = doc.assigned_vendor
-    if not assigned_vendor:
-        return
+def assign_to_vendor_executives_on_in_progress(doc):
+    """Create a ToDo for the Vendor Executive when the doctype transitions to 'In Progress'.
 
-    # Get all Vendor Managers for this supplier
-    vendor_managers = get_supplier_users(assigned_vendor, role="Vendor Manager")
+    Targets doc.assigned_internal_user if set and has the Vendor Executive role;
+    otherwise falls back to all Vendor Executives linked to the assigned supplier.
+    """
+    users_to_assign = []
 
-    if not vendor_managers:
-        frappe.msgprint(
-            _("No Vendor Managers found for {0} to review this survey").format(
-                assigned_vendor
-            ),
-            indicator="orange",
-            alert=True,
+    user = getattr(doc, "assigned_internal_user", None)
+    if user and frappe.db.get_value("User", user, "enabled"):
+        if frappe.db.exists("Has Role", {"parent": user, "role": "Vendor Executive"}):
+            users_to_assign = [user]
+
+    if not users_to_assign:
+        vendor_field = _get_vendor_field(doc)
+        assigned_vendor = getattr(doc, vendor_field, None) if vendor_field else None
+        if assigned_vendor:
+            users_to_assign = get_supplier_users(assigned_vendor, role="Vendor Executive")
+
+    if not users_to_assign:
+        frappe.logger("kaiten_erp").warning(
+            f"No Vendor Executive found to assign In Progress ToDo for {doc.doctype} {doc.name}"
         )
         return
 
-    for user in vendor_managers:
-        # Check if user is enabled (optional, but good practice)
+    description = _format_todo_description(doc, f"Execute {doc.doctype}")
+
+    for user in users_to_assign:
         if not frappe.db.get_value("User", user, "enabled"):
             continue
-
-        description = _(
-            "Technical Survey {0} has been Submitted. Please review."
-        ).format(doc.name)
-
-        # Check existing ToDo
-        existing_todo = frappe.db.exists(
+        if frappe.db.exists(
             "ToDo",
             {
-                "reference_type": "Technical Survey",
+                "reference_type": doc.doctype,
                 "reference_name": doc.name,
                 "allocated_to": user,
-                "description": description,
                 "status": "Open",
             },
-        )
-
-        if existing_todo:
+        ):
             continue
-
         try:
-            # Ensure permissions
-            if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
-                frappe.share.add(
-                    doc.doctype, doc.name, user=user, write=1, share=1, notify=0
-                )
-
             todo = frappe.get_doc(
                 {
                     "doctype": "ToDo",
                     "allocated_to": user,
-                    "reference_type": "Technical Survey",
+                    "reference_type": doc.doctype,
                     "reference_name": doc.name,
                     "description": description,
+                    "role": "Vendor Executive",
                     "priority": "High",
                     "status": "Open",
                 }
@@ -939,14 +826,207 @@ def assign_to_vendor_managers_for_review(doc):
             todo.flags.ignore_permissions = True
             todo.insert()
             frappe.logger("kaiten_erp").info(
-                f"Created Review ToDo for {user} on {doc.name}"
+                f"Created In Progress ToDo for {user} on {doc.doctype} {doc.name}"
             )
-
         except Exception as e:
             frappe.log_error(
-                f"Failed to create Review ToDo for {user}: {str(e)}",
-                "Technical Survey Review Assignment",
+                f"Failed to create In Progress ToDo for {user} on {doc.doctype} {doc.name}: {str(e)}",
+                "Execution ToDo Assignment",
             )
+
+
+def assign_to_vendor_heads_for_approval(doc):
+    """Create ToDos for all Vendor Heads to approve the doctype after Vendor Manager marks it Completed."""
+    vendor_heads = frappe.get_all(
+        "Has Role",
+        filters={"role": "Vendor Head", "parenttype": "User"},
+        fields=["parent as user"],
+    )
+    if not vendor_heads:
+        frappe.logger("kaiten_erp").warning(
+            f"No Vendor Head users found. Skipping approval ToDo for {doc.doctype} {doc.name}"
+        )
+        return
+
+    description = _format_todo_description(doc, f"Approve {doc.doctype}")
+    created = 0
+
+    for vh in vendor_heads:
+        user = vh.user
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        if frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": doc.doctype,
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "status": "Open",
+            },
+        ):
+            continue
+        try:
+            todo = frappe.get_doc(
+                {
+                    "doctype": "ToDo",
+                    "allocated_to": user,
+                    "reference_type": doc.doctype,
+                    "reference_name": doc.name,
+                    "description": description,
+                    "role": "Vendor Head",
+                    "priority": "High",
+                    "status": "Open",
+                }
+            )
+            todo.flags.ignore_permissions = True
+            todo.insert()
+            created += 1
+        except Exception as e:
+            frappe.log_error(
+                f"Failed to create Approval ToDo for {user} on {doc.doctype} {doc.name}: {str(e)}",
+                "Execution ToDo Assignment",
+            )
+
+    if created:
+        frappe.msgprint(
+            _("Assigned to {0} Vendor Head(s) for Approval").format(created),
+            alert=True,
+            indicator="blue",
+        )
+
+
+def assign_to_vendor_executives_on_rejected(doc):
+    """Create a ToDo for the Vendor Executive to rectify and resubmit after the doctype is Rejected."""
+    users_to_assign = []
+
+    user = getattr(doc, "assigned_internal_user", None)
+    if user and frappe.db.get_value("User", user, "enabled"):
+        if frappe.db.exists("Has Role", {"parent": user, "role": "Vendor Executive"}):
+            users_to_assign = [user]
+
+    if not users_to_assign:
+        vendor_field = _get_vendor_field(doc)
+        assigned_vendor = getattr(doc, vendor_field, None) if vendor_field else None
+        if assigned_vendor:
+            users_to_assign = get_supplier_users(assigned_vendor, role="Vendor Executive")
+
+    if not users_to_assign:
+        frappe.logger("kaiten_erp").warning(
+            f"No Vendor Executive found to notify Rejected state for {doc.doctype} {doc.name}"
+        )
+        return
+
+    description = _format_todo_description(doc, f"Rectify and Resubmit {doc.doctype}")
+
+    for user in users_to_assign:
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        if frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": doc.doctype,
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "description": description,
+                "status": "Open",
+            },
+        ):
+            continue
+        try:
+            todo = frappe.get_doc(
+                {
+                    "doctype": "ToDo",
+                    "allocated_to": user,
+                    "reference_type": doc.doctype,
+                    "reference_name": doc.name,
+                    "description": description,
+                    "role": "Vendor Executive",
+                    "priority": "High",
+                    "status": "Open",
+                }
+            )
+            todo.flags.ignore_permissions = True
+            todo.insert()
+            frappe.logger("kaiten_erp").info(
+                f"Created Rejected ToDo for {user} on {doc.doctype} {doc.name}"
+            )
+        except Exception as e:
+            frappe.log_error(
+                f"Failed to create Rejected ToDo for {user} on {doc.doctype} {doc.name}: {str(e)}",
+                "Execution ToDo Assignment",
+            )
+
+
+def assign_to_vendor_managers_for_review(doc):
+    """Assign to Vendor Managers for review when the doctype is Submitted by a Vendor Executive."""
+    vendor_field = _get_vendor_field(doc)
+    if not vendor_field:
+        frappe.logger("kaiten_erp").warning(
+            f"No vendor field found in {doc.doctype}. Cannot assign review ToDo."
+        )
+        return
+
+    assigned_vendor = getattr(doc, vendor_field)
+    if not assigned_vendor:
+        return
+
+    vendor_managers = get_supplier_users(assigned_vendor, role="Vendor Manager")
+    if not vendor_managers:
+        frappe.msgprint(
+            _("No Vendor Managers found for {0} to review this {1}").format(
+                assigned_vendor, doc.doctype
+            ),
+            indicator="orange",
+            alert=True,
+        )
+        return
+
+    description = _format_todo_description(doc, f"Review {doc.doctype}")
+    created = 0
+
+    for user in vendor_managers:
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        if frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": doc.doctype,
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "status": "Open",
+            },
+        ):
+            continue
+        try:
+            if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
+                frappe.share.add(doc.doctype, doc.name, user=user, write=1, share=1, notify=0)
+            todo = frappe.get_doc(
+                {
+                    "doctype": "ToDo",
+                    "allocated_to": user,
+                    "reference_type": doc.doctype,
+                    "reference_name": doc.name,
+                    "description": description,
+                    "role": "Vendor Manager",
+                    "priority": "High",
+                    "status": "Open",
+                }
+            )
+            todo.flags.ignore_permissions = True
+            todo.insert()
+            created += 1
+        except Exception as e:
+            frappe.log_error(
+                f"Failed to create Review ToDo for {user} on {doc.doctype} {doc.name}: {str(e)}",
+                "Execution ToDo Assignment",
+            )
+
+    if created:
+        frappe.msgprint(
+            _("Review assigned to {0} Vendor Manager(s)").format(created),
+            alert=True,
+            indicator="blue",
+        )
 
 
 def assign_to_sales_managers(doc):

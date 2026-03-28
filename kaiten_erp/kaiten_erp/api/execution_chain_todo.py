@@ -92,8 +92,8 @@ def _create_vendor_head_todos(doc, next_doctype):
         )
         return
 
-    # Get customer from Job File for the description
-    customer = frappe.db.get_value("Job File", job_file_name, "customer") or job_file_name
+    # Get customer first name from Job File for the description
+    customer_first_name = frappe.db.get_value("Job File", job_file_name, "first_name") or job_file_name
 
     # Get all enabled Vendor Head users
     vendor_heads = frappe.get_all(
@@ -113,9 +113,7 @@ def _create_vendor_head_todos(doc, next_doctype):
         )
         return
 
-    description = _("Initiate {0} for {1}.").format(
-        next_doctype, customer
-    )
+    description = f"{customer_first_name} - {next_doc_name} - Initiate {next_doctype}"
 
     created = 0
     for vh in vendor_heads:
