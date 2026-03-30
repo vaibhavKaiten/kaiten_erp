@@ -756,18 +756,23 @@ def get_vendor_users_for_assignment(
     if not vendor_executives:
         return []
 
+    # Build list with full names for display
+    user_data = [
+        (user, frappe.db.get_value("User", user, "full_name") or user)
+        for user in vendor_executives
+    ]
+
     # Filter by search text if provided
     if txt:
-        vendor_executives = [
-            user
-            for user in vendor_executives
+        user_data = [
+            (user, full_name)
+            for user, full_name in user_data
             if txt.lower() in user.lower()
-            or txt.lower()
-            in (frappe.db.get_value("User", user, "full_name") or "").lower()
+            or txt.lower() in full_name.lower()
         ]
 
-    # Return in the format expected by Frappe's query
-    return [[user] for user in vendor_executives[:page_len]]
+    # Return in the format expected by Frappe's query (email, full_name)
+    return [[user, full_name] for user, full_name in user_data[:page_len]]
 
 
 def assign_to_vendor_executives_on_in_progress(doc):
