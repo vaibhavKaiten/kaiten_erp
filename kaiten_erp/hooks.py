@@ -291,47 +291,47 @@ doc_events = {
         "on_update": "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.on_update",
     },
     "Structure Mounting": {
-        "validate": "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
+        "validate": "kaiten_erp.kaiten_erp.doc_events.execution_events.validate",
         "on_update": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
         ],
     },
     "Project Installation": {
         "validate": [
             "kaiten_erp.kaiten_erp.doc_events.project_installation_events.validate",
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.validate",
             "kaiten_erp.kaiten_erp.api.execution_payment_validation.validate_installation_payment",
         ],
         "on_update": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
         ],
     },
     "Meter Installation": {
         "validate": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.validate",
             "kaiten_erp.kaiten_erp.api.execution_payment_validation.validate_installation_payment",
         ],
         "on_update": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
         ],
     },
     "Meter Commissioning": {
-        "validate": "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
+        "validate": "kaiten_erp.kaiten_erp.doc_events.execution_events.validate",
         "on_update": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
         ],
     },
     "Verification Handover": {
         "validate": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.validate",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.validate",
             "kaiten_erp.kaiten_erp.api.execution_payment_validation.validate_verification_payment",
         ],
         "on_update": [
-            "kaiten_erp.kaiten_erp.doc_events.technical_survey_events.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
         ],
     },

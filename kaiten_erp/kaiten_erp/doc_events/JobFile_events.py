@@ -522,11 +522,8 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
         if existing:
             continue
 
-        description = _("Initiate Technical Survey – {0}").format(technical_survey_name)
-        note = _(
-            "Technical Survey is created please fill required information, "
-            "assign to vendor executive and initiate the Technical Survey."
-        )
+        customer_first_name = job_file.first_name or job_file.name
+        description = f"{customer_first_name} - {technical_survey_name} - Initiate Technical Survey"
 
         try:
             todo = frappe.get_doc(
@@ -535,8 +532,8 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
                     "allocated_to": user,
                     "reference_type": "Technical Survey",
                     "reference_name": technical_survey_name,
-                    "role" : "Vendor Head",
-                    "description": description + "\n\n" + note,
+                    "role": "Vendor Head",
+                    "description": description,
                     "priority": "High",
                     "status": "Open",
                 }
