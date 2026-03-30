@@ -2271,7 +2271,7 @@
   "email": 1,
   "export": 1,
   "if_owner": 0,
-  "impersonate": 1,
+  "impersonate": 0,
   "import": 1,
   "mask": 0,
   "modified": "2026-02-24 16:13:17.877640",
