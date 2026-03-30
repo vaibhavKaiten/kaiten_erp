@@ -489,13 +489,15 @@
   },
   {
    "fieldname": "roof_load_capacity",
-   "fieldtype": "Data",
-   "label": "Roof Load Capacity"
+   "fieldtype": "Select",
+   "label": "Roof Load Capacity",
+   "options": "Adequate (No Reinforcement Required)\nAdequate with Minor Reinforcement\nRequires Structural Reinforcement\nNot Adequate (Unsafe for Installation)"
   },
   {
    "fieldname": "feasibility_status",
    "fieldtype": "Select",
-   "label": "Feasibility Status"
+   "label": "Feasibility Status",
+   "options": "Feasible\nFeasible with Minor Changes\nFeasible with Major Changes\nNot Feasible"
   },
   {
    "fieldname": "column_break_egss",

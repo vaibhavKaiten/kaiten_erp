@@ -20,10 +20,6 @@
     "token_amount_recieved",
     "column_break_gqxp",
     "negotiated_amount",
-    "balance_amount",
-    "column_break_wwih",
-    "payment_term_template",
-    "finance_required",
     "tab_2_tab",
     "customer_snapshot_section",
     "first_name",
@@ -56,8 +52,6 @@
     "job_control_tab",
     "job_execution_control_section",
     "table_royw",
-    "payment_control_tab",
-    "payment_control_section",
     "connection_tab"
   ],
   "fields": [
@@ -144,26 +138,6 @@
       "fieldname": "negotiated_amount",
       "fieldtype": "Currency",
       "label": "Negotiated Amount"
-    },
-    {
-      "fieldname": "balance_amount",
-      "fieldtype": "Currency",
-      "label": "Balance Amount"
-    },
-    {
-      "fieldname": "column_break_wwih",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "payment_term_template",
-      "fieldtype": "Data",
-      "label": "Payment Term Template"
-    },
-    {
-      "fieldname": "finance_required",
-      "fieldtype": "Select",
-      "label": "Finance Required",
-      "options": "Yes\nNo"
     },
     {
       "fieldname": "customer_snapshot_section",
@@ -314,16 +288,6 @@
       "fieldname": "table_royw",
       "fieldtype": "Table",
       "options": "Job Execution Child Table"
-    },
-    {
-      "fieldname": "payment_control_tab",
-      "fieldtype": "Tab Break",
-      "label": "Payment Control"
-    },
-    {
-      "fieldname": "payment_control_section",
-      "fieldtype": "Section Break",
-      "label": ""
     }
   ],
   "grid_page_length": 50,
