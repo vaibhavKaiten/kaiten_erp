@@ -4,6 +4,294 @@
   "completed_by_role": "Sales Manager",
   "docstatus": 0,
   "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:16:29.648008",
+  "name": "kmve9j46q4",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-SJALK-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.446249",
+  "name": "6loqsmu4e5",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-SJALK-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.454345",
+  "name": "7760ktegdd",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "sjalk-54513131351153-0001",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.546296",
+  "name": "777enob22j",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "sjalk-54513131351153-0002",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.622958",
+  "name": "778ik1kbfa",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "sjalk-54513131351153-0003",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.665805",
+  "name": "778dpaeqhi",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "sjalk-54513131351153-0004",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.707209",
+  "name": "779v1bbql1",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "sjalk-54513131351153-0005",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:17:25.744692",
+  "name": "7790n6pjbq",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "sjalk-54513131351153-0006",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:37.301037",
+  "name": "cio4e8550m",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-LAKSHYA-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.189117",
+  "name": "ebtqfn2rsf",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-LAKSHYA-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.196859",
+  "name": "ecp6ojasnu",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "lakshya-513213136-0007",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.237974",
+  "name": "ecqjpnvovs",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "lakshya-513213136-0008",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.278714",
+  "name": "ecqmpgvain",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "lakshya-513213136-0009",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.310909",
+  "name": "ecrshtgsdp",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "lakshya-513213136-0010",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.343310",
+  "name": "ecrjpqobqa",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "lakshya-513213136-0011",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:29:40.377713",
+  "name": "ecro8audoe",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "lakshya-513213136-0012",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
   "modified": "2026-03-24 18:40:48.073467",
   "name": "0hl76tsqm6",
   "permitted_roles": [
@@ -14665,5 +14953,581 @@
   "status": "Open",
   "user": null,
   "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:11.126720",
+  "name": "mv5kvmo0co",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-AAJA-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:27.851513",
+  "name": "nfnk9oh7ls",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-AAJA-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:27.858875",
+  "name": "nkuicadvdf",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "aaja-31513521215-0013",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:27.949740",
+  "name": "nkvqv0q7rs",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "aaja-31513521215-0014",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:28.042660",
+  "name": "nl09mfuvg0",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "aaja-31513521215-0015",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:28.104402",
+  "name": "nl11diqvq9",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "aaja-31513521215-0016",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:28.165171",
+  "name": "nl1vqoisdd",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "aaja-31513521215-0017",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:45:28.222271",
+  "name": "nl22t4ianr",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "aaja-31513521215-0018",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:33.305194",
+  "name": "qdcvd7r9aa",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-FG-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.178175",
+  "name": "qkd2kfn1bo",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-FG-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.186004",
+  "name": "qpl4g7hhq0",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "fg-5323586-0019",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.230710",
+  "name": "qpm7634rd0",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "fg-5323586-0020",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.274250",
+  "name": "qpmu7gdgq9",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "fg-5323586-0021",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.311496",
+  "name": "qpnptrlefv",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "fg-5323586-0022",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.347649",
+  "name": "qpn50pctvh",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "fg-5323586-0023",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 12:50:50.388432",
+  "name": "qpnh4qlvdf",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "fg-5323586-0024",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:03.882501",
+  "name": "kvmlfcafdi",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-YTFRTY-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.039172",
+  "name": "lo7q7q8u63",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-YTFRTY-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.046262",
+  "name": "m5mu4fo2b7",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "ytfrty-5135145321321-0025",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.130066",
+  "name": "m5nsu4jc89",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "ytfrty-5135145321321-0026",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.198803",
+  "name": "m5n383o1n4",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "ytfrty-5135145321321-0027",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.238974",
+  "name": "m5oeb6mou2",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "ytfrty-5135145321321-0028",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.278954",
+  "name": "m5o65nc182",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "ytfrty-5135145321321-0029",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:26:47.323172",
+  "name": "m5p8nui2fr",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "ytfrty-5135145321321-0030",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:11.977725",
+  "name": "o2iiko2kg9",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-FDG-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.010700",
+  "name": "o5oak3svbt",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-FDG-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.017295",
+  "name": "oh073ur9ss",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "fdg-325555535-0031",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.054727",
+  "name": "oh0cudn291",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "fdg-325555535-0032",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.084231",
+  "name": "oh0bh08s5a",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "fdg-325555535-0033",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.117935",
+  "name": "oh1n29fklm",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "fdg-325555535-0034",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.155804",
+  "name": "oh1peqg90b",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "fdg-325555535-0035",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 15:30:48.215299",
+  "name": "oh2keadir8",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "fdg-325555535-0036",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
  }
 ]
