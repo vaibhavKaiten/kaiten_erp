@@ -12,5 +12,32 @@ frappe.ui.form.on('Sales Order', {
                 }
             };
         });
+    },
+
+    custom_finance_type: function(frm) {
+        // Clear existing rows first
+        frm.clear_table('custom_payment_plan');
+
+        if (!frm.doc.custom_finance_type) {
+            frm.refresh_field('custom_payment_plan');
+            return;
+        }
+
+        // Fetch the Payment Milestone Template and populate custom_payment_plan
+        frappe.db.get_doc('Payment Milestone Template', frm.doc.custom_finance_type)
+            .then(template => {
+                if (!template || !template.payment_milestone) return;
+
+                template.payment_milestone.forEach(row => {
+                    let child = frm.add_child('custom_payment_plan');
+                    child.milestone      = row.milestone;
+                    child.payment_source = row.payment_source;
+                    child.amount         = row.amount;
+                    child.stage          = row.stage;
+                    child.status         = row.status;
+                });
+
+                frm.refresh_field('custom_payment_plan');
+            });
     }
 });
