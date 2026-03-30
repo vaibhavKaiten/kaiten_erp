@@ -78,10 +78,10 @@ def on_update(job_file, method):
                 "phase_type_copy": job_file.get("phase_type"),
                 # Potential extra fields (using .get() safely)
                 "custom_k_number": job_file.get("k_number"),
-                "roof_area_sqft": job_file.get("roof_area_sqft"),
-                "roof_type": job_file.get("roof_type"),
-                "site_type": job_file.get("site_type"),
-                "area_suitability": job_file.get("area_suitability"),
+                "roof_area_sqft": job_file.get("custom_roof_area_sqft"),
+                "roof_type": job_file.get("custom_roof_type"),
+                "site_type": job_file.get("custom_site_type"),
+                "area_suitability": job_file.get("custom_area_suitability"),
                 "data_ycke": job_file.get("preferred_visit_date"),  # Scheduled Date
                 "data_tila": _normalize_select_value(
                     "Technical Survey",
