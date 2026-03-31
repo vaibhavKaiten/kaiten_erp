@@ -20,9 +20,18 @@ def get_remaining_ts_items(sales_order_name):
     if not sales_order_name:
         return []
 
-    technical_survey_name = frappe.db.get_value(
-        "Sales Order", sales_order_name, "custom_technical_survey"
+    so = frappe.db.get_value(
+        "Sales Order",
+        sales_order_name,
+        ["custom_technical_survey", "selling_price_list", "currency"],
+        as_dict=True,
     )
+    if not so:
+        return []
+
+    technical_survey_name = so.custom_technical_survey
+    selling_price_list = so.selling_price_list
+
     if not technical_survey_name:
         return []
 
@@ -98,6 +107,7 @@ def get_remaining_ts_items(sales_order_name):
     for item_code, meta in survey_items.items():
         remaining = meta["qty"] - delivered_map.get(item_code, 0.0)
         if remaining > 0:
+            rate = _get_item_rate(item_code, selling_price_list, meta["uom"]) if selling_price_list else 0.0
             result.append(
                 {
                     "item_code": item_code,
@@ -105,9 +115,44 @@ def get_remaining_ts_items(sales_order_name):
                     "qty": remaining,
                     "uom": meta["uom"],
                     "stock_uom": meta["uom"],
+                    "rate": rate,
+                    "price_list_rate": rate,
                 }
             )
     return result
+
+
+def _get_item_rate(item_code, price_list, uom=None):
+    """
+    Fetch rate for a BOM component item.
+    Priority:
+      1. Selling price list from SO + UOM
+      2. Selling price list from SO (any UOM)
+      3. Any Item Price for this item + UOM
+      4. Any Item Price for this item (any UOM)
+    """
+    if not item_code:
+        return 0.0
+
+    def _lookup(extra_filters):
+        return frappe.db.get_value("Item Price", {"item_code": item_code, **extra_filters}, "price_list_rate")
+
+    if price_list:
+        if uom:
+            rate = _lookup({"price_list": price_list, "uom": uom})
+            if rate:
+                return float(rate)
+        rate = _lookup({"price_list": price_list})
+        if rate:
+            return float(rate)
+
+    # Fall back: any price list, try UOM first
+    if uom:
+        rate = _lookup({"uom": uom})
+        if rate:
+            return float(rate)
+    rate = _lookup({})
+    return float(rate or 0)
 
 
 def validate(doc, method=None):
@@ -164,6 +209,9 @@ def populate_items_from_technical_survey(doc, method=None):
             indicator="red",
         )
         return
+
+    # ── 4. Fetch price list from Sales Order for rate lookup ────────────────────
+    selling_price_list = frappe.db.get_value("Sales Order", sales_order_name, "selling_price_list")
 
     # ── 4. Build survey qty map: item_code → {qty, uom, warehouse} ────────────
     _warehouse = doc.set_warehouse or None
@@ -254,12 +302,15 @@ def populate_items_from_technical_survey(doc, method=None):
         already_delivered = delivered_map.get(item_code, 0.0)
         remaining = meta["qty"] - already_delivered
         if remaining > 0:
+            rate = _get_item_rate(item_code, selling_price_list, meta["uom"])
             remaining_items.append(
                 {
                     "item_code": item_code,
                     "qty": remaining,
                     "uom": meta["uom"],
                     "warehouse": meta["warehouse"],
+                    "rate": rate,
+                    "price_list_rate": rate,
                 }
             )
 

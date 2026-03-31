@@ -111,19 +111,19 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-05 13:51:24.077978",
-  "name": "Submitted",
+  "modified": "2026-03-03 17:08:40.679520",
+  "name": "Qualified",
   "style": "",
-  "workflow_state_name": "Submitted"
+  "workflow_state_name": "Qualified"
  },
  {
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-03 17:08:40.679520",
-  "name": "Qualified",
+  "modified": "2026-03-05 13:51:24.077978",
+  "name": "Submitted",
   "style": "",
-  "workflow_state_name": "Qualified"
+  "workflow_state_name": "Submitted"
  },
  {
   "docstatus": 0,
