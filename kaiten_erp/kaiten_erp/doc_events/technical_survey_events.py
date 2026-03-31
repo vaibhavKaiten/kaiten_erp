@@ -948,6 +948,66 @@ def assign_to_vendor_heads_for_approval(doc):
         )
 
 
+def assign_to_sales_managers(doc):
+    """Create ToDos for all Sales Managers to execute the Verification Handover."""
+    sales_managers = frappe.get_all(
+        "Has Role",
+        filters={"role": "Sales Manager", "parenttype": "User"},
+        fields=["parent as user"],
+    )
+    if not sales_managers:
+        frappe.logger("kaiten_erp").warning(
+            f"No Sales Manager users found. Skipping ToDo assignment for {doc.doctype} {doc.name}"
+        )
+        return
+
+    description = _format_todo_description(doc, f"Execute {doc.doctype}")
+    created = 0
+
+    for sm in sales_managers:
+        user = sm.user
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        if frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": doc.doctype,
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "status": "Open",
+            },
+        ):
+            continue
+        try:
+            todo = frappe.get_doc(
+                {
+                    "doctype": "ToDo",
+                    "allocated_to": user,
+                    "reference_type": doc.doctype,
+                    "reference_name": doc.name,
+                    "description": description,
+                    "role": "Sales Manager",
+                    "priority": "Medium",
+                    "status": "Open",
+                }
+            )
+            todo.flags.ignore_permissions = True
+            todo.insert()
+            created += 1
+        except Exception as e:
+            frappe.log_error(
+                f"Failed to create ToDo for Sales Manager {user} on {doc.doctype} {doc.name}: {str(e)}",
+                "Verification Handover ToDo Assignment",
+            )
+
+    if created:
+        frappe.msgprint(
+            _("Assigned to {0} Sales Manager(s) for execution").format(created),
+            alert=True,
+            indicator="blue",
+        )
+
+
 def assign_to_vendor_executives_on_rejected(doc):
     """Create a ToDo for the Vendor Executive to rectify and resubmit after the doctype is Rejected."""
     users_to_assign = []
