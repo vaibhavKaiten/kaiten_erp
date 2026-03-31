@@ -20,7 +20,7 @@ from kaiten_erp.kaiten_erp.doc_events.technical_survey_events import (
     assign_to_vendor_executives_on_in_progress,
     assign_to_vendor_heads_for_approval,
     assign_to_vendor_executives_on_rejected,
-    assign_to_sales_managers,
+    assign_to_sales_managers_for_execution,
 )
 
 
@@ -31,7 +31,7 @@ def _validate_verification_handover(doc, state):
     """
     if state == "Assigned to Vendor":
         close_open_todos_by_role(doc, "Vendor Head")
-        assign_to_sales_managers(doc)
+        assign_to_sales_managers_for_execution(doc)
 
     elif state == "Completed":
         close_open_todos_by_role(doc, "Sales Manager")

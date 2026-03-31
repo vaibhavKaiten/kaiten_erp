@@ -948,8 +948,11 @@ def assign_to_vendor_heads_for_approval(doc):
         )
 
 
-def assign_to_sales_managers(doc):
-    """Create ToDos for all Sales Managers to execute the Verification Handover."""
+def assign_to_sales_managers_for_execution(doc):
+    """
+    Create ToDos for all Sales Managers to execute the Verification Handover
+    and share the document with write permission so they can edit it.
+    """
     sales_managers = frappe.get_all(
         "Has Role",
         filters={"role": "Sales Manager", "parenttype": "User"},
@@ -962,7 +965,7 @@ def assign_to_sales_managers(doc):
         return
 
     description = _format_todo_description(doc, f"Execute {doc.doctype}")
-    created = 0
+    successful = []
 
     for sm in sales_managers:
         user = sm.user
@@ -979,32 +982,37 @@ def assign_to_sales_managers(doc):
         ):
             continue
         try:
-            todo = frappe.get_doc(
+            # Share document with write permission (same as Vendor Manager flow)
+            if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
+                frappe.share.add(
+                    doc.doctype, doc.name, user=user, write=1, share=1, notify=0
+                )
+
+            assign_to.add(
                 {
-                    "doctype": "ToDo",
-                    "allocated_to": user,
-                    "reference_type": doc.doctype,
-                    "reference_name": doc.name,
+                    "assign_to": [user],
+                    "doctype": doc.doctype,
+                    "name": doc.name,
                     "description": description,
-                    "role": "Sales Manager",
                     "priority": "Medium",
-                    "status": "Open",
                 }
             )
-            todo.flags.ignore_permissions = True
-            todo.insert()
-            created += 1
+            user_full_name = frappe.db.get_value("User", user, "full_name") or user
+            successful.append(user_full_name)
+            frappe.logger("kaiten_erp").info(
+                f"{doc.doctype} {doc.name} assigned to Sales Manager: {user}"
+            )
         except Exception as e:
             frappe.log_error(
-                f"Failed to create ToDo for Sales Manager {user} on {doc.doctype} {doc.name}: {str(e)}",
+                f"Failed to assign {doc.doctype} {doc.name} to Sales Manager {user}: {str(e)}",
                 "Verification Handover ToDo Assignment",
             )
 
-    if created:
+    if successful:
         frappe.msgprint(
-            _("Assigned to {0} Sales Manager(s) for execution").format(created),
-            alert=True,
-            indicator="blue",
+            _("Assigned to: {0}").format(", ".join(successful)),
+            title=_("Assignment Successful"),
+            indicator="green",
         )
 
 
