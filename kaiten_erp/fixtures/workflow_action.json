@@ -17944,5 +17944,23 @@
   "status": "Completed",
   "user": null,
   "workflow_state": "Completed"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:11:52.164538",
+  "name": "sb1hgnqtlo",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-JOYATI-2026-00001",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
  }
 ]
