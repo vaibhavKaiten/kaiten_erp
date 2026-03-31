@@ -54,5 +54,17 @@ frappe.ui.form.on("Job File", {
             // Clear mrp if proposed_system is cleared
             frm.set_value('mrp', 0);
         }
+    },
+    k_number: function(frm) {
+        const val = frm.doc.k_number;
+        if (val && !/^\d{12,15}$/.test(val)) {
+            frappe.msgprint({
+                title: __("Invalid K Number"),
+                message: __("K Number must be 12 to 15 digits only (no spaces or letters)."),
+                indicator: "red"
+            });
+            frm.set_value("k_number", "");
+        }
     }
+
 });

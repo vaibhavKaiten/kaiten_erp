@@ -1,5 +1,23 @@
 [
  {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-30 18:35:31.452097",
+  "name": "4oi6g5a5gr",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-UNKNOWN-2026-00001",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
   "completed_by": "Administrator",
   "completed_by_role": "Sales Manager",
   "docstatus": 0,
