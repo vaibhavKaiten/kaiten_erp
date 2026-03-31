@@ -85,11 +85,59 @@ def close_open_todos_by_role(doc, role):
         )
 
 
+def _guard_approved_system_config(doc):
+    """Prevent changes to system-configuration fields once the survey is Approved.
+
+    If the workflow_state is transitioning away from Approved (e.g. to Rejected)
+    the guard is skipped so the state change itself is not blocked.
+    """
+    prev = doc.get_doc_before_save()
+    if not prev:
+        return
+    # Only enforce when the document was already Approved and stays Approved
+    if prev.workflow_state != "Approved":
+        return
+    if doc.has_value_changed("workflow_state"):
+        return  # state is moving away from Approved — allow
+
+    scalar_fields = [
+        "proposed_system_kw__tier", "bom_reference",
+        "panel", "panel_qty_bom",
+        "inverter", "inverter_qty_bom",
+        "battery", "battery_qty_bom",
+    ]
+    for field in scalar_fields:
+        if str(doc.get(field) or "") != str(prev.get(field) or ""):
+            frappe.throw(
+                _("System Configuration cannot be modified after the Technical Survey is Approved."),
+                title=_("Approved Survey Locked"),
+            )
+
+    # Check child table changes (row count or any item_code / qty change)
+    old_rows = prev.get("table_vctx") or []
+    new_rows = doc.get("table_vctx") or []
+    if len(old_rows) != len(new_rows):
+        frappe.throw(
+            _("BOM Items table cannot be modified after the Technical Survey is Approved."),
+            title=_("Approved Survey Locked"),
+        )
+    for old_row, new_row in zip(old_rows, new_rows):
+        if (old_row.item_code != new_row.item_code
+                or float(old_row.qty or 0) != float(new_row.qty or 0)):
+            frappe.throw(
+                _("BOM Items table cannot be modified after the Technical Survey is Approved."),
+                title=_("Approved Survey Locked"),
+            )
+
+
 def validate(doc, method=None):
     """
     Technical Survey validate hook.
     Creates role-targeted ToDos on workflow state change and closes the previous role's open ToDos.
+    Prevents modification of system-configuration fields once the survey is Approved.
     """
+    _guard_approved_system_config(doc)
+
     if not doc.has_value_changed("workflow_state"):
         return
 

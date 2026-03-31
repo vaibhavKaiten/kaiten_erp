@@ -1,12 +1,34 @@
 // Copyright (c) 2026, Kaiten Software and contributors
 // For license information, please see license.txt
 
+// Returns true for Commercial / Industrial site types (full item flexibility)
+function is_commercial_site_type(frm) {
+    const st = (frm.doc.site_type || '').trim();
+    return st === 'Commercial' || st === 'Industrial';
+}
+
+// Lock system-configuration fields after Technical Survey is Approved
+function lock_system_config_if_approved(frm) {
+    const is_approved = frm.doc.workflow_state === 'Approved';
+    const fields = [
+        'proposed_system_kw__tier', 'bom_reference',
+        'panel', 'panel_qty_bom',
+        'inverter', 'inverter_qty_bom',
+        'battery', 'battery_qty_bom',
+        'table_vctx'
+    ];
+    fields.forEach(function (f) {
+        frm.set_df_property(f, 'read_only', is_approved ? 1 : 0);
+    });
+}
+
 frappe.ui.form.on('Technical Survey', {
     refresh: function (frm) {
         frm.set_df_property('tilt_deg', 'read_only', 1);
         calculate_tilt_degree(frm, { show_warning: false });
         setup_custom_location_log_link_formatter(frm);
         auto_load_bom_if_missing(frm);
+        lock_system_config_if_approved(frm);
 
         // Override the assignment functionality to filter users based on assigned_vendor
         if (frm.doc.assigned_vendor && !frm.is_new()) {
@@ -153,9 +175,12 @@ frappe.ui.form.on('Technical Survey', {
                 }
             };
         });
-        
-        // Filter panel field to only show panels from the selected BOM (server-side)
+
+        // Panel dropdown: BOM-restricted for Domestic, all items by group for Commercial
         frm.set_query('panel', function() {
+            if (is_commercial_site_type(frm)) {
+                return { filters: { item_group: ['in', ['Panel', 'Panels']] } };
+            }
             const proposed = frm.doc.proposed_system_kw__tier;
             if (!proposed) return {};
             return {
@@ -167,9 +192,12 @@ frappe.ui.form.on('Technical Survey', {
                 }
             };
         });
-        
-        // Filter inverter field to only show inverters from the selected BOM (server-side)
+
+        // Inverter dropdown: BOM-restricted for Domestic, all items by group for Commercial
         frm.set_query('inverter', function() {
+            if (is_commercial_site_type(frm)) {
+                return { filters: { item_group: ['in', ['Inverter', 'Inverters']] } };
+            }
             const proposed = frm.doc.proposed_system_kw__tier;
             if (!proposed) return {};
             return {
@@ -181,9 +209,12 @@ frappe.ui.form.on('Technical Survey', {
                 }
             };
         });
-        
-        // Filter battery field to only show batteries from the selected BOM (server-side)
+
+        // Battery dropdown: BOM-restricted for Domestic, all items by group for Commercial
         frm.set_query('battery', function() {
+            if (is_commercial_site_type(frm)) {
+                return { filters: { item_group: ['in', ['Battery', 'Batteries']] } };
+            }
             const proposed = frm.doc.proposed_system_kw__tier;
             if (!proposed) return {};
             return {
@@ -215,6 +246,13 @@ frappe.ui.form.on('Technical Survey', {
     battery: function(frm) {
         // Set battery quantity when battery is selected
         set_component_quantity(frm, 'battery', 'battery_qty_bom', 'battery_candidates');
+    },
+
+    site_type: function(frm) {
+        // Re-trigger BOM load when site_type changes so queries adapt
+        if (frm.doc.proposed_system_kw__tier) {
+            fetch_bom_for_proposed_system(frm);
+        }
     },
 
     front_height_m: function(frm) {
@@ -697,6 +735,10 @@ function set_component_quantity(frm, component_field, qty_field, candidates_key)
         console.log('Setting quantity to:', selected_candidate.qty);
         frm.set_value(qty_field, selected_candidate.qty);
     } else {
-        console.log('Candidate not found in array');
+        // Commercial: item not from BOM — default qty to 1 for manual adjustment
+        if (is_commercial_site_type(frm) && !frm.doc[qty_field]) {
+            frm.set_value(qty_field, 1);
+        }
+        console.log('Candidate not found in BOM array');
     }
 }
