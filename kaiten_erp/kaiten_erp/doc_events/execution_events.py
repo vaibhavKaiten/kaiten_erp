@@ -20,7 +20,27 @@ from kaiten_erp.kaiten_erp.doc_events.technical_survey_events import (
     assign_to_vendor_executives_on_in_progress,
     assign_to_vendor_heads_for_approval,
     assign_to_vendor_executives_on_rejected,
+    assign_to_sales_managers_for_execution,
 )
+
+
+def _validate_verification_handover(doc, state):
+    """
+    Verification Handover-specific workflow ToDo logic.
+    Sales Managers execute; Vendor Heads approve.
+    """
+    if state == "Assigned to Vendor":
+        close_open_todos_by_role(doc, "Vendor Head")
+        assign_to_sales_managers_for_execution(doc)
+
+    elif state == "Completed":
+        close_open_todos_by_role(doc, "Sales Manager")
+        assign_to_vendor_heads_for_approval(doc)
+
+    elif state == "Approved":
+        close_open_todos_by_role(doc, "Vendor Head")
+
+    # In Progress / Submitted / On Hold / Rejected: Sales Managers keep their existing ToDo
 
 
 def validate(doc, method=None):
@@ -33,6 +53,11 @@ def validate(doc, method=None):
         return
 
     state = doc.workflow_state
+
+    # Verification Handover has a different role flow (Sales Manager instead of Vendor Executive)
+    if doc.doctype == "Verification Handover":
+        _validate_verification_handover(doc, state)
+        return
 
     if state == "Assigned to Vendor":
         close_open_todos_by_role(doc, "Vendor Head")
@@ -71,7 +96,8 @@ def on_update(doc, method=None):
     import frappe.share
 
     # If a specific internal user is assigned, create their ToDo + share
-    if doc.get("assigned_internal_user"):
+    # (not applicable for Verification Handover which uses Sales Manager role-based assignment)
+    if doc.doctype != "Verification Handover" and doc.get("assigned_internal_user"):
         assign_to_internal_user(doc)
 
     # Keep all ToDo-assigned users' share permissions up-to-date
