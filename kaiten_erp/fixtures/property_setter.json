@@ -4305,22 +4305,6 @@
  },
  {
   "default_value": null,
-  "doc_type": "Lead",
-  "docstatus": 0,
-  "doctype": "Property Setter",
-  "doctype_or_field": "DocType",
-  "field_name": null,
-  "is_system_generated": 0,
-  "modified": "2026-03-30 16:07:13.516890",
-  "module": null,
-  "name": "Lead-main-field_order",
-  "property": "field_order",
-  "property_type": "Data",
-  "row_name": null,
-  "value": "[\"custom_column_break_cuj4h\", \"custom_hold_rreason\", \"custom_hold_until_when\", \"custom_dropped_purpose\", \"custom_hold_reason\", \"custom_section_break_x6dew\", \"custom_dropped_reason\", \"custom_references\", \"workflow_state\", \"custom_column_break_kzh6v\", \"custom_customer_link\", \"custom_job_file\", \"custom_section_break_yzy83\", \"naming_series\", \"salutation\", \"first_name\", \"middle_name\", \"last_name\", \"column_break_1\", \"lead_name\", \"job_title\", \"gender\", \"col_break123\", \"lead_owner\", \"status\", \"customer\", \"type\", \"request_type\", \"contact_info_tab\", \"email_id\", \"website\", \"column_break_20\", \"mobile_no\", \"whatsapp_no\", \"column_break_16\", \"phone\", \"phone_ext\", \"organization_section\", \"company_name\", \"no_of_employees\", \"column_break_28\", \"annual_revenue\", \"industry\", \"column_break_31\", \"market_segment\", \"fax\", \"address_section\", \"address_html\", \"custom_address_line_1\", \"column_break_38\", \"custom_address_line_2\", \"column_break2\", \"contact_html\", \"state\", \"city\", \"country\", \"custom_section_break_4iyoq\", \"territory\", \"custom_column_break_ue8l1\", \"custom_active_sales_manager\", \"utm_analytics_section\", \"custom_pincode\", \"utm_source\", \"utm_content\", \"column_break_gkxo\", \"utm_campaign\", \"custom_landmark\", \"utm_medium\", \"qualification_tab\", \"qualification_status\", \"column_break_64\", \"qualified_by\", \"qualified_on\", \"other_info_tab\", \"company\", \"column_break_22\", \"language\", \"image\", \"title\", \"column_break_50\", \"disabled\", \"unsubscribed\", \"blog_subscriber\", \"activities_tab\", \"open_activities_html\", \"all_activities_section\", \"all_activities_html\", \"notes_tab\", \"notes_html\", \"notes\", \"dashboard_tab\"]"
- },
- {
-  "default_value": null,
   "doc_type": "Technical Survey",
   "docstatus": 0,
   "doctype": "Property Setter",
@@ -4350,5 +4334,21 @@
   "property_type": "Data",
   "row_name": null,
   "value": "[\"custom_details\", \"workflow_state\", \"custom_series\", \"custom_section_break_nucui\", \"custom_hold_reasons\", \"custom_hold_until_when\", \"custom_section_break_fmuij\", \"custom_rejected_reason\", \"tab_2_tab\", \"customer_snapshot_section\", \"first_name\", \"last_name\", \"column_break_rqqe\", \"company_name\", \"mobile_number\", \"column_break_szvl\", \"email\", \"customer_type\", \"custom_job_file_owner\", \"location_snapshot_section\", \"address_line_1\", \"column_break_foex\", \"address_line_2\", \"column_break_mfkx\", \"city\", \"state\", \"territory\", \"territory_copy\", \"electrical_snapshot_section\", \"k_number\", \"monthly_consumption\", \"custom_monthly_bill\", \"column_break_bdhq\", \"existing_load_kw\", \"required_load_kw\", \"sanctioned_load_kw\", \"column_break_pvee\", \"phase_type\", \"discom\", \"custom_site__building\", \"custom_roof_area_sqft\", \"custom_roof_type\", \"custom_column_break_f1p3t\", \"custom_site_type\", \"custom_area_suitability\", \"custom_column_break_0po3a\", \"custom_shading_remarks\", \"custom_site_visit_preferences\", \"custom_preferred_visit_days\", \"custom_preferred_time_slot\", \"custom_column_break_gvd78\", \"custom_preferred_visit_date\", \"custom_column_break_brjgk\", \"custom_remarks_for_visit\", \"custom_commercial_qualification\", \"commercial_snapshot_section\", \"proposed_system\", \"token_amount_recieved\", \"column_break_gqxp\", \"mrp\", \"negotiated_amount\", \"custom_column_break_wuuxm\", \"job_priority\", \"custom_finance_type\", \"custom_section_break_9rlgo\", \"custom_electricity_bill_photo\", \"custom_bank_passbookcheque_\", \"custom_column_break_wfpnl\", \"custom_aadhar_card\", \"custom_pan_card\", \"custom_assignment\", \"custom_assignment_territory\", \"custom_column_break_mpfic\", \"custom_assigned_technical_supplier\", \"custom_column_break_ncnyv\", \"custom_assigned_meter_supplier\", \"job_control_tab\", \"job_execution_control_section\", \"table_royw\", \"job_overview_tab\", \"job_references_section\", \"lead\", \"column_break_jvdk\", \"customer\", \"column_break_bimj\", \"sales_order\", \"custom_execution_references\", \"custom_technical_survey\", \"custom_structure_mounting\", \"custom_column_break_euqua\", \"custom_column_break_nm38d\", \"custom_project_installation\", \"custom_meter_installation\", \"custom_column_break_muqjk\", \"custom_column_break_534gk\", \"custom_meter_commissioning\", \"custom_verification_handover\"]"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Lead",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocType",
+  "field_name": null,
+  "is_system_generated": 0,
+  "modified": "2026-03-31 11:38:04.696269",
+  "module": null,
+  "name": "Lead-main-field_order",
+  "property": "field_order",
+  "property_type": "Data",
+  "row_name": null,
+  "value": "[\"custom_column_break_cuj4h\", \"custom_hold_rreason\", \"custom_hold_until_when\", \"custom_dropped_purpose\", \"custom_hold_reason\", \"custom_section_break_x6dew\", \"custom_dropped_reason\", \"custom_references\", \"workflow_state\", \"custom_column_break_kzh6v\", \"custom_customer_link\", \"custom_job_file\", \"custom_section_break_yzy83\", \"salutation\", \"first_name\", \"middle_name\", \"last_name\", \"column_break_1\", \"lead_name\", \"job_title\", \"gender\", \"col_break123\", \"lead_owner\", \"status\", \"customer\", \"type\", \"request_type\", \"contact_info_tab\", \"email_id\", \"website\", \"column_break_20\", \"mobile_no\", \"whatsapp_no\", \"column_break_16\", \"phone\", \"phone_ext\", \"organization_section\", \"company_name\", \"no_of_employees\", \"column_break_28\", \"annual_revenue\", \"industry\", \"column_break_31\", \"market_segment\", \"fax\", \"address_section\", \"address_html\", \"custom_address_line_1\", \"column_break_38\", \"custom_address_line_2\", \"column_break2\", \"contact_html\", \"state\", \"city\", \"country\", \"custom_section_break_4iyoq\", \"territory\", \"custom_column_break_ue8l1\", \"custom_active_sales_manager\", \"utm_analytics_section\", \"custom_pincode\", \"utm_source\", \"utm_content\", \"column_break_gkxo\", \"utm_campaign\", \"custom_landmark\", \"utm_medium\", \"naming_series\", \"qualification_tab\", \"qualification_status\", \"column_break_64\", \"qualified_by\", \"qualified_on\", \"other_info_tab\", \"company\", \"column_break_22\", \"language\", \"image\", \"title\", \"column_break_50\", \"disabled\", \"unsubscribed\", \"blog_subscriber\", \"activities_tab\", \"open_activities_html\", \"all_activities_section\", \"all_activities_html\", \"notes_tab\", \"notes_html\", \"notes\", \"dashboard_tab\"]"
  }
 ]
