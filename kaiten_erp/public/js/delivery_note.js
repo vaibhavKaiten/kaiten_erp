@@ -38,8 +38,8 @@ frappe.ui.form.on("Delivery Note", {
                     row.qty = item.qty;
                     row.uom = item.uom;
                     row.stock_uom = item.stock_uom || item.uom;
-                    row.conversion_factor = 1;
-                    if (frm.doc.set_warehouse) {
+                    row.conversion_factor = 1;                    row.rate = item.rate || 0;
+                    row.price_list_rate = item.price_list_rate || item.rate || 0;                    if (frm.doc.set_warehouse) {
                         row.warehouse = frm.doc.set_warehouse;
                     }
                 });
