@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
+import re
 
 
 class JobFile(Document):
@@ -20,3 +21,10 @@ class JobFile(Document):
 		
 		# Generate the name using the existing pattern but with populated first_name
 		self.name = make_autoname(f"JOB-{clean_first_name}-.YYYY.-.#####")
+	def validate(self):
+		if self.k_number:
+			if not re.fullmatch(r'\d{12,15}', self.k_number):
+				frappe.throw(
+					"K Number must be 12 to 15 digits only (no spaces or letters).",
+					title="Invalid K Number"
+				)
