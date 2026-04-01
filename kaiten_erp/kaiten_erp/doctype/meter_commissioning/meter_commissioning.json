@@ -93,7 +93,8 @@
     {
       "fieldname": "inverter_sync_status",
       "fieldtype": "Select",
-      "label": "Inverter Sync Status"
+      "label": "Inverter Sync Status",
+      "options": "Yes\nNo"
     },
     {
       "fieldname": "column_break_ofyi",
@@ -102,7 +103,8 @@
     {
       "fieldname": "grid_sync_status",
       "fieldtype": "Select",
-      "label": "Grid Sync Status"
+      "label": "Grid Sync Status",
+      "options": "Yes\nNo"
     },
 
     {
