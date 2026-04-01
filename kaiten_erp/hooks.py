@@ -152,6 +152,7 @@ doctype_js = {
     "Meter Commissioning": "public/js/meter_commissioning.js",
     "Verification Handover": "public/js/verification_handover.js",
     "Quotation": "public/js/quotation.js",
+    "Opportunity": "public/js/opportunity.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
