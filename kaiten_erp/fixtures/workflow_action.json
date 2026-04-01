@@ -4,6 +4,294 @@
   "completed_by_role": "Sales Manager",
   "docstatus": 0,
   "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:03:35.241883",
+  "name": "n4ht95aa43",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-KANU-2026-00003",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:03:46.115283",
+  "name": "nfo0320stq",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-KANU-2026-00003",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Execution Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:05:10.447491",
+  "name": "nj5vkjsool",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Kanu-651651156151515-0162",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:03:46.236603",
+  "name": "nj6grmihgd",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "Kanu-651651156151515-0163",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:03:46.359795",
+  "name": "nj7i30r6fd",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "Kanu-651651156151515-0164",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:03:46.441848",
+  "name": "nj87t7rb10",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "Kanu-651651156151515-0165",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:03:46.527108",
+  "name": "nj9ueou26h",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "Kanu-651651156151515-0166",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "ashok@gmail.com",
+  "completed_by_role": "Execution Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 18:35:35.878577",
+  "name": "njatdah6bb",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Kanu-651651156151515-0167",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:05:13.169777",
+  "name": "odgl5plhtt",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Kanu-651651156151515-0162",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:05:15.293949",
+  "name": "oebh68indl",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Kanu-651651156151515-0162",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:05:17.810266",
+  "name": "of1kd5gv7n",
+  "permitted_roles": [
+   {
+    "role": "Vendor Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Kanu-651651156151515-0162",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Execution Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 16:05:19.576506",
+  "name": "ofqkpdjhn2",
+  "permitted_roles": [
+   {
+    "role": "Execution Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Kanu-651651156151515-0162",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 18:35:35.903631",
+  "name": "ghvji68vj9",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Kanu-651651156151515-0167",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "prabhas@gmail.com",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 18:40:51.032720",
+  "name": "jjnav5geg2",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Kanu-651651156151515-0167",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "prabhas@gmail.com",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 18:40:52.886470",
+  "name": "jkebafi55v",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Kanu-651651156151515-0167",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "ashok@gmail.com",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-03-31 18:41:14.149524",
+  "name": "jl06jd3hd0",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Kanu-651651156151515-0167",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
   "modified": "2026-03-27 13:43:10.714952",
   "name": "m4hs77asdl",
   "permitted_roles": [
