@@ -2,6 +2,17 @@
  {
   "docstatus": 0,
   "doctype": "Client Script",
+  "dt": "Quotation",
+  "enabled": 0,
+  "modified": "2026-03-10 15:38:52.632052",
+  "module": "Kaiten Erp",
+  "name": "Quotation – Auto-fill Item Name and UOM",
+  "script": "frappe.ui.form.on(\"Quotation\", {\n    onload: function(frm) {\n        if (frm.is_new()) frappe.after_ajax(() => fill_missing_item_details(frm));\n    },\n    refresh: function(frm) {\n        if (frm.is_new()) setTimeout(() => fill_missing_item_details(frm), 300);\n    }\n});\n\nfunction fill_missing_item_details(frm) {\n    var needs_fill = (frm.doc.items || []).filter(row => row.item_code && (!row.item_name || !row.uom));\n    if (!needs_fill.length) return;\n    needs_fill.forEach(function(item) {\n        frm.script_manager.trigger(\"item_code\", item.doctype, item.name);\n    });\n}\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
   "dt": "Technical Survey",
   "enabled": 1,
   "modified": "2026-02-18 18:03:20.657097",
