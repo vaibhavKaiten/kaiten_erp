@@ -16,7 +16,7 @@ function prune_lead_toolbar(frm) {
 
 frappe.ui.form.on('Lead', {
     setup(frm) {
-        frm.set_query('custom_active_sales_manager', function() {
+        frm.set_query('custom_active_sales_manager', function () {
             return {
                 query: 'kaiten_erp.kaiten_erp.api.assignment_filter.get_active_sales_managers_for_territory',
                 filters: { territory: frm.doc.territory || '' }
@@ -33,11 +33,30 @@ frappe.ui.form.on('Lead', {
         if (frm.doc.custom_active_sales_manager) {
             frm.set_value('custom_active_sales_manager', '');
         }
-        frm.set_query('custom_active_sales_manager', function() {
+        frm.set_query('custom_active_sales_manager', function () {
             return {
                 query: 'kaiten_erp.kaiten_erp.api.assignment_filter.get_active_sales_managers_for_territory',
                 filters: { territory: frm.doc.territory || '' }
             };
         });
+    },
+
+    custom_pincode(frm) {
+        const pincode = (frm.doc.custom_pincode || '').trim();
+        if (!pincode || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) return;
+
+        fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data[0] && data[0].Status === 'Success') {
+                    const po = data[0].PostOffice[0];
+                    if (po.District) frm.set_value('city', po.District);
+                    if (po.State) frm.set_value('state', po.State);
+                    frm.set_value('country', 'India');
+                }
+            })
+            .catch(() => {
+                frappe.show_alert({ message: __('Could not fetch pincode details'), indicator: 'orange' });
+            });
     },
 });
