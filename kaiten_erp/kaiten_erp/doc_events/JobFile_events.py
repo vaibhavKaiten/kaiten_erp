@@ -294,7 +294,7 @@ def assign_sales_manager_owner_todo(job_file, opportunity):
     Create a ToDo for the Job File owner when the Job File is initiated.
     The ToDo is only assigned if the owner has the Sales Manager role and is enabled.
     """
-    owner = job_file.owner
+    owner = job_file.get("custom_job_file_owner") or frappe.session.user
 
     if not owner:
         return
@@ -310,9 +310,10 @@ def assign_sales_manager_owner_todo(job_file, opportunity):
     if not has_sales_manager_role:
         return
 
-    description = _(
-        "Job File {0} has been initiated. Please create the Quotation for Opportunity {1} before Technical Survey Quotation."
-    ).format(job_file.name, opportunity.name)
+    customer_name = job_file.customer or (
+        f"{job_file.first_name or ''} {job_file.last_name or ''}".strip()
+    )
+    description = _("Create quotation for {0}").format(customer_name)
 
     # Avoid duplicate open ToDos for the same user and opportunity
     existing_todo = frappe.db.exists(
