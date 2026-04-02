@@ -164,6 +164,41 @@ def _ensure_single_commercial_item(doc):
         item.qty = 1
 
 
+def on_submit(doc, method=None):
+    """Close open Sales Manager ToDos on the linked Opportunity when a Quotation is submitted.
+
+    Two open Sales Manager ToDos may exist for the Opportunity:
+    1. Created at Job File Initiated state — to create the initial quotation.
+    2. Created at Technical Survey Approved state — to create the Final Quotation.
+
+    Both are closed here when the Quotation is submitted, since submitting a Quotation
+    means the Sales Manager has completed the relevant task.
+    """
+    opportunity_name = doc.opportunity
+    if not opportunity_name:
+        return
+
+    todos = frappe.db.sql(
+        """
+        SELECT DISTINCT t.name
+        FROM `tabToDo` t
+        INNER JOIN `tabHas Role` hr ON hr.parent = t.allocated_to AND hr.parenttype = 'User'
+        WHERE t.reference_type = 'Opportunity'
+            AND t.reference_name = %(opportunity)s
+            AND t.status = 'Open'
+            AND hr.role = 'Sales Manager'
+        """,
+        {"opportunity": opportunity_name},
+        as_dict=True,
+    )
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Sales Manager ToDo(s) for Opportunity {opportunity_name} on Quotation {doc.name} submit"
+        )
+
+
 def _lock_final_approved_item_structure(doc):
     if doc.is_new() or doc.amended_from:
         return
