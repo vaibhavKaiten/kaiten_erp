@@ -148,6 +148,8 @@ def validate(doc, method=None):
         assign_to_vendor_managers(doc)
 
     elif state == "In Progress":
+        if not doc.get("data_zxjn"):
+            doc.data_zxjn = frappe.utils.today()
         close_open_todos_by_role(doc, "Vendor Manager")
         assign_to_vendor_executives_on_in_progress(doc)
 
@@ -156,6 +158,7 @@ def validate(doc, method=None):
         assign_to_vendor_managers_for_review(doc)
 
     elif state == "Completed":
+        doc.data_xwsx = frappe.utils.today()
         close_open_todos_by_role(doc, "Vendor Manager")
         assign_to_vendor_heads_for_approval(doc)
 
