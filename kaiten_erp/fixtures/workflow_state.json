@@ -93,33 +93,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-03 17:08:29.161035",
-  "name": "Draft",
-  "style": "",
-  "workflow_state_name": "Draft"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-03-05 13:56:04.620044",
-  "name": "Job File Initiated",
-  "style": "",
-  "workflow_state_name": "Job File Initiated"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-03-05 13:51:24.077978",
-  "name": "Submitted",
-  "style": "",
-  "workflow_state_name": "Submitted"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
   "modified": "2026-03-05 13:51:10.027273",
   "name": "In Progress",
   "style": "",
@@ -142,5 +115,32 @@
   "name": "Qualified",
   "style": "",
   "workflow_state_name": "Qualified"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-03 17:08:29.161035",
+  "name": "Draft",
+  "style": "",
+  "workflow_state_name": "Draft"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:51:24.077978",
+  "name": "Submitted",
+  "style": "",
+  "workflow_state_name": "Submitted"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:56:04.620044",
+  "name": "Job File Initiated",
+  "style": "",
+  "workflow_state_name": "Job File Initiated"
  }
 ]
