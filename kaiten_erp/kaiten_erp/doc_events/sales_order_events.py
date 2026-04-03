@@ -19,6 +19,16 @@ def validate(doc, method=None):
     enforce_final_approved_quotation_rule(doc)
 
 
+def on_update(doc, method=None):
+    """Sales Order on_update hook – link back to Job File."""
+    link_sales_order_to_job_file(doc)
+
+
+def on_cancel(doc, method=None):
+    """Sales Order on_cancel hook – clear link from Job File."""
+    unlink_sales_order_from_job_file(doc)
+
+
 def on_submit(doc, method=None):
     """
     Sales Order on_submit hook - Create Material Request from Technical Survey's System Configuration
@@ -418,8 +428,8 @@ def create_material_request_from_technical_survey(sales_order):
     )
 
     frappe.msgprint(
-        _("Material Request {0} created successfully from Technical Survey {1}").format(
-            material_request.name, technical_survey_name
+        _("Material Request {0} created").format(
+            material_request.name
         ),
         alert=True,
         indicator="green",
@@ -457,3 +467,33 @@ def get_default_warehouse(company=None):
         default_warehouse = frappe.db.get_value("Warehouse", filters, "name")
 
     return default_warehouse
+
+
+def link_sales_order_to_job_file(sales_order):
+    """Set the Job File's sales_order field when a Sales Order is linked to a Job File."""
+    job_file = sales_order.get("custom_job_file")
+    if not job_file:
+        return
+
+    current_so = frappe.db.get_value("Job File", job_file, "sales_order")
+    if current_so == sales_order.name:
+        return
+
+    frappe.db.set_value(
+        "Job File", job_file, "sales_order", sales_order.name, update_modified=False
+    )
+
+
+def unlink_sales_order_from_job_file(sales_order):
+    """Clear the Job File's sales_order field when a Sales Order is cancelled."""
+    job_file = sales_order.get("custom_job_file")
+    if not job_file:
+        return
+
+    current_so = frappe.db.get_value("Job File", job_file, "sales_order")
+    if current_so != sales_order.name:
+        return
+
+    frappe.db.set_value(
+        "Job File", job_file, "sales_order", None, update_modified=False
+    )

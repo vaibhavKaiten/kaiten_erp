@@ -272,12 +272,16 @@ doc_events = {
     },
     "Sales Order": {
         "validate": "kaiten_erp.kaiten_erp.doc_events.sales_order_events.validate",
+        "on_update": "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_update",
         "on_submit": [
             "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_submit",
             "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_submit",
             
         ],
-        "on_cancel": "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_cancel",
+        "on_cancel": [
+            "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_cancel",
+            "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_cancel",
+        ],
     },
     "Quotation": {
         "validate": "kaiten_erp.kaiten_erp.doc_events.quotation_events.validate",
