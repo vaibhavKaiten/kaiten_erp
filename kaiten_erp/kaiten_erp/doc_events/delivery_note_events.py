@@ -86,6 +86,9 @@ def get_remaining_ts_items(sales_order_name):
     if not survey_items:
         return []
 
+    # Get valuation rates from Bin (stock reconciliation)
+    valuation_rate_map = _get_valuation_rate_map(list(survey_items.keys()))
+
     delivered_rows = frappe.db.sql(
         """
         SELECT dni.item_code, SUM(dni.qty) AS delivered_qty
@@ -107,7 +110,7 @@ def get_remaining_ts_items(sales_order_name):
     for item_code, meta in survey_items.items():
         remaining = meta["qty"] - delivered_map.get(item_code, 0.0)
         if remaining > 0:
-            rate = _get_item_rate(item_code, selling_price_list, meta["uom"]) if selling_price_list else 0.0
+            rate = valuation_rate_map.get(item_code, 0.0)
             result.append(
                 {
                     "item_code": item_code,
@@ -122,37 +125,24 @@ def get_remaining_ts_items(sales_order_name):
     return result
 
 
-def _get_item_rate(item_code, price_list, uom=None):
+def _get_valuation_rate_map(item_codes):
     """
-    Fetch rate for a BOM component item.
-    Priority:
-      1. Selling price list from SO + UOM
-      2. Selling price list from SO (any UOM)
-      3. Any Item Price for this item + UOM
-      4. Any Item Price for this item (any UOM)
+    Return {item_code: valuation_rate} from tabBin (stock reconciliation rates).
+    Takes the MAX non-zero valuation_rate across all warehouses per item.
+    Falls back to 0 if no stock entry exists.
     """
-    if not item_code:
-        return 0.0
-
-    def _lookup(extra_filters):
-        return frappe.db.get_value("Item Price", {"item_code": item_code, **extra_filters}, "price_list_rate")
-
-    if price_list:
-        if uom:
-            rate = _lookup({"price_list": price_list, "uom": uom})
-            if rate:
-                return float(rate)
-        rate = _lookup({"price_list": price_list})
-        if rate:
-            return float(rate)
-
-    # Fall back: any price list, try UOM first
-    if uom:
-        rate = _lookup({"uom": uom})
-        if rate:
-            return float(rate)
-    rate = _lookup({})
-    return float(rate or 0)
+    if not item_codes:
+        return {}
+    placeholders = ", ".join(["%s"] * len(item_codes))
+    rows = frappe.db.sql(
+        f"""SELECT item_code, MAX(valuation_rate) AS valuation_rate
+            FROM `tabBin`
+            WHERE item_code IN ({placeholders}) AND valuation_rate > 0
+            GROUP BY item_code""",
+        item_codes,
+        as_dict=True,
+    )
+    return {r.item_code: float(r.valuation_rate or 0) for r in rows}
 
 
 def validate(doc, method=None):
@@ -210,10 +200,11 @@ def populate_items_from_technical_survey(doc, method=None):
         )
         return
 
-    # ── 4. Fetch price list from Sales Order for rate lookup ────────────────────
-    selling_price_list = frappe.db.get_value("Sales Order", sales_order_name, "selling_price_list")
+    # ── 4. Build valuation rate map from tabBin (stock reconciliation) ─────────
+    # Collect item codes first; we'll build the map after survey_items is built.
+    # Done after step 5 below.
 
-    # ── 4. Build survey qty map: item_code → {qty, uom, warehouse} ────────────
+    # ── 5. Build survey qty map: item_code → {qty, uom, warehouse} ───────────
     _warehouse = doc.set_warehouse or None
     survey_items = {}  # { item_code: {qty, uom, warehouse} }
 
@@ -276,7 +267,10 @@ def populate_items_from_technical_survey(doc, method=None):
         )
         return
 
-    # ── 5. Build delivered qty map from submitted DNs ─────────────────────────
+    # ── 6. Build valuation rate map from Bin for all items ───────────────────
+    valuation_rate_map = _get_valuation_rate_map(list(survey_items.keys()))
+
+    # ── 7. Build delivered qty map from submitted DNs ─────────────────────────
     # Match by against_sales_order on item rows OR by against_sales_order
     # on the DN header.
     delivered_rows = frappe.db.sql(
@@ -296,13 +290,13 @@ def populate_items_from_technical_survey(doc, method=None):
     )
     delivered_map = {row.item_code: float(row.delivered_qty or 0) for row in delivered_rows}
 
-    # ── 6. Compute remaining qty and build filtered list ──────────────────────
+    # ── 8. Compute remaining qty and build filtered list ─────────────────────
     remaining_items = []
     for item_code, meta in survey_items.items():
         already_delivered = delivered_map.get(item_code, 0.0)
         remaining = meta["qty"] - already_delivered
         if remaining > 0:
-            rate = _get_item_rate(item_code, selling_price_list, meta["uom"])
+            rate = valuation_rate_map.get(item_code, 0.0)
             remaining_items.append(
                 {
                     "item_code": item_code,
