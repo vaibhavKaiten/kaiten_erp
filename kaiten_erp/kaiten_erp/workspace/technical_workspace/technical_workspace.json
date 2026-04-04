@@ -1,97 +1,97 @@
 {
- "app": "kaiten_erp",
- "content": "[{\"id\": \"tw_header_1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Technical Workspace</b></span>\", \"col\": 12}}, {\"id\": \"tw_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Technical Survey\", \"col\": 4}}, {\"id\": \"tw_shortcut_2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Structure Mounting\", \"col\": 4}}, {\"id\": \"tw_shortcut_3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Project Installation\", \"col\": 4}}, {\"id\": \"tw_shortcut_4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Verification Handover\", \"col\": 4}}]",
- "doctype": "Workspace",
- "for_user": "",
- "icon": "tool",
- "is_hidden": 0,
- "label": "Technical Workspace",
- "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Technical Survey",
-   "link_count": 0,
-   "link_to": "Technical Survey",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Structure Mounting",
-   "link_count": 0,
-   "link_to": "Structure Mounting",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project Installation",
-   "link_count": 0,
-   "link_to": "Project Installation",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Verification Handover",
-   "link_count": 0,
-   "link_to": "Verification Handover",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  }
- ],
- "module": "Kaiten Erp",
- "name": "Technical Workspace",
- "parent_page": "",
- "public": 1,
- "restrict_to_domain": "",
- "roles": [
-  {
-   "role": "Vendor Manager"
-  },
-  {
-   "role": "Vendor Head"
-  }
- ],
- "sequence_id": 24.0,
- "shortcuts": [
-  {
-   "color": "#4bce97",
-   "doc_view": "List",
-   "label": "Technical Survey",
-   "link_to": "Technical Survey",
-   "type": "DocType"
-  },
-  {
-   "color": "#4bce97",
-   "doc_view": "List",
-   "label": "Structure Mounting",
-   "link_to": "Structure Mounting",
-   "type": "DocType"
-  },
-  {
-   "color": "#4bce97",
-   "doc_view": "List",
-   "label": "Project Installation",
-   "link_to": "Project Installation",
-   "type": "DocType"
-  },
-  {
-   "color": "#4bce97",
-   "doc_view": "List",
-   "label": "Verification Handover",
-   "link_to": "Verification Handover",
-   "type": "DocType"
-  }
- ],
- "title": "Technical Workspace",
- "type": "Workspace"
+    "app": "kaiten_erp",
+    "content": "[{\"id\": \"tw_header_1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Technical Workspace</b></span>\", \"col\": 12}}, {\"id\": \"tw_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Technical Survey\", \"col\": 4}}, {\"id\": \"tw_shortcut_2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Structure Mounting\", \"col\": 4}}, {\"id\": \"tw_shortcut_3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Project Installation\", \"col\": 4}}, {\"id\": \"tw_shortcut_4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Verification Handover\", \"col\": 4}}]",
+    "doctype": "Workspace",
+    "for_user": "",
+    "icon": "tool",
+    "is_hidden": 0,
+    "label": "Technical Workspace",
+    "links": [
+        {
+            "hidden": 0,
+            "is_query_report": 0,
+            "label": "Technical Survey",
+            "link_count": 0,
+            "link_to": "Technical Survey",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "is_query_report": 0,
+            "label": "Structure Mounting",
+            "link_count": 0,
+            "link_to": "Structure Mounting",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "is_query_report": 0,
+            "label": "Project Installation",
+            "link_count": 0,
+            "link_to": "Project Installation",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "is_query_report": 0,
+            "label": "Verification Handover",
+            "link_count": 0,
+            "link_to": "Verification Handover",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        }
+    ],
+    "module": "Kaiten Erp",
+    "name": "Technical Workspace",
+    "parent_page": "",
+    "public": 1,
+    "restrict_to_domain": "",
+    "roles": [
+        {
+            "role": "Vendor Manager"
+        },
+        {
+            "role": "Vendor Head"
+        }
+    ],
+    "sequence_id": 24.0,
+    "shortcuts": [
+        {
+            "color": "#4bce97",
+            "doc_view": "List",
+            "label": "Technical Survey",
+            "link_to": "Technical Survey",
+            "type": "DocType"
+        },
+        {
+            "color": "#4bce97",
+            "doc_view": "List",
+            "label": "Structure Mounting",
+            "link_to": "Structure Mounting",
+            "type": "DocType"
+        },
+        {
+            "color": "#4bce97",
+            "doc_view": "List",
+            "label": "Project Installation",
+            "link_to": "Project Installation",
+            "type": "DocType"
+        },
+        {
+            "color": "#4bce97",
+            "doc_view": "List",
+            "label": "Verification Handover",
+            "link_to": "Verification Handover",
+            "type": "DocType"
+        }
+    ],
+    "title": "Technical Workspace",
+    "type": "Workspace"
 }
