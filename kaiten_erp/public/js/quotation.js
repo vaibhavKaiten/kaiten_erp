@@ -9,6 +9,27 @@ frappe.ui.form.on('Quotation', {
         frm.trigger('apply_stage_ui');
         frm.trigger('set_technical_survey_query');
         frm.trigger('fetch_opportunity_details');
+
+        // Follow-up reschedule button (submitted, not Ordered/Lost)
+        if (frm.doc.docstatus === 1 && !['Ordered', 'Lost'].includes(frm.doc.status)) {
+            frm.add_custom_button(__('Reschedule Follow-up'), function () {
+                frappe.prompt(
+                    {
+                        label: __('New Follow-up Date'),
+                        fieldname: 'new_date',
+                        fieldtype: 'Date',
+                        reqd: 1,
+                        default: frm.doc.custom_next_followup_date || frappe.datetime.add_days(frappe.datetime.nowdate(), 4),
+                    },
+                    function (values) {
+                        frm.set_value('custom_next_followup_date', values.new_date);
+                        frm.save();
+                    },
+                    __('Reschedule Follow-up'),
+                    __('Update')
+                );
+            }, __('Actions'));
+        }
     },
 
     opportunity: function (frm) {

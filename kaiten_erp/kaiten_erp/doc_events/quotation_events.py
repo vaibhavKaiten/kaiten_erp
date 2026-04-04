@@ -3,16 +3,119 @@
 
 import frappe
 from frappe import _
+from frappe.utils import add_days, nowdate
 
+
+# ---------------------------------------------------------------------------
+# Doc event hooks
+# ---------------------------------------------------------------------------
 
 def validate(doc, method=None):
     _sync_links_from_opportunity(doc)
     _fill_item_name_and_uom(doc)
+    _set_default_followup_date(doc)
 
     if doc.get("custom_quotation_stage") == "Final Approved":
         _validate_final_approved_requirements(doc)
         _ensure_single_commercial_item(doc)
         _lock_final_approved_item_structure(doc)
+
+
+def on_submit(doc, method=None):
+    """Create a follow-up ToDo when a Quotation is submitted."""
+    if doc.status in ("Ordered", "Lost"):
+        return
+    if not doc.get("custom_next_followup_date"):
+        return
+    _create_followup_todo(doc)
+
+
+def on_update_after_submit(doc, method=None):
+    """
+    Handles two post-submit changes:
+    1. Next Follow-up Date changed → reschedule ToDo.
+    2. Status changed to Lost → close all open Quotation ToDos.
+    """
+    before = doc.get_doc_before_save()
+    if not before:
+        return
+
+    status_changed_to_lost = (
+        before.get("status") != "Lost" and doc.status == "Lost"
+    )
+    if status_changed_to_lost:
+        close_quotation_todos(doc.name)
+        return
+
+    if doc.status in ("Ordered", "Lost"):
+        return
+
+    prev_date = str(before.get("custom_next_followup_date") or "")
+    curr_date = str(doc.get("custom_next_followup_date") or "")
+    if curr_date and curr_date != prev_date:
+        _reschedule_followup(doc)
+
+
+# ---------------------------------------------------------------------------
+# Follow-up helpers
+# ---------------------------------------------------------------------------
+
+def _set_default_followup_date(doc):
+    """Default Next Follow-up Date to today + 4 days for new Quotations."""
+    if doc.is_new() and not doc.get("custom_next_followup_date"):
+        doc.custom_next_followup_date = add_days(nowdate(), 4)
+
+
+def _create_followup_todo(doc):
+    """Create an Open ToDo for the Quotation's salesperson."""
+    customer = doc.get("customer_name") or doc.get("party_name") or doc.get("title") or doc.name
+    grand_total = doc.get("grand_total") or 0
+    description = (
+        f"Follow-up: {customer} | {doc.name} | ₹{grand_total:,.0f}"
+    )
+    todo = frappe.get_doc({
+        "doctype": "ToDo",
+        "allocated_to": doc.owner,
+        "reference_type": "Quotation",
+        "reference_name": doc.name,
+        "description": description,
+        "date": doc.custom_next_followup_date,
+        "status": "Open",
+    })
+    todo.flags.ignore_permissions = True
+    todo.insert()
+
+
+def _reschedule_followup(doc):
+    """Close existing open ToDos, create a new one, update tracking fields."""
+    close_quotation_todos(doc.name)
+    _create_followup_todo(doc)
+
+    current_count = frappe.db.get_value("Quotation", doc.name, "custom_followup_count") or 0
+    frappe.db.set_value(
+        "Quotation",
+        doc.name,
+        {
+            "custom_last_followup_date": nowdate(),
+            "custom_followup_count": int(current_count) + 1,
+        },
+        update_modified=False,
+    )
+
+
+def close_quotation_todos(quotation_name):
+    """Close all Open ToDos linked to a given Quotation."""
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Quotation",
+            "reference_name": quotation_name,
+            "status": "Open",
+        },
+        fields=["name"],
+    )
+    for todo in todos:
+        frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
 
 
 def _fill_item_name_and_uom(doc):

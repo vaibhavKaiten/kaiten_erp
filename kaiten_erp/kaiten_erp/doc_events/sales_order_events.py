@@ -7,6 +7,7 @@ Sales Order event handlers for Technical Survey integration
 
 import frappe
 from frappe import _
+from kaiten_erp.kaiten_erp.doc_events.quotation_events import close_quotation_todos
 
 
 def validate(doc, method=None):
@@ -35,6 +36,13 @@ def on_submit(doc, method=None):
     Called after Sales Order is submitted
     """
     create_material_request_from_technical_survey(doc)
+    _close_source_quotation_todos(doc)
+
+
+def _close_source_quotation_todos(sales_order):
+    """Close open follow-up ToDos for all Quotations that sourced this Sales Order."""
+    for quotation_name in get_source_quotation_names(sales_order):
+        close_quotation_todos(quotation_name)
 
 
 def link_technical_survey_to_sales_order(sales_order):
