@@ -109,6 +109,78 @@ def get_vendor_executive_details(vendor):
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
+def get_sales_managers_for_assignment(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Custom query for the assigned_internal_user Link field on Verification Handover.
+
+    Same territory logic as custom_active_sales_manager on Lead:
+      Sales Person → custom_active_territory child table (territory + status = Active)
+
+    Links Sales Person to User via two paths (whichever matches):
+      1. Sales Person.employee → Employee.user_id = User.name
+      2. Sales Person.sales_person_name = User.full_name (fallback)
+
+    Returns enabled Users who:
+      - Have the 'Sales Manager' role
+      - Are linked to a Sales Person with the given territory Active
+
+    Falls back to all Sales Managers if no territory is provided.
+    """
+    territory = (filters or {}).get("territory")
+
+    if territory:
+        return frappe.db.sql(
+            """
+            SELECT DISTINCT u.name, u.full_name
+            FROM `tabUser` u
+            INNER JOIN `tabHas Role` hr
+                ON hr.parent = u.name AND hr.parenttype = 'User'
+            INNER JOIN `tabSales Person` sp
+                ON (
+                    (sp.employee IS NOT NULL AND sp.employee != ''
+                     AND EXISTS (
+                         SELECT 1 FROM `tabEmployee` e
+                         WHERE e.name = sp.employee AND e.user_id = u.name
+                     ))
+                    OR sp.sales_person_name = u.full_name
+                )
+            INNER JOIN `tabSales Person Territory Child Table` sptct
+                ON  sptct.parent     = sp.name
+                AND sptct.parenttype = 'Sales Person'
+                AND sptct.territory  = %(territory)s
+                AND sptct.status     = 'Active'
+            WHERE hr.role = 'Sales Manager'
+              AND u.enabled = 1
+              AND u.name NOT IN ('Administrator', 'Guest')
+              AND u.user_type = 'System User'
+              AND (u.name LIKE %(txt)s OR u.full_name LIKE %(txt)s)
+            ORDER BY u.full_name ASC
+            LIMIT %(start)s, %(page_len)s
+            """,
+            {"territory": territory, "txt": f"%{txt}%", "start": start, "page_len": page_len},
+        )
+
+    # Fallback: no territory — return all Sales Managers
+    return frappe.db.sql(
+        """
+        SELECT DISTINCT u.name, u.full_name
+        FROM `tabUser` u
+        INNER JOIN `tabHas Role` hr
+            ON hr.parent = u.name AND hr.parenttype = 'User'
+        WHERE hr.role = 'Sales Manager'
+          AND u.enabled = 1
+          AND u.name NOT IN ('Administrator', 'Guest')
+          AND u.user_type = 'System User'
+          AND (u.name LIKE %(txt)s OR u.full_name LIKE %(txt)s)
+        ORDER BY u.full_name ASC
+        LIMIT %(start)s, %(page_len)s
+        """,
+        {"txt": f"%{txt}%", "start": start, "page_len": page_len},
+    )
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
 def get_active_sales_managers_for_territory(doctype, txt, searchfield, start, page_len, filters):
     """
     Custom query for the custom_active_sales_manager Link field on Lead.

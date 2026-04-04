@@ -2,14 +2,45 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Verification Handover', {
+    setup: function (frm) {
+        // Filter assigned_internal_user: Sales Managers with active territory from Lead
+        frm.set_query('assigned_internal_user', function () {
+            return {
+                query: 'kaiten_erp.kaiten_erp.api.assignment_filter.get_sales_managers_for_assignment',
+                filters: {
+                    'territory': frm.doc.__territory || ''
+                }
+            };
+        });
+    },
+
     refresh: function (frm) {
         setup_custom_location_log_link_formatter_verification_handover(frm);
+        // Resolve territory from Job File → Lead chain for assigned_internal_user filter
+        resolve_territory_for_vh(frm);
     },
 
     before_workflow_action: async function(frm) {
         await capture_workflow_gps_verification_handover(frm);
     }
 });
+
+function resolve_territory_for_vh(frm) {
+    frm.doc.__territory = '';
+    const job_file = frm.doc.custom_job_file || frm.doc.job_file;
+    if (!job_file) return;
+
+    frappe.db.get_value('Job File', job_file, 'lead').then(r => {
+        const lead = r && r.message && r.message.lead;
+        if (!lead) return;
+        frappe.db.get_value('Lead', lead, 'territory').then(r2 => {
+            const territory = r2 && r2.message && r2.message.territory;
+            if (territory) {
+                frm.doc.__territory = territory;
+            }
+        });
+    });
+}
 
 function setup_custom_location_log_link_formatter_verification_handover(frm) {
     const table_field_name = (frm.fields_dict && frm.fields_dict.custom_location_log)
