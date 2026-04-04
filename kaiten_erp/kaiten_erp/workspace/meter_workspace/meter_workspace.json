@@ -1,0 +1,63 @@
+{
+ "app": "kaiten_erp",
+ "content": "[{\"id\": \"mw_header_1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Meter Workspace</b></span>\", \"col\": 12}}, {\"id\": \"mw_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Meter Installation\", \"col\": 4}}, {\"id\": \"mw_shortcut_2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Meter Commissioning\", \"col\": 4}}]",
+ "doctype": "Workspace",
+ "for_user": "",
+ "icon": "dashboard",
+ "is_hidden": 0,
+ "label": "Meter Workspace",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Meter Installation",
+   "link_count": 0,
+   "link_to": "Meter Installation",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Meter Commissioning",
+   "link_count": 0,
+   "link_to": "Meter Commissioning",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  }
+ ],
+ "module": "Kaiten Erp",
+ "name": "Meter Workspace",
+ "parent_page": "",
+ "public": 1,
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "Vendor Manager"
+  },
+  {
+   "role": "Vendor Head"
+  }
+ ],
+ "sequence_id": 25.0,
+ "shortcuts": [
+  {
+   "color": "#f5cd47",
+   "doc_view": "List",
+   "label": "Meter Installation",
+   "link_to": "Meter Installation",
+   "type": "DocType"
+  },
+  {
+   "color": "#f5cd47",
+   "doc_view": "List",
+   "label": "Meter Commissioning",
+   "link_to": "Meter Commissioning",
+   "type": "DocType"
+  }
+ ],
+ "title": "Meter Workspace",
+ "type": "Workspace"
+}
