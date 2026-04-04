@@ -955,11 +955,19 @@ def assign_to_sales_managers_for_execution(doc):
     """
     Create ToDos for all Sales Managers to execute the Verification Handover
     and share the document with write permission so they can edit it.
+    Only assigns to enabled, non-system users who have the Sales Manager role.
     """
-    sales_managers = frappe.get_all(
-        "Has Role",
-        filters={"role": "Sales Manager", "parenttype": "User"},
-        fields=["parent as user"],
+    sales_managers = frappe.db.sql(
+        """
+        SELECT DISTINCT u.name AS user
+        FROM `tabUser` u
+        INNER JOIN `tabHas Role` hr ON hr.parent = u.name AND hr.parenttype = 'User'
+        WHERE hr.role = 'Sales Manager'
+          AND u.enabled = 1
+          AND u.name NOT IN ('Administrator', 'Guest')
+          AND u.user_type = 'System User'
+        """,
+        as_dict=True,
     )
     if not sales_managers:
         frappe.logger("kaiten_erp").warning(
@@ -972,8 +980,6 @@ def assign_to_sales_managers_for_execution(doc):
 
     for sm in sales_managers:
         user = sm.user
-        if not frappe.db.get_value("User", user, "enabled"):
-            continue
         if frappe.db.exists(
             "ToDo",
             {
