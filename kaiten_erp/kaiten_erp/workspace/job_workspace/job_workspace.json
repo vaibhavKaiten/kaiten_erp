@@ -1,0 +1,52 @@
+{
+    "app": "kaiten_erp",
+    "content": "[{\"id\": \"jw_header_1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Job Workspace</b></span>\", \"col\": 12}}, {\"id\": \"jw_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Job File\", \"col\": 4}}]",
+    "doctype": "Workspace",
+    "for_user": "",
+    "icon": "files",
+    "is_hidden": 0,
+    "label": "Job Workspace",
+    "links": [
+        {
+            "hidden": 0,
+            "is_query_report": 0,
+            "label": "Job File",
+            "link_count": 0,
+            "link_to": "Job File",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        }
+    ],
+    "module": "Kaiten Erp",
+    "name": "Job Workspace",
+    "parent_page": "",
+    "public": 1,
+    "restrict_to_domain": "",
+    "roles": [
+        {
+            "role": "System Manager"
+        },
+        {
+            "role": "Execution Manager"
+        },
+        {
+            "role": "Accounts Manager"
+        },
+        {
+            "role": "Sales Executive"
+        }
+    ],
+    "sequence_id": 26.0,
+    "shortcuts": [
+        {
+            "color": "#4bce97",
+            "doc_view": "List",
+            "label": "Job File",
+            "link_to": "Job File",
+            "type": "DocType"
+        }
+    ],
+    "title": "Job Workspace",
+    "type": "Workspace"
+}
