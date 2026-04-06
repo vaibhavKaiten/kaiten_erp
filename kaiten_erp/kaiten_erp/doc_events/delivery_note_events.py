@@ -150,7 +150,33 @@ def validate(doc, method=None):
 
 
 def on_submit(doc, method=None):
-    pass
+    """Close Stock Manager todos when Delivery Note is submitted."""
+    _close_delivery_note_todos(doc)
+
+
+def _close_delivery_note_todos(doc):
+    sales_orders = set()
+    for item in doc.get("items") or []:
+        if item.get("against_sales_order"):
+            sales_orders.add(item.against_sales_order)
+
+    if not sales_orders:
+        return
+
+    for so in sales_orders:
+        todos = frappe.db.get_all(
+            "ToDo",
+            filters={
+                "reference_type": "Delivery Note",
+                "status": "Open",
+                "description": ["like", f"%| SO: {so}%"],
+            },
+            fields=["name"],
+        )
+        for todo in todos:
+            frappe.db.set_value(
+                "ToDo", todo.name, "status", "Closed", update_modified=False
+            )
 
 
 def populate_items_from_technical_survey(doc, method=None):

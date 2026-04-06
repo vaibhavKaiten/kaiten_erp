@@ -26,3 +26,7 @@ kaiten_erp.patches.rename_handover_label_and_unhide_meter_tab
 kaiten_erp.patches.update_workflow_roles
 kaiten_erp.patches.add_meter_commissioning_sync_options
 kaiten_erp.patches.rename_self_funding_to_self_finance
+kaiten_erp.patches.add_execution_workspaces
+kaiten_erp.patches.add_job_file_desk_icon
+kaiten_erp.patches.create_payment_milestone_todos
+kaiten_erp.patches.create_payment_milestone_todos
