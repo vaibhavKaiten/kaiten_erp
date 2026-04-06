@@ -37,12 +37,251 @@ def on_submit(doc, method=None):
     """
     create_material_request_from_technical_survey(doc)
     _close_source_quotation_todos(doc)
+    _create_payment_milestone_todos(doc)
+
+
+def on_update_after_submit(doc, method=None):
+    """Handle Payment Milestone changes after Sales Order is submitted."""
+    _sync_payment_milestone_todos(doc)
 
 
 def _close_source_quotation_todos(sales_order):
     """Close open follow-up ToDos for all Quotations that sourced this Sales Order."""
     for quotation_name in get_source_quotation_names(sales_order):
         close_quotation_todos(quotation_name)
+
+
+# ---------------------------------------------------------------------------
+# Payment Milestone ToDo helpers
+# ---------------------------------------------------------------------------
+
+def _get_accounts_manager_users():
+    """Return list of enabled Accounts Manager user emails."""
+    rows = frappe.db.sql(
+        """
+        SELECT DISTINCT u.name
+        FROM `tabUser` u
+        INNER JOIN `tabHas Role` hr ON hr.parent = u.name AND hr.parenttype = 'User'
+        WHERE hr.role = 'Accounts Manager'
+          AND u.enabled = 1
+          AND u.name NOT IN ('Administrator', 'Guest')
+        """,
+        as_dict=True,
+    )
+    return [r.name for r in rows]
+
+
+def _milestone_todo_description(sales_order_name, milestone_label, amount, customer_name, k_number):
+    """Build a standardised ToDo description for a Payment Milestone."""
+    k_part = f" ({k_number})" if k_number else ""
+    amt_fmt = frappe.utils.fmt_money(amount, currency="INR")
+    return (
+        f"Create Sales Invoice & Payment Entry"
+        f" - {milestone_label} {amt_fmt}"
+        f" - {customer_name}{k_part}"
+        f" | {sales_order_name}"
+    )
+
+
+def _get_so_customer_info(sales_order_doc):
+    """Return (customer_name, k_number) for a submitted Sales Order document."""
+    customer_name = (
+        sales_order_doc.get("customer_name")
+        or frappe.db.get_value("Customer", sales_order_doc.customer, "customer_name")
+        or sales_order_doc.customer
+        or ""
+    )
+    k_number = ""
+    job_file = sales_order_doc.get("custom_job_file")
+    if job_file:
+        k_number = frappe.db.get_value("Job File", job_file, "k_number") or ""
+    return customer_name, k_number
+
+
+def _open_milestone_todos(sales_order_name, milestone_label):
+    """Return Open Accounts Manager ToDos for a specific milestone on this SO."""
+    return frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Sales Order",
+            "reference_name": sales_order_name,
+            "role": "Accounts Manager",
+            "status": "Open",
+            "description": ["like", f"% - {milestone_label} %"],
+        },
+        fields=["name", "description"],
+    )
+
+
+def _close_milestone_todos(sales_order_name, milestone_label):
+    """Close all Open Accounts Manager ToDos for a milestone on this SO."""
+    todos = _open_milestone_todos(sales_order_name, milestone_label)
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+
+def _create_payment_milestone_todos(doc):
+    """Create Accounts Manager ToDos for all unpaid milestones with amount > 0 on submit."""
+    milestones = doc.get("custom_payment_plan") or []
+    if not milestones:
+        return
+
+    managers = _get_accounts_manager_users()
+    if not managers:
+        return
+
+    customer_name, k_number = _get_so_customer_info(doc)
+
+    for row in milestones:
+        amount = float(row.amount or 0)
+        status = (row.status or "Pending")
+        if amount <= 0 or status == "Paid":
+            continue
+
+        description = _milestone_todo_description(
+            doc.name, row.milestone, amount, customer_name, k_number
+        )
+
+        for user in managers:
+            # Deduplication: skip if an open todo for this milestone already exists
+            existing = frappe.db.exists(
+                "ToDo",
+                {
+                    "reference_type": "Sales Order",
+                    "reference_name": doc.name,
+                    "allocated_to": user,
+                    "role": "Accounts Manager",
+                    "status": "Open",
+                    "description": ["like", f"% - {row.milestone} %"],
+                },
+            )
+            if existing:
+                continue
+
+            frappe.get_doc({
+                "doctype": "ToDo",
+                "allocated_to": user,
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "description": description,
+                "role": "Accounts Manager",
+                "priority": "Medium",
+                "status": "Open",
+            }).insert(ignore_permissions=True)
+
+
+def _sync_payment_milestone_todos(doc):
+    """
+    Called on_update_after_submit. Syncs open Accounts Manager ToDos with the
+    current state of each Payment Milestone row.
+
+    Rules per row:
+    - status == 'Paid'              → close all open todos for that milestone
+    - amount == 0 AND no invoice/PE → close all open todos for that milestone
+    - amount > 0 AND status != 'Paid':
+        - if existing open todo has a different amount in description → close + create new
+        - if no existing todo at all → create new
+        - if existing todo with same amount → do nothing
+
+    After processing all current rows, close todos for milestone names that no longer
+    exist in the table (deleted rows).
+    """
+    managers = _get_accounts_manager_users()
+    if not managers:
+        return
+
+    customer_name, k_number = _get_so_customer_info(doc)
+    current_milestones = {row.milestone for row in (doc.get("custom_payment_plan") or [])}
+
+    # ── Handle each current row ──────────────────────────────────────────────
+    for row in (doc.get("custom_payment_plan") or []):
+        amount = float(row.amount or 0)
+        status = row.status or "Pending"
+        has_linked_doc = bool(row.get("invoice") or row.get("payment_entry"))
+
+        # 1. Status is Paid → close todos
+        if status == "Paid":
+            _close_milestone_todos(doc.name, row.milestone)
+            continue
+
+        # 2. Amount dropped to 0 with no linked invoice/PE → close todos
+        if amount <= 0 and not has_linked_doc:
+            _close_milestone_todos(doc.name, row.milestone)
+            continue
+
+        # 3. Amount > 0 and status != 'Paid' → ensure todo is current
+        if amount > 0:
+            new_description = _milestone_todo_description(
+                doc.name, row.milestone, amount, customer_name, k_number
+            )
+
+            existing_todos = _open_milestone_todos(doc.name, row.milestone)
+
+            if existing_todos:
+                # Check if description (amount) has changed
+                current_desc = existing_todos[0].get("description", "")
+                if current_desc != new_description:
+                    # Amount changed — close old, create new
+                    _close_milestone_todos(doc.name, row.milestone)
+                    for user in managers:
+                        frappe.get_doc({
+                            "doctype": "ToDo",
+                            "allocated_to": user,
+                            "reference_type": "Sales Order",
+                            "reference_name": doc.name,
+                            "description": new_description,
+                            "role": "Accounts Manager",
+                            "priority": "Medium",
+                            "status": "Open",
+                        }).insert(ignore_permissions=True)
+                # else: same description — nothing to do
+            else:
+                # No open todo yet — create one
+                for user in managers:
+                    existing = frappe.db.exists(
+                        "ToDo",
+                        {
+                            "reference_type": "Sales Order",
+                            "reference_name": doc.name,
+                            "allocated_to": user,
+                            "role": "Accounts Manager",
+                            "status": "Open",
+                            "description": ["like", f"% - {row.milestone} %"],
+                        },
+                    )
+                    if existing:
+                        continue
+                    frappe.get_doc({
+                        "doctype": "ToDo",
+                        "allocated_to": user,
+                        "reference_type": "Sales Order",
+                        "reference_name": doc.name,
+                        "description": new_description,
+                        "role": "Accounts Manager",
+                        "priority": "Medium",
+                        "status": "Open",
+                    }).insert(ignore_permissions=True)
+
+    # ── Close orphaned todos for deleted rows ────────────────────────────────
+    all_open_todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Sales Order",
+            "reference_name": doc.name,
+            "role": "Accounts Manager",
+            "status": "Open",
+        },
+        fields=["name", "description"],
+    )
+    milestone_options = ["Advance", "Structure", "Final", "Margin", "Tranche 1", "Tranche 2"]
+    for todo in all_open_todos:
+        desc = todo.get("description", "")
+        # Find which milestone this todo belongs to
+        todo_milestone = next(
+            (m for m in milestone_options if f" - {m} " in desc), None
+        )
+        if todo_milestone and todo_milestone not in current_milestones:
+            frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
 
 
 def link_technical_survey_to_sales_order(sales_order):
