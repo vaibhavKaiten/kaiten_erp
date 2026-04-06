@@ -84,10 +84,20 @@ def _get_followup_assignee(doc):
 
 def _create_followup_todo(doc):
     """Create an Open ToDo for the Quotation's Sales Manager / job file owner."""
+    assigned_to = _get_followup_assignee(doc)
+
+    # Duplicate guard
+    if frappe.db.exists("ToDo", {
+        "reference_type": "Quotation",
+        "reference_name": doc.name,
+        "allocated_to": assigned_to,
+        "status": "Open",
+    }):
+        return
+
     customer = doc.get("customer_name") or doc.get("party_name") or doc.get("title") or doc.name
     grand_total = doc.get("grand_total") or 0
     description = f"Follow-up: {customer} | {doc.name} | ₹{grand_total:,.0f}"
-    assigned_to = _get_followup_assignee(doc)
 
     todo = frappe.get_doc({
         "doctype": "ToDo",
@@ -95,6 +105,7 @@ def _create_followup_todo(doc):
         "reference_type": "Quotation",
         "reference_name": doc.name,
         "description": description,
+        "role": "Sales Manager",
         "date": doc.custom_next_followup_date,
         "status": "Open",
     })
