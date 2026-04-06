@@ -1,5 +1,23 @@
 [
  {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 18:20:55.607103",
+  "name": "ee5m0kmk6k",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "munna-7525253475-0090",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
+ },
+ {
   "completed_by": null,
   "completed_by_role": null,
   "docstatus": 0,
@@ -54,11 +72,11 @@
   "workflow_state": "In Progress"
  },
  {
-  "completed_by": null,
-  "completed_by_role": null,
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
   "docstatus": 0,
   "doctype": "Workflow Action",
-  "modified": "2026-04-06 11:38:07.508566",
+  "modified": "2026-04-06 18:49:08.203230",
   "name": "2ebam9ghrs",
   "permitted_roles": [
    {
@@ -67,7 +85,7 @@
   ],
   "reference_doctype": "Technical Survey",
   "reference_name": "kumala-5131321-0083",
-  "status": "Open",
+  "status": "Completed",
   "user": null,
   "workflow_state": "Draft"
  },
@@ -28714,6 +28732,78 @@
   ],
   "reference_doctype": "Structure Mounting",
   "reference_name": "kumala-5131321-0084",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 18:49:12.168345",
+  "name": "uvq7r3n15p",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "kumala-5131321-0083",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 18:49:13.707044",
+  "name": "v11n93m84v",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "kumala-5131321-0083",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 18:49:14.872833",
+  "name": "v1hrcpmds1",
+  "permitted_roles": [
+   {
+    "role": "Vendor Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "kumala-5131321-0083",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 18:49:16.189693",
+  "name": "v1sfu3cbe1",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "kumala-5131321-0083",
   "status": "Completed",
   "user": null,
   "workflow_state": "Completed"
