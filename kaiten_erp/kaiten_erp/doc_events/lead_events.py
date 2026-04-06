@@ -601,7 +601,13 @@ def assign_active_sales_manager(doc):
         )
     else:
         # Create new ToDo
-        description = _("Start Job File – {0}").format(doc.name)
+        customer_display_name = (
+            doc.get("company_name")
+            or f"{doc.get('first_name') or ''} {doc.get('last_name') or ''}".strip()
+            or doc.get("customer")
+            or ""
+        )
+        description = _("Start Job File – {0} – {1}").format(customer_display_name, doc.name)
         
         todo = frappe.get_doc(
             {
