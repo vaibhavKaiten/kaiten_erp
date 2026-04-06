@@ -28555,5 +28555,41 @@
   "status": "Open",
   "user": null,
   "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 14:15:44.490131",
+  "name": "upku31qo7a",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-VIKAMA-2026-00001",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 14:18:55.896483",
+  "name": "0lfqnvlie7",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-KUMAR-2026-00001",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
  }
 ]
