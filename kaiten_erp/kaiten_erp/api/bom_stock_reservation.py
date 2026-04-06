@@ -432,11 +432,9 @@ def create_material_request_for_shortages(sales_order_doc, shortage_items):
 
     frappe.msgprint(
         _(
-            "Material Request {0} created for {1} shortage items from Technical Survey {2}"
+            "Material Request {0} is created "
         ).format(
             frappe.utils.get_link_to_form("Material Request", mr.name),
-            len(shortage_items),
-            technical_survey or "N/A",
         ),
         title=_("Procurement Initiated"),
         indicator="blue",
