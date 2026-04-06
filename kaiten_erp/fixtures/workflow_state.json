@@ -142,5 +142,14 @@
   "name": "Job File Initiated",
   "style": "",
   "workflow_state_name": "Job File Initiated"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-04-06 13:01:21.348326",
+  "name": "Open",
+  "style": "",
+  "workflow_state_name": "Open"
  }
 ]
