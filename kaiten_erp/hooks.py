@@ -289,9 +289,6 @@ doc_events = {
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_submit",
         "on_update_after_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_update_after_submit",
     },
-    "Material Request": {
-        "on_submit": "kaiten_erp.kaiten_erp.doc_events.material_request_events.on_submit",
-    },
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_submit",
