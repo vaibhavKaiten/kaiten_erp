@@ -29,4 +29,5 @@ kaiten_erp.patches.rename_self_funding_to_self_finance
 kaiten_erp.patches.add_execution_workspaces
 kaiten_erp.patches.add_job_file_desk_icon
 kaiten_erp.patches.create_payment_milestone_todos
+kaiten_erp.patches.add_job_file_to_crm_sidebar
 
