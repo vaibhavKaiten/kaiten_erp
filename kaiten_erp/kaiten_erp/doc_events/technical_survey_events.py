@@ -166,6 +166,7 @@ def validate(doc, method=None):
         close_open_todos_by_role(doc, "Vendor Head")
         link_technical_survey_to_opportunity(doc)
         assign_final_quotation_todo(doc)
+        push_ts_counts_to_project_installation(doc)
 
     elif state == "Rejected":
         close_open_todos_by_role(doc, "Vendor Manager")
@@ -1319,6 +1320,40 @@ def link_technical_survey_to_opportunity(doc):
     )
     frappe.logger("kaiten_erp").info(
         "Linked Technical Survey %s to Opportunity %s", doc.name, opportunity_name
+    )
+
+
+def push_ts_counts_to_project_installation(doc):
+    """
+    When a Technical Survey is Approved, push the BOM panel and inverter counts
+    to the linked Project Installation document (if it already exists).
+
+    Chain: Technical Survey -> Job File (custom_job_file) -> Project Installation (custom_project_installation)
+    """
+    if not doc.get("custom_job_file"):
+        return
+
+    pi_name = frappe.db.get_value(
+        "Job File", doc.custom_job_file, "custom_project_installation"
+    )
+    if not pi_name:
+        return
+
+    frappe.db.set_value(
+        "Project Installation",
+        pi_name,
+        {
+            "panel_count": doc.panel_qty_bom,
+            "custom_inverter_count": doc.inverter_qty_bom,
+        },
+        update_modified=False,
+    )
+
+    frappe.logger("kaiten_erp").info(
+        "push_ts_counts_to_project_installation: pushed panel=%s, inverter=%s to PI %s",
+        doc.panel_qty_bom,
+        doc.inverter_qty_bom,
+        pi_name,
     )
 
 
