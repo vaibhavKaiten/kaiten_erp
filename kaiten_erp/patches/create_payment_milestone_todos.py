@@ -2,35 +2,38 @@
 Patch: create_payment_milestone_todos
 Retroactively create Accounts Manager ToDos for all existing submitted Sales Orders
 that have Payment Milestone rows with amount > 0 and status != 'Paid'.
+
+Uses the same description format and helper functions as sales_order_events.py so
+that the on_update_after_submit logic can correctly detect and update these todos.
 """
 
 import frappe
-from frappe import _
 
 
 def execute():
-    managers = frappe.get_all(
-        "Has Role",
-        filters={"role": "Accounts Manager", "parenttype": "User"},
-        pluck="parent",
+    from kaiten_erp.kaiten_erp.doc_events.sales_order_events import (
+        _get_accounts_manager_users,
+        _milestone_todo_description,
     )
-    active_managers = [
-        u for u in managers if frappe.db.get_value("User", u, "enabled")
-    ]
-    if not active_managers:
+
+    managers = _get_accounts_manager_users()
+    if not managers:
         frappe.logger().warning(
             "create_payment_milestone_todos: No active Accounts Manager users found; skipping."
         )
         return
 
-    # Find all Payment Milestone rows on submitted Sales Orders
+    # Find all unpaid Payment Milestone rows on submitted Sales Orders
     milestones = frappe.db.sql(
         """
         SELECT
-            pm.name AS milestone_name,
+            pm.name  AS row_name,
             pm.parent AS sales_order,
             pm.milestone,
-            pm.amount
+            pm.amount,
+            so.customer,
+            so.customer_name,
+            so.custom_job_file
         FROM `tabPayment Milestone` pm
         INNER JOIN `tabSales Order` so ON so.name = pm.parent
         WHERE so.docstatus = 1
@@ -42,19 +45,16 @@ def execute():
 
     created = 0
     for row in milestones:
-        so = frappe.db.get_value(
-            "Sales Order",
-            row.sales_order,
-            ["customer_name", "customer"],
-            as_dict=True,
-        )
-        customer_name = (so and (so.customer_name or so.customer)) or row.sales_order
-        amount_fmt = frappe.utils.fmt_money(row.amount, currency="INR")
-        description = _(
-            "Create Sales Invoice & Payment Entry of {0} for {1} – {2} milestone"
-        ).format(amount_fmt, customer_name, row.milestone)
+        customer_name = row.customer_name or row.customer or row.sales_order
+        k_number = ""
+        if row.custom_job_file:
+            k_number = frappe.db.get_value("Job File", row.custom_job_file, "k_number") or ""
 
-        for user in active_managers:
+        description = _milestone_todo_description(
+            row.sales_order, row.milestone, float(row.amount), customer_name, k_number
+        )
+
+        for user in managers:
             # Skip if an open ToDo for this milestone already exists for this user
             existing = frappe.db.exists(
                 "ToDo",
@@ -64,7 +64,7 @@ def execute():
                     "allocated_to": user,
                     "role": "Accounts Manager",
                     "status": "Open",
-                    "description": ["like", f"%{row.milestone} milestone%"],
+                    "description": ["like", f"% - {row.milestone} %"],
                 },
             )
             if existing:
@@ -78,7 +78,6 @@ def execute():
                     "reference_name": row.sales_order,
                     "description": description,
                     "role": "Accounts Manager",
-                    "date": frappe.utils.nowdate(),
                     "priority": "Medium",
                     "status": "Open",
                 }

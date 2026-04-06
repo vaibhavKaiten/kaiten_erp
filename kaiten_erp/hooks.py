@@ -278,6 +278,7 @@ doc_events = {
             "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_submit",
             
         ],
+        "on_update_after_submit": "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_update_after_submit",
         "on_cancel": [
             "kaiten_erp.kaiten_erp.api.bom_stock_reservation.on_sales_order_cancel",
             "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_cancel",
