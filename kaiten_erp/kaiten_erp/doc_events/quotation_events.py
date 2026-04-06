@@ -66,16 +66,32 @@ def _set_default_followup_date(doc):
         doc.custom_next_followup_date = add_days(nowdate(), 4)
 
 
+def _get_followup_assignee(doc):
+    """
+    Resolve the user to assign the follow-up ToDo to.
+
+    Priority:
+    1. custom_job_file_owner on the linked Job File (Sales Manager who owns the deal)
+    2. doc.owner (Quotation submitter) as fallback
+    """
+    job_file = doc.get("custom_job_file")
+    if job_file:
+        owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
+        if owner and frappe.db.get_value("User", owner, "enabled"):
+            return owner
+    return doc.owner
+
+
 def _create_followup_todo(doc):
-    """Create an Open ToDo for the Quotation's salesperson."""
+    """Create an Open ToDo for the Quotation's Sales Manager / job file owner."""
     customer = doc.get("customer_name") or doc.get("party_name") or doc.get("title") or doc.name
     grand_total = doc.get("grand_total") or 0
-    description = (
-        f"Follow-up: {customer} | {doc.name} | ₹{grand_total:,.0f}"
-    )
+    description = f"Follow-up: {customer} | {doc.name} | ₹{grand_total:,.0f}"
+    assigned_to = _get_followup_assignee(doc)
+
     todo = frappe.get_doc({
         "doctype": "ToDo",
-        "allocated_to": doc.owner,
+        "allocated_to": assigned_to,
         "reference_type": "Quotation",
         "reference_name": doc.name,
         "description": description,
