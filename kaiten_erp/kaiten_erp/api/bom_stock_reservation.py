@@ -16,8 +16,9 @@ from frappe.utils import flt, nowdate, now_datetime, add_days
 def on_sales_order_submit(doc, method):
     """
     Called when Sales Order is submitted
-    Reserves BOM materials for each SO item
-    Creates Material Request for shortages instead of blocking
+    Reserves BOM materials for each SO item.
+    Material Request creation is handled exclusively by sales_order_events.on_submit
+    to avoid duplicate MRs.
     """
     # Skip if not applicable
     if not should_reserve_stock(doc):
@@ -33,18 +34,15 @@ def on_sales_order_submit(doc, method):
                 f"All BOM materials reserved. {len(result['reserved_items'])} items.",
             )
         else:
-            # Create Material Request for shortages
-            mr = create_material_request_for_shortages(doc, result["shortage_items"])
+            # Log shortage information for audit — MR is created by sales_order_events
+            if result["shortage_items"]:
+                create_shortage_logs(doc, result["shortage_items"], None)
 
-            if mr:
-                # Create shortage logs for audit
-                create_shortage_logs(doc, result["shortage_items"], mr.name)
-
-                _log_so_action(
-                    doc.name,
-                    "Pending Procurement",
-                    f"Material Request {mr.name} created for {len(result['shortage_items'])} shortage items.",
-                )
+            _log_so_action(
+                doc.name,
+                "Stock Shortage",
+                f"{len(result['shortage_items'])} shortage items logged. Material Request created via Technical Survey.",
+            )
 
     except Exception as e:
         frappe.log_error(
