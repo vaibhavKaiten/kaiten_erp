@@ -15,6 +15,9 @@ def validate(doc, method=None):
     _fill_item_name_and_uom(doc)
     _set_default_followup_date(doc)
 
+    from kaiten_erp.kaiten_erp.doc_events.tax_bifurcation import fill_tax_bifurcation
+    fill_tax_bifurcation(doc)
+
     if doc.get("custom_quotation_stage") == "Final Approved":
         _validate_final_approved_requirements(doc)
         _ensure_single_commercial_item(doc)
