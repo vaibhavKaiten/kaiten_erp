@@ -40,6 +40,7 @@ def on_submit(doc, method=None):
     create_material_request_from_technical_survey(doc)
     _close_source_quotation_todos(doc)
     _create_payment_milestone_todos(doc)
+    _create_stock_manager_transfer_todo(doc)
     _recalculate_job_file_profitability(doc)
 
 
@@ -132,7 +133,7 @@ def _close_milestone_todos(sales_order_name, milestone_label):
 
 
 def _close_all_milestone_todos(doc):
-    """Close all Open Accounts Manager payment milestone ToDos for this SO (Issue G)."""
+    """Close all Open Accounts Manager payment milestone ToDos and Stock Manager transfer ToDos for this SO."""
     todos = frappe.db.get_all(
         "ToDo",
         filters={
@@ -149,6 +150,111 @@ def _close_all_milestone_todos(doc):
         frappe.logger("kaiten_erp").info(
             f"Closed {len(todos)} Accounts Manager milestone ToDo(s) for Sales Order {doc.name} on cancel"
         )
+    _close_stock_transfer_todos(doc.name)
+
+
+# ---------------------------------------------------------------------------
+# Stock Manager Material Transfer ToDo helpers
+# ---------------------------------------------------------------------------
+
+def _get_stock_manager_users():
+    """Return list of enabled Stock Manager user emails."""
+    rows = frappe.db.sql(
+        """
+        SELECT DISTINCT u.name
+        FROM `tabUser` u
+        INNER JOIN `tabHas Role` hr ON hr.parent = u.name AND hr.parenttype = 'User'
+        WHERE hr.role = 'Stock Manager'
+          AND u.enabled = 1
+          AND u.name NOT IN ('Administrator', 'Guest')
+        """,
+        as_dict=True,
+    )
+    return [r.name for r in rows]
+
+
+def _stock_transfer_todo_description(sales_order_name, customer_name, k_number):
+    """Build a standardised ToDo description for a Stock Manager material transfer task."""
+    k_part = f" ({k_number})" if k_number else ""
+    return (
+        f"Material Transfer Required"
+        f" - {customer_name}{k_part}"
+        f" | {sales_order_name}"
+    )
+
+
+def _open_stock_transfer_todos(sales_order_name):
+    """Return Open Stock Manager material transfer ToDos for this SO."""
+    return frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Sales Order",
+            "reference_name": sales_order_name,
+            "role": "Stock Manager",
+            "status": "Open",
+            "description": ["like", "Material Transfer Required%"],
+        },
+        fields=["name", "description"],
+    )
+
+
+def _close_stock_transfer_todos(sales_order_name):
+    """Close all Open Stock Manager material transfer ToDos for this SO."""
+    todos = _open_stock_transfer_todos(sales_order_name)
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Stock Manager transfer ToDo(s) for Sales Order {sales_order_name}"
+        )
+
+
+def _create_stock_manager_transfer_todo(doc):
+    """
+    Create Stock Manager ToDos when the first payment milestone row (idx=1) is Paid.
+    Deduplicates — will not create a second todo if one is already open.
+    """
+    milestones = doc.get("custom_payment_plan") or []
+    if not milestones:
+        return
+
+    # Find the first row (lowest idx)
+    first_row = min(milestones, key=lambda r: r.idx)
+    if (first_row.status or "Pending") != "Paid":
+        return
+
+    managers = _get_stock_manager_users()
+    if not managers:
+        return
+
+    customer_name, k_number = _get_so_customer_info(doc)
+    description = _stock_transfer_todo_description(doc.name, customer_name, k_number)
+
+    for user in managers:
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "role": "Stock Manager",
+                "status": "Open",
+                "description": ["like", "Material Transfer Required%"],
+            },
+        )
+        if existing:
+            continue
+
+        frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "reference_type": "Sales Order",
+            "reference_name": doc.name,
+            "description": description,
+            "role": "Stock Manager",
+            "priority": "High",
+            "status": "Open",
+        }).insert(ignore_permissions=True)
 
 
 def _create_payment_milestone_todos(doc):
@@ -313,6 +419,9 @@ def _sync_payment_milestone_todos(doc):
         )
         if todo_milestone and todo_milestone not in current_milestones:
             frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+    # ── Sync Stock Manager transfer ToDo ─────────────────────────────────────
+    _create_stock_manager_transfer_todo(doc)
 
 
 def link_technical_survey_to_sales_order(sales_order):
