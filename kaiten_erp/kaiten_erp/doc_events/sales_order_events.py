@@ -504,6 +504,20 @@ def create_material_request_from_technical_survey(sales_order):
         )
         return
 
+    # Deduplication guard — skip if a Material Request already exists for this Sales Order
+    existing_mr = frappe.db.get_value(
+        "Material Request",
+        {"custom_source_sales_order": sales_order.name, "docstatus": ["!=", 2]},
+        "name",
+    )
+    if existing_mr:
+        frappe.msgprint(
+            _("Material Request {0} already exists for this Sales Order. Skipping creation.").format(existing_mr),
+            alert=True,
+            indicator="orange",
+        )
+        return
+
     # Resolve warehouse once — validate SO's set_warehouse belongs to the same company
     _item_warehouse = None
     if sales_order.set_warehouse:
