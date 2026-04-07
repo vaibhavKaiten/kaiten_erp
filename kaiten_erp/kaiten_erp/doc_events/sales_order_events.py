@@ -28,6 +28,7 @@ def on_update(doc, method=None):
 def on_cancel(doc, method=None):
     """Sales Order on_cancel hook – clear link from Job File."""
     unlink_sales_order_from_job_file(doc)
+    _recalculate_job_file_profitability(doc)
 
 
 def on_submit(doc, method=None):
@@ -38,11 +39,20 @@ def on_submit(doc, method=None):
     create_material_request_from_technical_survey(doc)
     _close_source_quotation_todos(doc)
     _create_payment_milestone_todos(doc)
+    _recalculate_job_file_profitability(doc)
 
 
 def on_update_after_submit(doc, method=None):
     """Handle Payment Milestone changes after Sales Order is submitted."""
     _sync_payment_milestone_todos(doc)
+
+
+def _recalculate_job_file_profitability(doc):
+    """Recalculate profitability on the linked Job File, if any."""
+    job_file = doc.get("custom_job_file")
+    if job_file:
+        from kaiten_erp.kaiten_erp.api.profitability import update_profitability
+        update_profitability(job_file)
 
 
 def _close_source_quotation_todos(sales_order):

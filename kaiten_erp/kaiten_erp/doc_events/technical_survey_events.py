@@ -167,6 +167,7 @@ def validate(doc, method=None):
         link_technical_survey_to_opportunity(doc)
         assign_final_quotation_todo(doc)
         push_ts_counts_to_project_installation(doc)
+        _recalculate_job_file_profitability(doc)
 
     elif state == "Rejected":
         close_open_todos_by_role(doc, "Vendor Manager")
@@ -351,6 +352,14 @@ def _get_job_file_name_from_doc(doc):
         job_file_name = doc.job_file
 
     return job_file_name
+
+
+def _recalculate_job_file_profitability(doc):
+    """Recalculate profitability on the linked Job File, if any."""
+    job_file_name = _get_job_file_name_from_doc(doc)
+    if job_file_name:
+        from kaiten_erp.kaiten_erp.api.profitability import update_profitability
+        update_profitability(job_file_name)
 
 
 def sync_job_file_execution_status(doc):

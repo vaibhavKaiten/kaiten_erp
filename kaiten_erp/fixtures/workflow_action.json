@@ -1,21 +1,813 @@
 [
  {
   "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:30:29.428939",
+  "name": "hr67egdot1",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-JI-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:30:34.734506",
+  "name": "i4603n0uct",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-JI-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
   "completed_by_role": "Vendor Head",
   "docstatus": 0,
   "doctype": "Workflow Action",
-  "modified": "2026-04-06 18:20:55.607103",
-  "name": "ee5m0kmk6k",
+  "modified": "2026-04-02 12:30:46.975308",
+  "name": "i5r71t4rek",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-JI-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Approval Pending"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:31:43.829758",
+  "name": "i9lj7rj5q4",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-JI-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Approved"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:41:45.724919",
+  "name": "irfvdi4jmr",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "ji-53211552-0173",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:31:44.359130",
+  "name": "irjmgc6b6s",
   "permitted_roles": [
    {
     "role": "Vendor Head"
    }
   ],
   "reference_doctype": "Structure Mounting",
-  "reference_name": "munna-7525253475-0090",
+  "reference_name": "ji-53211552-0174",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:31:44.715477",
+  "name": "irnf1l1729",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "ji-53211552-0175",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:31:44.871690",
+  "name": "irohtnfu3c",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "ji-53211552-0176",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:31:45.100591",
+  "name": "irr3nsmacj",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "ji-53211552-0177",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 16:27:55.178613",
+  "name": "irsj9bin89",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "ji-53211552-0178",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:42:37.916078",
+  "name": "onhne168v4",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "ji-53211552-0173",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:43:07.272402",
+  "name": "p7r7bk4j5f",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "ji-53211552-0173",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:43:12.229316",
+  "name": "ph047csuio",
+  "permitted_roles": [
+   {
+    "role": "Vendor Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "ji-53211552-0173",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-02 12:43:17.330792",
+  "name": "piikls354s",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "ji-53211552-0173",
   "status": "Completed",
   "user": null,
   "workflow_state": "Completed"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:08:24.806856",
+  "name": "3bdn02qecp",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Shyam-6886868768-0179",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:07:31.090553",
+  "name": "3belka1a6h",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "Shyam-6886868768-0180",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:07:31.206556",
+  "name": "3bg05qm1tb",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "Shyam-6886868768-0181",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:07:31.278762",
+  "name": "3bgomarrhn",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "Shyam-6886868768-0182",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:07:31.347286",
+  "name": "3bhsmn8hp6",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "Shyam-6886868768-0183",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 11:29:32.347657",
+  "name": "3bi8ul36ob",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Shyam-6886868768-0184",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:08:27.738586",
+  "name": "3s8sijv5b5",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Shyam-6886868768-0179",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:08:28.900089",
+  "name": "3t58eleqk0",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Shyam-6886868768-0179",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:08:30.142097",
+  "name": "3thm6l362g",
+  "permitted_roles": [
+   {
+    "role": "Vendor Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Shyam-6886868768-0179",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-03 18:08:31.240536",
+  "name": "3ttff552bd",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Shyam-6886868768-0179",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 11:29:32.382538",
+  "name": "5tb7qnsj7r",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Shyam-6886868768-0184",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 16:00:08.008865",
+  "name": "4f0a32qbrg",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Vaibhav-789456123-0102",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 16:27:55.184598",
+  "name": "knv12eu4b0",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "ji-53211552-0178",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:37:41.390458",
+  "name": "teiplm8jce",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-SITA-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:37:51.103745",
+  "name": "tk6s5lo538",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-SITA-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 11:31:38.539233",
+  "name": "tn7o211ena",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "SIta-578875785756786-0197",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:37:51.231940",
+  "name": "tn8n5r4bvr",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "SIta-578875785756786-0198",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:37:51.327853",
+  "name": "tn996r9rr0",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "SIta-578875785756786-0199",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:37:51.410350",
+  "name": "tnanul3kqp",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "SIta-578875785756786-0200",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:37:51.483269",
+  "name": "tnad4sn9ua",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "SIta-578875785756786-0201",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:55:10.313490",
+  "name": "tnbuft1u0t",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "SIta-578875785756786-0202",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-04 17:55:10.344169",
+  "name": "7rvdrmrt06",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "SIta-578875785756786-0202",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 11:31:38.561626",
+  "name": "ukpg03386t",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "SIta-578875785756786-0197",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:25:05.427632",
+  "name": "tpvqr2bfll",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-HANS-2026-00001",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:25:05.447736",
+  "name": "tuukiksd4a",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-HANS-2026-00001",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:28:30.646157",
+  "name": "vv2gfnv34l",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Ajay-587585876786678-0203",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:28:30.762069",
+  "name": "vv3hg4l8l6",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "Ajay-587585876786678-0204",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:28:30.885411",
+  "name": "vv4slapqgu",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "Ajay-587585876786678-0205",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:28:30.970479",
+  "name": "vv5g688pnl",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "Ajay-587585876786678-0206",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:28:31.047134",
+  "name": "vv69ncku1f",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "Ajay-587585876786678-0207",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-06 12:28:31.131762",
+  "name": "vv74dk3npj",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Ajay-587585876786678-0208",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
  },
  {
   "completed_by": null,
@@ -72,11 +864,11 @@
   "workflow_state": "In Progress"
  },
  {
-  "completed_by": "Administrator",
-  "completed_by_role": "Vendor Head",
+  "completed_by": null,
+  "completed_by_role": null,
   "docstatus": 0,
   "doctype": "Workflow Action",
-  "modified": "2026-04-06 18:49:08.203230",
+  "modified": "2026-04-06 11:38:07.508566",
   "name": "2ebam9ghrs",
   "permitted_roles": [
    {
@@ -85,7 +877,7 @@
   ],
   "reference_doctype": "Technical Survey",
   "reference_name": "kumala-5131321-0083",
-  "status": "Completed",
+  "status": "Open",
   "user": null,
   "workflow_state": "Draft"
  },
@@ -28732,78 +29524,6 @@
   ],
   "reference_doctype": "Structure Mounting",
   "reference_name": "kumala-5131321-0084",
-  "status": "Completed",
-  "user": null,
-  "workflow_state": "Completed"
- },
- {
-  "completed_by": "Administrator",
-  "completed_by_role": "Vendor Executive",
-  "docstatus": 0,
-  "doctype": "Workflow Action",
-  "modified": "2026-04-06 18:49:12.168345",
-  "name": "uvq7r3n15p",
-  "permitted_roles": [
-   {
-    "role": "Vendor Executive"
-   }
-  ],
-  "reference_doctype": "Technical Survey",
-  "reference_name": "kumala-5131321-0083",
-  "status": "Completed",
-  "user": null,
-  "workflow_state": "Assigned to Vendor"
- },
- {
-  "completed_by": "Administrator",
-  "completed_by_role": "Vendor Executive",
-  "docstatus": 0,
-  "doctype": "Workflow Action",
-  "modified": "2026-04-06 18:49:13.707044",
-  "name": "v11n93m84v",
-  "permitted_roles": [
-   {
-    "role": "Vendor Executive"
-   }
-  ],
-  "reference_doctype": "Technical Survey",
-  "reference_name": "kumala-5131321-0083",
-  "status": "Completed",
-  "user": null,
-  "workflow_state": "In Progress"
- },
- {
-  "completed_by": "Administrator",
-  "completed_by_role": "Vendor Manager",
-  "docstatus": 0,
-  "doctype": "Workflow Action",
-  "modified": "2026-04-06 18:49:14.872833",
-  "name": "v1hrcpmds1",
-  "permitted_roles": [
-   {
-    "role": "Vendor Manager"
-   }
-  ],
-  "reference_doctype": "Technical Survey",
-  "reference_name": "kumala-5131321-0083",
-  "status": "Completed",
-  "user": null,
-  "workflow_state": "Submitted"
- },
- {
-  "completed_by": "Administrator",
-  "completed_by_role": "Vendor Head",
-  "docstatus": 0,
-  "doctype": "Workflow Action",
-  "modified": "2026-04-06 18:49:16.189693",
-  "name": "v1sfu3cbe1",
-  "permitted_roles": [
-   {
-    "role": "Vendor Head"
-   }
-  ],
-  "reference_doctype": "Technical Survey",
-  "reference_name": "kumala-5131321-0083",
   "status": "Completed",
   "user": null,
   "workflow_state": "Completed"
