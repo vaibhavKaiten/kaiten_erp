@@ -26,3 +26,22 @@ def validate(doc, method=None):
     doc.structure_type = sm.structure_type
     doc.anchoring_type = sm.anchoring_type
     doc.structure_height_m = sm.strucutre_height
+
+    # Populate panel and inverter counts from the approved Technical Survey
+    ts_name = frappe.db.get_value(
+        "Job File", doc.custom_job_file, "custom_technical_survey"
+    )
+    if not ts_name:
+        return
+
+    ts_state, panel_qty, inverter_qty = frappe.db.get_value(
+        "Technical Survey",
+        ts_name,
+        ["workflow_state", "panel_qty_bom", "inverter_qty_bom"],
+    )
+
+    if ts_state != "Approved":
+        return
+
+    doc.panel_count = panel_qty
+    doc.custom_inverter_count = inverter_qty
