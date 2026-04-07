@@ -28,6 +28,7 @@ def on_update(doc, method=None):
 def on_cancel(doc, method=None):
     """Sales Order on_cancel hook – clear link from Job File."""
     unlink_sales_order_from_job_file(doc)
+    _close_all_milestone_todos(doc)
     _recalculate_job_file_profitability(doc)
 
 
@@ -128,6 +129,26 @@ def _close_milestone_todos(sales_order_name, milestone_label):
     todos = _open_milestone_todos(sales_order_name, milestone_label)
     for t in todos:
         frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+
+def _close_all_milestone_todos(doc):
+    """Close all Open Accounts Manager payment milestone ToDos for this SO (Issue G)."""
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Sales Order",
+            "reference_name": doc.name,
+            "role": "Accounts Manager",
+            "status": "Open",
+        },
+        fields=["name"],
+    )
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Accounts Manager milestone ToDo(s) for Sales Order {doc.name} on cancel"
+        )
 
 
 def _create_payment_milestone_todos(doc):
