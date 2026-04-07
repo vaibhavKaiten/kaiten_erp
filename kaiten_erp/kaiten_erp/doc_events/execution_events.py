@@ -77,11 +77,81 @@ def validate(doc, method=None):
 
     elif state == "Approved":
         close_open_todos_by_role(doc, "Vendor Head")
+        if doc.doctype == "Structure Mounting":
+            _create_structure_payment_todo(doc)
 
     elif state == "Rejected":
         close_open_todos_by_role(doc, "Vendor Manager")
         assign_to_vendor_executives_on_rejected(doc)
 
+
+
+def _create_structure_payment_todo(doc):
+    """
+    Create a Sales Manager ToDo for the Job File owner and the Sales Order
+    submitter to collect the Structure payment after Structure Mounting is approved.
+    """
+    import frappe
+
+    job_file_name = doc.get("job_file") or doc.get("custom_job_file")
+    if not job_file_name:
+        return
+
+    jf = frappe.db.get_value(
+        "Job File", job_file_name,
+        ["custom_job_file_owner", "sales_order", "first_name", "k_number"],
+        as_dict=True,
+    )
+    if not jf:
+        return
+
+    so_name = jf.get("sales_order") or doc.get("sales_order")
+    if not so_name:
+        return
+
+    customer_name = jf.get("first_name") or ""
+    k_part = f" ({jf.get('k_number')})" if jf.get("k_number") else ""
+    description = (
+        f"Collect Structure Payment"
+        f" - {customer_name}{k_part}"
+        f" | {so_name}"
+    )
+
+    # Collect unique enabled users: Job File owner + SO submitter
+    users = set()
+    jf_owner = jf.get("custom_job_file_owner")
+    if jf_owner and frappe.db.get_value("User", jf_owner, "enabled"):
+        users.add(jf_owner)
+
+    so_owner = frappe.db.get_value("Sales Order", so_name, "owner")
+    if so_owner and frappe.db.get_value("User", so_owner, "enabled"):
+        users.add(so_owner)
+
+    if not users:
+        return
+
+    for user in users:
+        existing = frappe.db.exists("ToDo", {
+            "reference_type": "Sales Order",
+            "reference_name": so_name,
+            "allocated_to": user,
+            "role": "Sales Manager",
+            "status": "Open",
+            "description": ["like", "Collect Structure Payment%"],
+        })
+        if existing:
+            continue
+
+        frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "reference_type": "Sales Order",
+            "reference_name": so_name,
+            "description": description,
+            "role": "Sales Manager",
+            "priority": "High",
+            "status": "Open",
+        }).insert(ignore_permissions=True)
 
 
 def on_update(doc, method=None):

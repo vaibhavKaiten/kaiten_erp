@@ -46,6 +46,7 @@ def on_submit(doc, method=None):
 def on_update_after_submit(doc, method=None):
     """Handle Payment Milestone changes after Sales Order is submitted."""
     _sync_payment_milestone_todos(doc)
+    _close_structure_payment_todo_if_filled(doc)
 
 
 def _recalculate_job_file_profitability(doc):
@@ -313,6 +314,25 @@ def _sync_payment_milestone_todos(doc):
         )
         if todo_milestone and todo_milestone not in current_milestones:
             frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+
+def _close_structure_payment_todo_if_filled(doc):
+    """
+    Close the Sales Manager 'Collect Structure Payment' ToDo when the
+    Structure milestone row in custom_payment_plan has amount > 0.
+    """
+    for row in (doc.get("custom_payment_plan") or []):
+        if row.milestone == "Structure" and float(row.amount or 0) > 0:
+            todos = frappe.db.get_all("ToDo", filters={
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "role": "Sales Manager",
+                "status": "Open",
+                "description": ["like", "Collect Structure Payment%"],
+            }, fields=["name"])
+            for t in todos:
+                frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+            return
 
 
 def link_technical_survey_to_sales_order(sales_order):

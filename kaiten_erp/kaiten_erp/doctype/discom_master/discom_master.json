@@ -1,0 +1,500 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "field:discom_name",
+    "creation": "2026-04-07 10:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "basic_information_tab",
+        "discom_name",
+        "discom_code",
+        "short_name",
+        "column_break_basic_1",
+        "state",
+        "region_zone",
+        "districts_covered",
+        "column_break_basic_2",
+        "type_of_utility",
+        "regulatory_body",
+        "status",
+        "address_contact_section",
+        "registered_address",
+        "address_column_break_1",
+        "city",
+        "pin_code",
+        "address_state",
+        "column_break_address_2",
+        "office_phone",
+        "official_email",
+        "website",
+        "column_break_address_3",
+        "consumer_helpline",
+        "grievance_portal_url",
+        "nodal_officer_tab",
+        "officer_name",
+        "designation",
+        "department",
+        "column_break_nodal_1",
+        "mobile_number",
+        "email",
+        "office_sub_division",
+        "column_break_nodal_2",
+        "approval_authority_level",
+        "notes",
+        "technical_specifications_tab",
+        "grid_voltage_level",
+        "max_sanctioned_load",
+        "max_rooftop_solar_allowed",
+        "column_break_tech_1",
+        "net_metering_available",
+        "net_metering_limit",
+        "gross_metering_available",
+        "column_break_tech_2",
+        "applicable_connection_type",
+        "feeder_type",
+        "meter_type_required",
+        "column_break_tech_3",
+        "reverse_power_flow_allowed",
+        "tariff_billing_tab",
+        "tariff_order_year",
+        "applicable_tariff_category",
+        "export_tariff_rate",
+        "column_break_tariff_1",
+        "import_tariff_rate",
+        "fixed_charge",
+        "billing_cycle",
+        "column_break_tariff_2",
+        "net_metering_settlement",
+        "subsidy_applicable",
+        "subsidy_amount",
+        "column_break_tariff_3",
+        "mnre_subsidy_applicable",
+        "tariff_order_reference",
+        "tariff_notes_section",
+        "tariff_notes",
+        "linked_records_tab",
+        "linked_customers",
+        "column_break_linked_1",
+        "application_portal_url",
+        "processing_tat"
+    ],
+    "fields": [
+        {
+            "fieldname": "basic_information_tab",
+            "fieldtype": "Tab Break",
+            "label": "Basic Information"
+        },
+        {
+            "fieldname": "discom_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "DISCOM Name",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "discom_code",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "DISCOM Code",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "short_name",
+            "fieldtype": "Data",
+            "label": "Short Name"
+        },
+        {
+            "fieldname": "column_break_basic_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "state",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "State",
+            "options": "\nAndhra Pradesh\nArunachal Pradesh\nAssam\nBihar\nChhattisgarh\nGoa\nGujarat\nHaryana\nHimachal Pradesh\nJharkhand\nKarnataka\nKerala\nMadhya Pradesh\nMaharashtra\nManipur\nMeghalaya\nMizoram\nNagaland\nOdisha\nPunjab\nRajasthan\nSikkim\nTamil Nadu\nTelangana\nTripura\nUttar Pradesh\nUttarakhand\nWest Bengal\nAndaman and Nicobar Islands\nChandigarh\nDadra and Nagar Haveli and Daman and Diu\nDelhi\nJammu and Kashmir\nLadakh\nLakshadweep\nPuducherry",
+            "reqd": 1
+        },
+        {
+            "fieldname": "region_zone",
+            "fieldtype": "Data",
+            "label": "Region / Zone"
+        },
+        {
+            "fieldname": "districts_covered",
+            "fieldtype": "Small Text",
+            "label": "District(s) Covered"
+        },
+        {
+            "fieldname": "column_break_basic_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "type_of_utility",
+            "fieldtype": "Select",
+            "label": "Type of Utility",
+            "options": "\nState DISCOM\nPrivate DISCOM\nJoint Venture DISCOM\nDeemed Licensee"
+        },
+        {
+            "fieldname": "regulatory_body",
+            "fieldtype": "Select",
+            "label": "Regulatory Body",
+            "options": "\nRERC\nCERC\nGERC\nMERC\nDERC"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "default": "Active",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "\nActive\nInactive"
+        },
+        {
+            "fieldname": "address_contact_section",
+            "fieldtype": "Tab Break",
+            "label": "Address & Contact"
+        },
+        {
+            "fieldname": "registered_address",
+            "fieldtype": "Small Text",
+            "label": "Registered Office Address",
+            "reqd": 1
+        },
+        {
+            "fieldname": "address_column_break_1",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "city",
+            "fieldtype": "Data",
+            "label": "City"
+        },
+        {
+            "fieldname": "pin_code",
+            "fieldtype": "Data",
+            "label": "PIN Code"
+        },
+        {
+            "fieldname": "address_state",
+            "fieldtype": "Select",
+            "label": "State",
+            "options": "\nAndhra Pradesh\nArunachal Pradesh\nAssam\nBihar\nChhattisgarh\nGoa\nGujarat\nHaryana\nHimachal Pradesh\nJharkhand\nKarnataka\nKerala\nMadhya Pradesh\nMaharashtra\nManipur\nMeghalaya\nMizoram\nNagaland\nOdisha\nPunjab\nRajasthan\nSikkim\nTamil Nadu\nTelangana\nTripura\nUttar Pradesh\nUttarakhand\nWest Bengal\nAndaman and Nicobar Islands\nChandigarh\nDadra and Nagar Haveli and Daman and Diu\nDelhi\nJammu and Kashmir\nLadakh\nLakshadweep\nPuducherry"
+        },
+        {
+            "fieldname": "column_break_address_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "office_phone",
+            "fieldtype": "Data",
+            "label": "Office Phone",
+            "options": "Phone"
+        },
+        {
+            "fieldname": "official_email",
+            "fieldtype": "Data",
+            "label": "Official Email",
+            "options": "Email"
+        },
+        {
+            "fieldname": "website",
+            "fieldtype": "Data",
+            "label": "Website",
+            "options": "URL"
+        },
+        {
+            "fieldname": "column_break_address_3",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "consumer_helpline",
+            "fieldtype": "Data",
+            "default": "1912",
+            "label": "Consumer Helpline Number"
+        },
+        {
+            "fieldname": "grievance_portal_url",
+            "fieldtype": "Data",
+            "label": "Grievance Portal URL",
+            "options": "URL"
+        },
+        {
+            "fieldname": "nodal_officer_tab",
+            "fieldtype": "Tab Break",
+            "label": "Nodal / Liaison Officer Details"
+        },
+        {
+            "fieldname": "officer_name",
+            "fieldtype": "Data",
+            "label": "Officer Name",
+            "reqd": 1
+        },
+        {
+            "fieldname": "designation",
+            "fieldtype": "Select",
+            "label": "Designation",
+            "options": "\nAEN\nXEN\nSE\nCE"
+        },
+        {
+            "fieldname": "department",
+            "fieldtype": "Select",
+            "label": "Department",
+            "options": "\nNet Metering Cell\nRenewable Energy Cell\nTechnical\nBilling\nOperations"
+        },
+        {
+            "fieldname": "column_break_nodal_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "mobile_number",
+            "fieldtype": "Data",
+            "label": "Mobile Number",
+            "options": "Phone"
+        },
+        {
+            "fieldname": "email",
+            "fieldtype": "Data",
+            "label": "Email",
+            "options": "Email"
+        },
+        {
+            "fieldname": "office_sub_division",
+            "fieldtype": "Data",
+            "label": "Office / Sub-division"
+        },
+        {
+            "fieldname": "column_break_nodal_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "approval_authority_level",
+            "fieldtype": "Select",
+            "label": "Approval Authority Level",
+            "options": "\nSub-Division\nDivision\nCircle\nZone"
+        },
+        {
+            "fieldname": "notes",
+            "fieldtype": "Small Text",
+            "label": "Notes / Remarks"
+        },
+        {
+            "fieldname": "technical_specifications_tab",
+            "fieldtype": "Tab Break",
+            "label": "Technical Specifications"
+        },
+        {
+            "fieldname": "grid_voltage_level",
+            "fieldtype": "Select",
+            "label": "Grid Voltage Level",
+            "options": "\nLT (230V / 415V)\nHT\nEHT"
+        },
+        {
+            "fieldname": "max_sanctioned_load",
+            "fieldtype": "Float",
+            "label": "Max Sanctioned Load (kW)"
+        },
+        {
+            "fieldname": "max_rooftop_solar_allowed",
+            "fieldtype": "Float",
+            "label": "Max Rooftop Solar Allowed (kWp)"
+        },
+        {
+            "fieldname": "column_break_tech_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "net_metering_available",
+            "fieldtype": "Check",
+            "label": "Net Metering Available"
+        },
+        {
+            "fieldname": "net_metering_limit",
+            "fieldtype": "Float",
+            "label": "Net Metering Limit (kW)",
+            "depends_on": "eval:doc.net_metering_available"
+        },
+        {
+            "fieldname": "gross_metering_available",
+            "fieldtype": "Check",
+            "label": "Gross Metering Available"
+        },
+        {
+            "fieldname": "column_break_tech_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "applicable_connection_type",
+            "fieldtype": "Select",
+            "label": "Applicable Connection Type",
+            "options": "\nLT\nHT\nBoth"
+        },
+        {
+            "fieldname": "feeder_type",
+            "fieldtype": "Select",
+            "label": "Feeder Type",
+            "options": "\nUrban\nRural\nAgricultural\nMixed"
+        },
+        {
+            "fieldname": "meter_type_required",
+            "fieldtype": "Select",
+            "label": "Meter Type Required",
+            "options": "\nBi-directional (Net Meter)\nSmart Meter\nGross Meter\nDual Meter"
+        },
+        {
+            "fieldname": "column_break_tech_3",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "reverse_power_flow_allowed",
+            "fieldtype": "Check",
+            "label": "Reverse Power Flow Allowed"
+        },
+        {
+            "fieldname": "tariff_billing_tab",
+            "fieldtype": "Tab Break",
+            "label": "Tariff & Billing"
+        },
+        {
+            "fieldname": "tariff_order_year",
+            "fieldtype": "Data",
+            "label": "Applicable Tariff Order Year"
+        },
+        {
+            "fieldname": "applicable_tariff_category",
+            "fieldtype": "Select",
+            "label": "Applicable Tariff Category",
+            "options": "\nDomestic\nCommercial\nIndustrial\nAgricultural\nGovernment"
+        },
+        {
+            "fieldname": "export_tariff_rate",
+            "fieldtype": "Currency",
+            "label": "Export Tariff Rate (\u20b9/kWh)"
+        },
+        {
+            "fieldname": "column_break_tariff_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "import_tariff_rate",
+            "fieldtype": "Currency",
+            "label": "Import Tariff Rate (\u20b9/kWh)"
+        },
+        {
+            "fieldname": "fixed_charge",
+            "fieldtype": "Currency",
+            "label": "Fixed / Demand Charge (\u20b9/kW/month)"
+        },
+        {
+            "fieldname": "billing_cycle",
+            "fieldtype": "Select",
+            "label": "Billing Cycle",
+            "options": "\nMonthly\nBi-Monthly"
+        },
+        {
+            "fieldname": "column_break_tariff_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "net_metering_settlement",
+            "fieldtype": "Select",
+            "label": "Net Metering Settlement Period",
+            "options": "\nMonthly\nAnnual"
+        },
+        {
+            "fieldname": "subsidy_applicable",
+            "fieldtype": "Check",
+            "label": "Subsidy Applicable"
+        },
+        {
+            "fieldname": "subsidy_amount",
+            "fieldtype": "Currency",
+            "label": "Subsidy Amount (\u20b9)",
+            "depends_on": "eval:doc.subsidy_applicable"
+        },
+        {
+            "fieldname": "column_break_tariff_3",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "mnre_subsidy_applicable",
+            "fieldtype": "Check",
+            "label": "MNRE Subsidy Applicable"
+        },
+        {
+            "fieldname": "tariff_order_reference",
+            "fieldtype": "Data",
+            "label": "Tariff Order Reference / URL"
+        },
+        {
+            "fieldname": "tariff_notes_section",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "tariff_notes",
+            "fieldtype": "Small Text",
+            "label": "Tariff Notes"
+        },
+        {
+            "fieldname": "linked_records_tab",
+            "fieldtype": "Tab Break",
+            "label": "Linked Records"
+        },
+        {
+            "fieldname": "linked_customers",
+            "fieldtype": "Table",
+            "label": "Linked Customers",
+            "options": "DISCOM Linked Customer"
+        },
+        {
+            "fieldname": "column_break_linked_1",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "application_portal_url",
+            "fieldtype": "Data",
+            "label": "Application Portal URL",
+            "options": "URL"
+        },
+        {
+            "fieldname": "processing_tat",
+            "fieldtype": "Int",
+            "label": "Processing TAT (days)",
+            "description": "Typical approval turnaround time"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-04-07 10:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Kaiten Erp",
+    "name": "DISCOM Master",
+    "naming_rule": "By fieldname",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "creation",
+    "sort_order": "DESC",
+    "states": [],
+    "title_field": "discom_name",
+    "search_fields": "discom_code,short_name,state",
+    "track_changes": 1
+}
