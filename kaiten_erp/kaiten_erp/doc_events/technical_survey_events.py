@@ -1437,6 +1437,7 @@ def assign_final_quotation_todo(doc):
             "reference_type": "Opportunity",
             "reference_name": opportunity_name,
             "description": description,
+            "role": "Sales Manager",
             "priority": "High",
             "status": "Open",
         }

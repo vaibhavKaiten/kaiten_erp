@@ -30,6 +30,8 @@ def on_update(job_file, method):
         # Set Job File Owner when "Start Job File" is clicked (Draft -> In Progress)
         # This can be overridden by subsequent users until final initiation
         if job_file.workflow_state == "In Progress":
+            _close_execution_manager_todos(job_file)  # Issue C: close if returning from Approval Pending
+            _close_start_job_file_todos(job_file)     # Issue F: close stale Sales Manager todos
             set_initiating_sales_manager(job_file, allow_override=True, final=False)
 
         # Handle Approval Pending state - Create ToDo for Execution Managers
@@ -38,7 +40,9 @@ def on_update(job_file, method):
             assign_to_execution_managers(job_file)
 
         if job_file.workflow_state == "Job File Initiated":
-          
+            _close_execution_manager_todos(job_file)  # Issue C: job file approved — close approval todos
+            _close_start_job_file_todos(job_file)     # Issue F: close stale Sales Manager todos
+
             # Set the FINAL Job File Owner (always override - this is the last action)
             set_initiating_sales_manager(job_file, allow_override=False, final=True)
 
@@ -448,13 +452,13 @@ def assign_to_execution_managers(job_file):
                     "reference_type": "Job File",
                     "reference_name": job_file.name,
                     "description": f"Job File {job_file.name} requires approval. Negotiated Amount (₹{job_file.negotiated_amount or 0:,.2f}) is less than MRP (₹{job_file.mrp or 0:,.2f}).",
+                    "role": "Execution Manager",
                     "priority": "High",
                     "status": "Open",
                 }
             )
             todo.flags.ignore_permissions = True
             todo.insert()
-            frappe.db.commit()
             assigned_count += 1
             print(f"    ✓ Successfully created ToDo: {todo.name}")
         except Exception as e:
@@ -549,7 +553,49 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
             )
 
     if assigned_count:
-        frappe.db.commit()
         frappe.logger("kaiten_erp").info(
             f"Created {assigned_count} Vendor Head ToDo(s) for Technical Survey {technical_survey_name}"
+        )
+
+
+def _close_execution_manager_todos(job_file):
+    """Close all Open Execution Manager ToDos for this Job File (Issue C)."""
+    todos = frappe.db.sql(
+        """
+        SELECT DISTINCT t.name
+        FROM `tabToDo` t
+        INNER JOIN `tabHas Role` hr ON hr.parent = t.allocated_to AND hr.parenttype = 'User'
+        WHERE t.reference_type = 'Job File'
+            AND t.reference_name = %(name)s
+            AND t.status = 'Open'
+            AND hr.role = 'Execution Manager'
+        """,
+        {"name": job_file.name},
+        as_dict=True,
+    )
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Execution Manager ToDo(s) for Job File {job_file.name}"
+        )
+
+
+def _close_start_job_file_todos(job_file):
+    """Close 'Start Job File' Sales Manager ToDos for this Job File (Issue F)."""
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Job File",
+            "reference_name": job_file.name,
+            "status": "Open",
+            "description": ["like", "%Start Job File%"],
+        },
+        fields=["name"],
+    )
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} 'Start Job File' ToDo(s) for Job File {job_file.name}"
         )
