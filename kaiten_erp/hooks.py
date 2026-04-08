@@ -289,6 +289,9 @@ doc_events = {
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_submit",
         "on_update_after_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_update_after_submit",
     },
+    "Sales Invoice": {
+        "validate": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.validate",
+    },
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_submit",
