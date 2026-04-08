@@ -26,20 +26,17 @@ def on_update(doc, method=None):
     if doc.has_value_changed("workflow_state"):
         new_workflow_state = doc.workflow_state
         
-        print(f"\n=== Lead Workflow State Changed ===")
-        print(f"Lead: {doc.name}")
-        print(f"New State: {new_workflow_state}")
-        print(f"Current User: {frappe.session.user}")
+
 
         # Set Lead Owner when "Mark Contacted" is clicked (Draft/Reopen -> Contacted)
         # This can be overridden by subsequent users until final qualification
         if new_workflow_state == "Contacted":
-            print("\n>>> 'Mark Contacted' action detected - Setting Lead Owner (can be overridden) <<<")
+          
             set_lead_owner(doc, allow_override=True, final=False)
 
         # Check if changed TO "Qualified" - FINAL action
         if new_workflow_state == "Qualified":
-            print("\n>>> 'Mark Qualified' action detected - Setting FINAL Lead Owner <<<")
+
             
             # Set the FINAL Lead Owner (always override - this is the last action)
             set_lead_owner(doc, allow_override=False, final=True)
