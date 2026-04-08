@@ -141,6 +141,7 @@ app_include_css = "/assets/kaiten_erp/css/quick_hide.css"
 # include js in doctype views
 doctype_js = {
     "Delivery Note": "public/js/delivery_note.js",
+    "Sales Invoice": "public/js/sales_invoice.js",
     "Supplier": "public/js/supplier.js",
     "Job File": "public/js/JobFile.js",
     "Sales Order": "public/js/sales_order.js",
@@ -262,6 +263,12 @@ has_permission = {
 }
 
 
+# Override whitelisted methods
+# ----------------------------
+override_whitelisted_methods = {
+    "erpnext.stock.doctype.delivery_note.delivery_note.make_sales_invoice": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.make_sales_invoice_from_dn",
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events
@@ -291,6 +298,7 @@ doc_events = {
         "on_update_after_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_update_after_submit",
     },
     "Sales Invoice": {
+        "before_insert": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.before_insert",
         "validate": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.validate",
     },
     "Delivery Note": {
