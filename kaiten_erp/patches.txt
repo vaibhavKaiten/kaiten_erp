@@ -32,4 +32,5 @@ kaiten_erp.patches.create_payment_milestone_todos
 kaiten_erp.patches.add_job_file_to_crm_sidebar
 kaiten_erp.patches.remove_tax_biffurication_fields
 kaiten_erp.patches.backfill_material_request_titles
+kaiten_erp.patches.update_discom_master_select_options
 
