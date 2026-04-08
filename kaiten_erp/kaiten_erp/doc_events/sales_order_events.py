@@ -39,6 +39,7 @@ def on_submit(doc, method=None):
     """
     create_material_request_from_technical_survey(doc)
     _close_source_quotation_todos(doc)
+    _close_create_sales_order_todos(doc)
     _create_payment_milestone_todos(doc)
     _create_stock_manager_transfer_todo(doc)
     _recalculate_job_file_profitability(doc)
@@ -62,6 +63,27 @@ def _close_source_quotation_todos(sales_order):
     """Close open follow-up ToDos for all Quotations that sourced this Sales Order."""
     for quotation_name in get_source_quotation_names(sales_order):
         close_quotation_todos(quotation_name)
+
+
+def _close_create_sales_order_todos(sales_order):
+    """Close 'Create Sales Order' ToDos on source Quotations when SO is submitted."""
+    for quotation_name in get_source_quotation_names(sales_order):
+        todos = frappe.db.get_all(
+            "ToDo",
+            filters={
+                "reference_type": "Quotation",
+                "reference_name": quotation_name,
+                "status": "Open",
+                "description": ["like", "%Create Sales Order%"],
+            },
+            fields=["name"],
+        )
+        for t in todos:
+            frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+        if todos:
+            frappe.logger("kaiten_erp").info(
+                f"Closed {len(todos)} 'Create Sales Order' ToDo(s) for Quotation {quotation_name} on SO {sales_order.name} submit"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -614,13 +636,11 @@ def get_source_quotation_name(sales_order):
 def get_source_quotation_names(sales_order):
     quotation_names = []
     for item in sales_order.get("items") or []:
-        quotation_name = item.get("quotation") or (
-            item.get("prevdoc_docname")
-            if item.get("prevdoc_doctype") == "Quotation"
-            else None
-        )
+        quotation_name = item.get("quotation") or item.get("prevdoc_docname")
         if quotation_name and quotation_name not in quotation_names:
-            quotation_names.append(quotation_name)
+            # Verify it is actually a Quotation (prevdoc_docname may lack prevdoc_doctype)
+            if frappe.db.exists("Quotation", quotation_name):
+                quotation_names.append(quotation_name)
     return quotation_names
 
 

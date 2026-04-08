@@ -2,6 +2,51 @@
  {
   "docstatus": 0,
   "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-04-08 13:43:58.194406",
+  "name": "Partially Delivered",
+  "style": "",
+  "workflow_state_name": "Partially Delivered"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-04-08 13:44:16.716639",
+  "name": "Delivered",
+  "style": "",
+  "workflow_state_name": "Delivered"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-04-08 13:44:38.222928",
+  "name": "Return",
+  "style": "",
+  "workflow_state_name": "Return"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-04-08 13:44:57.716754",
+  "name": "Return Issued",
+  "style": "",
+  "workflow_state_name": "Return Issued"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-04-08 13:45:15.082391",
+  "name": "Cancelled",
+  "style": "",
+  "workflow_state_name": "Cancelled"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
   "icon": "question-sign",
   "modified": "2026-03-03 15:46:32.334509",
   "name": "Pending",
@@ -84,15 +129,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-05 13:50:49.763623",
-  "name": "Assigned to Vendor",
-  "style": "",
-  "workflow_state_name": "Assigned to Vendor"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
   "modified": "2026-03-05 13:51:10.027273",
   "name": "In Progress",
   "style": "",
@@ -129,15 +165,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-05 13:56:04.620044",
-  "name": "Job File Initiated",
-  "style": "",
-  "workflow_state_name": "Job File Initiated"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
   "modified": "2026-04-06 13:01:21.348326",
   "name": "Open",
   "style": "",
@@ -151,5 +178,23 @@
   "name": "Draft",
   "style": "",
   "workflow_state_name": "Draft"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:50:49.763623",
+  "name": "Assigned to Vendor",
+  "style": "",
+  "workflow_state_name": "Assigned to Vendor"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:56:04.620044",
+  "name": "Job File Initiated",
+  "style": "",
+  "workflow_state_name": "Job File Initiated"
  }
 ]
