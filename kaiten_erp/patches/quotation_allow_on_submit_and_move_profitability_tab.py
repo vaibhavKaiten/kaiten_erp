@@ -19,7 +19,7 @@ def execute():
         frappe.get_doc(
             {
                 "doctype": "Property Setter",
-                "doctype_or_docfield": "DocField",
+                "doctype_or_field": "DocField",
                 "doc_type": "Quotation",
                 "field_name": "customer_name",
                 "property": "allow_on_submit",
