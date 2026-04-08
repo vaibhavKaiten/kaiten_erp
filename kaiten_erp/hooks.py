@@ -153,6 +153,7 @@ doctype_js = {
     "Verification Handover": "public/js/verification_handover.js",
     "Quotation": "public/js/quotation.js",
     "Opportunity": "public/js/opportunity.js",
+    "Material Request": "public/js/material_request.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -295,6 +296,9 @@ doc_events = {
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_submit",
+    },
+    "Material Request": {
+        "before_insert": "kaiten_erp.kaiten_erp.doc_events.material_request_events.before_insert",
     },
     "Stock Entry": {
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.stock_entry_events.on_submit",
