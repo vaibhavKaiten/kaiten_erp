@@ -158,7 +158,8 @@ def _close_all_milestone_todos(doc):
 # ---------------------------------------------------------------------------
 
 def _get_stock_manager_users():
-    """Return list of enabled Stock Manager user emails."""
+    """Return list of enabled Stock Manager user emails.
+    Falls back to Administrator if no dedicated Stock Manager users are configured."""
     rows = frappe.db.sql(
         """
         SELECT DISTINCT u.name
@@ -166,11 +167,15 @@ def _get_stock_manager_users():
         INNER JOIN `tabHas Role` hr ON hr.parent = u.name AND hr.parenttype = 'User'
         WHERE hr.role = 'Stock Manager'
           AND u.enabled = 1
-          AND u.name NOT IN ('Administrator', 'Guest')
+          AND u.name != 'Guest'
         """,
         as_dict=True,
     )
-    return [r.name for r in rows]
+    users = [r.name for r in rows]
+    if not users:
+        # Fallback: assign to Administrator so the task is never silently lost
+        users = ["Administrator"]
+    return users
 
 
 def _stock_transfer_todo_description(sales_order_name, customer_name, k_number):
