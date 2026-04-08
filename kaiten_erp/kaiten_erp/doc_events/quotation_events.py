@@ -58,6 +58,12 @@ def on_update_after_submit(doc, method=None):
     if curr_date and curr_date != prev_date:
         _reschedule_followup(doc)
 
+    # Customer Acceptance changed to "Yes" after submit
+    prev_acceptance = str(before.get("custom_customer_acceptance") or "")
+    curr_acceptance = str(doc.get("custom_customer_acceptance") or "")
+    if curr_acceptance == "Yes" and prev_acceptance != "Yes":
+        _handle_customer_acceptance(doc)
+
 
 # ---------------------------------------------------------------------------
 # Follow-up helpers
@@ -308,28 +314,149 @@ def on_submit(doc, method=None):
     means the Sales Manager has completed the relevant task.
     """
     opportunity_name = doc.opportunity
-    if not opportunity_name:
+    if opportunity_name:
+        todos = frappe.db.sql(
+            """
+            SELECT DISTINCT t.name
+            FROM `tabToDo` t
+            INNER JOIN `tabHas Role` hr ON hr.parent = t.allocated_to AND hr.parenttype = 'User'
+            WHERE t.reference_type = 'Opportunity'
+                AND t.reference_name = %(opportunity)s
+                AND t.status = 'Open'
+                AND hr.role = 'Sales Manager'
+            """,
+            {"opportunity": opportunity_name},
+            as_dict=True,
+        )
+        for t in todos:
+            frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+        if todos:
+            frappe.logger("kaiten_erp").info(
+                f"Closed {len(todos)} Sales Manager ToDo(s) for Opportunity {opportunity_name} on Quotation {doc.name} submit"
+            )
+
+    # Customer Acceptance ToDo handling
+    if doc.get("custom_customer_acceptance") == "Yes":
+        _handle_customer_acceptance(doc)
+
+
+# ---------------------------------------------------------------------------
+# Customer Acceptance ToDo helpers
+# ---------------------------------------------------------------------------
+
+def _handle_customer_acceptance(doc):
+    """Dispatch ToDo creation based on whether a Technical Survey is linked.
+
+    Case 1: No TS on Quotation → Vendor Head ToDo to initiate TS.
+    Case 2: TS is present → Sales Manager ToDo to create Sales Order.
+    """
+    if not doc.get("custom_technical_survey"):
+        _create_vendor_head_initiate_ts_todo(doc)
+    else:
+        _create_sales_order_todo(doc)
+
+
+def _create_vendor_head_initiate_ts_todo(doc):
+    """Case 1: Create ToDo for Vendor Head users to initiate Technical Survey.
+
+    The Technical Survey reference is fetched from the linked Job File.
+    Closes automatically when TS transitions to 'Assigned to Vendor'
+    (handled in technical_survey_events.close_open_todos_by_role).
+    """
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
         return
 
-    todos = frappe.db.sql(
-        """
-        SELECT DISTINCT t.name
-        FROM `tabToDo` t
-        INNER JOIN `tabHas Role` hr ON hr.parent = t.allocated_to AND hr.parenttype = 'User'
-        WHERE t.reference_type = 'Opportunity'
-            AND t.reference_name = %(opportunity)s
-            AND t.status = 'Open'
-            AND hr.role = 'Sales Manager'
-        """,
-        {"opportunity": opportunity_name},
-        as_dict=True,
+    ts_name = frappe.db.get_value("Job File", job_file_name, "custom_technical_survey")
+    if not ts_name:
+        return
+
+    customer_name = doc.get("customer_name") or doc.get("party_name") or doc.name
+
+    vendor_heads = frappe.get_all(
+        "Has Role",
+        filters={"role": "Vendor Head", "parenttype": "User"},
+        fields=["parent"],
     )
-    for t in todos:
-        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
-    if todos:
-        frappe.logger("kaiten_erp").info(
-            f"Closed {len(todos)} Sales Manager ToDo(s) for Opportunity {opportunity_name} on Quotation {doc.name} submit"
-        )
+
+    for head in vendor_heads:
+        user = head.parent
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+
+        # Duplicate guard
+        existing = frappe.db.exists("ToDo", {
+            "reference_type": "Technical Survey",
+            "reference_name": ts_name,
+            "allocated_to": user,
+            "status": "Open",
+        })
+        if existing:
+            continue
+
+        description = f"{customer_name} - {ts_name} - Initiate Technical Survey"
+
+        todo = frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "reference_type": "Technical Survey",
+            "reference_name": ts_name,
+            "role": "Vendor Head",
+            "description": description,
+            "priority": "High",
+            "status": "Open",
+        })
+        todo.flags.ignore_permissions = True
+        todo.insert()
+
+    frappe.logger("kaiten_erp").info(
+        f"Created Vendor Head 'Initiate TS' ToDo(s) for Technical Survey {ts_name} from Quotation {doc.name}"
+    )
+
+
+def _create_sales_order_todo(doc):
+    """Case 2: Create ToDo for the Sales Manager who submitted the Quotation
+    to create a Sales Order.
+
+    Closes automatically when the Sales Order is submitted
+    (handled in sales_order_events._close_create_sales_order_todos).
+    """
+    assigned_to = _get_followup_assignee(doc)
+
+    if not frappe.db.get_value("User", assigned_to, "enabled"):
+        return
+
+    customer_name = doc.get("customer_name") or doc.get("party_name") or doc.name
+    grand_total = doc.get("grand_total") or 0
+
+    # Duplicate guard
+    existing = frappe.db.exists("ToDo", {
+        "reference_type": "Quotation",
+        "reference_name": doc.name,
+        "allocated_to": assigned_to,
+        "status": "Open",
+        "description": ["like", "%Create Sales Order%"],
+    })
+    if existing:
+        return
+
+    description = f"Create Sales Order for {customer_name} | {doc.name} | ₹{grand_total:,.0f}"
+
+    todo = frappe.get_doc({
+        "doctype": "ToDo",
+        "allocated_to": assigned_to,
+        "reference_type": "Quotation",
+        "reference_name": doc.name,
+        "role": "Sales Manager",
+        "description": description,
+        "priority": "High",
+        "status": "Open",
+    })
+    todo.flags.ignore_permissions = True
+    todo.insert()
+    frappe.logger("kaiten_erp").info(
+        f"Created 'Create Sales Order' ToDo for {assigned_to} on Quotation {doc.name}"
+    )
 
 
 def _lock_final_approved_item_structure(doc):
