@@ -11,13 +11,26 @@ frappe.ui.form.on("Material Request", {
 });
 
 function _update_mr_title(frm) {
-    const customer_id = frm.doc.custom_source_customer || frm.doc.customer;
-
     const get_customer_name = (cb) => {
-        if (!customer_id) return cb("");
-        frappe.db.get_value("Customer", customer_id, "customer_name", (r) =>
-            cb(r && r.customer_name ? r.customer_name : customer_id)
-        );
+        const customer_id = frm.doc.custom_source_customer || frm.doc.customer;
+        if (customer_id) {
+            return frappe.db.get_value("Customer", customer_id, "customer_name", (r) =>
+                cb(r && r.customer_name ? r.customer_name : customer_id)
+            );
+        }
+        // Fallback: fetch customer from the linked Sales Order
+        if (frm.doc.custom_source_sales_order) {
+            return frappe.db.get_value(
+                "Sales Order", frm.doc.custom_source_sales_order, "customer",
+                (so_r) => {
+                    if (!so_r || !so_r.customer) return cb("");
+                    frappe.db.get_value("Customer", so_r.customer, "customer_name", (r) =>
+                        cb(r && r.customer_name ? r.customer_name : so_r.customer)
+                    );
+                }
+            );
+        }
+        return cb("");
     };
 
     const get_k_number = (cb) => {

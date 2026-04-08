@@ -30,6 +30,11 @@ def execute():
     for mr in mrs:
         # Resolve customer name
         customer_id = mr.custom_source_customer or mr.customer
+        # Fallback: fetch customer from the linked Sales Order
+        if not customer_id and mr.custom_source_sales_order:
+            customer_id = frappe.db.get_value(
+                "Sales Order", mr.custom_source_sales_order, "customer"
+            )
         customer_name = ""
         if customer_id:
             customer_name = (

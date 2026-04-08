@@ -25,7 +25,15 @@ def _set_title(doc):
 
 
 def _get_customer_name(doc):
-    customer_id = doc.get("custom_source_customer") or doc.get("customer")
+    customer_id = (
+        doc.get("custom_source_customer")
+        or doc.get("customer")
+    )
+    # Fallback: fetch customer from the linked Sales Order
+    if not customer_id and doc.get("custom_source_sales_order"):
+        customer_id = frappe.db.get_value(
+            "Sales Order", doc.get("custom_source_sales_order"), "customer"
+        )
     if not customer_id:
         return ""
     return frappe.db.get_value("Customer", customer_id, "customer_name") or customer_id
