@@ -160,6 +160,70 @@ def on_update(job_file, method):
             message = f"""Opportunity <b><a href=\"{opportunity_url}\">{opportunity.name}</a></b> and Execution Documents have been created successfully.<br><br>"""
             frappe.msgprint(message, title="Documents Created", indicator="green")
 
+    # Token Amount → Accounts Manager ToDo
+    if job_file.has_value_changed("token_amount_recieved") and job_file.token_amount_recieved:
+        _create_token_amount_todo(job_file)
+
+
+def _create_token_amount_todo(job_file):
+    """Create a ToDo for each Accounts Manager to make a Payment Entry
+    when Token Amount is filled on a Job File."""
+
+    if not job_file.customer:
+        return
+
+    customer_name = frappe.db.get_value("Customer", job_file.customer, "customer_name") or job_file.customer
+    k_number = job_file.k_number or job_file.name
+    amount = frappe.utils.fmt_money(job_file.token_amount_recieved, currency="INR")
+
+    description = f"{customer_name} - {k_number}. Create payment entry - {amount}"
+
+    accounts_managers = frappe.get_all(
+        "Has Role",
+        filters={"role": "Accounts Manager", "parenttype": "User"},
+        fields=["parent"],
+    )
+
+    if not accounts_managers:
+        return
+
+    for manager in accounts_managers:
+        user = manager.parent
+
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+
+        # Avoid duplicate open ToDos
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": "Customer",
+                "reference_name": job_file.customer,
+                "allocated_to": user,
+                "status": "Open",
+                "description": description,
+            },
+        )
+        if existing:
+            continue
+
+        todo = frappe.get_doc(
+            {
+                "doctype": "ToDo",
+                "allocated_to": user,
+                "reference_type": "Customer",
+                "reference_name": job_file.customer,
+                "description": description,
+                "role": "Accounts Manager",
+                "priority": "High",
+                "status": "Open",
+            }
+        )
+        todo.flags.ignore_permissions = True
+        todo.insert()
+
+    frappe.db.commit()
+
 
 def create_execution(
     doctype,
