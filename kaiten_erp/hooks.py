@@ -267,6 +267,7 @@ has_permission = {
 # ----------------------------
 override_whitelisted_methods = {
     "erpnext.stock.doctype.delivery_note.delivery_note.make_sales_invoice": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.make_sales_invoice_from_dn",
+    "erpnext.selling.doctype.quotation.quotation.make_sales_order": "kaiten_erp.kaiten_erp.doc_events.quotation_events.make_sales_order",
 }
 
 # Document Events
