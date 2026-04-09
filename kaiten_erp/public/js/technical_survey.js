@@ -22,6 +22,19 @@ function lock_system_config_if_approved(frm) {
     });
 }
 
+frappe.ui.form.on('BOM Item', {
+    qty: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        row.amount = flt(row.qty) * flt(row.rate);
+        frm.refresh_field('table_vctx');
+    },
+    rate: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        row.amount = flt(row.qty) * flt(row.rate);
+        frm.refresh_field('table_vctx');
+    }
+});
+
 frappe.ui.form.on('Technical Survey', {
     refresh: function (frm) {
         frm.set_df_property('tilt_deg', 'read_only', 1);
