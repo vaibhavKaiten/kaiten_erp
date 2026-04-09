@@ -492,3 +492,21 @@ def _lock_final_approved_item_structure(doc):
                     "Item code, quantity, and UOM are locked for Final Approved Quotation unless amended."
                 )
             )
+
+
+# ---------------------------------------------------------------------------
+# Sales Order creation guard
+# ---------------------------------------------------------------------------
+
+@frappe.whitelist()
+def make_sales_order(source_name, target_doc=None):
+    """Override ERPNext's make_sales_order to block creation when Technical Survey is missing."""
+    custom_ts = frappe.db.get_value("Quotation", source_name, "custom_technical_survey")
+    if not custom_ts:
+        frappe.throw(
+            _("Technical Survey is mandatory to create a Sales Order. Please link a Technical Survey to Quotation {0} first.").format(source_name),
+            title=_("Technical Survey Required"),
+        )
+
+    from erpnext.selling.doctype.quotation.quotation import make_sales_order as _erpnext_make_so
+    return _erpnext_make_so(source_name, target_doc)
