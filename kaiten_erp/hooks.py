@@ -361,6 +361,7 @@ doc_events = {
         "on_update": [
             "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.execution_events.update_job_file_on_approval",
         ],
     },
 }

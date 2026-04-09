@@ -53,8 +53,6 @@
         "column_break_tech_2",
         "applicable_connection_type",
         "feeder_type",
-        "meter_type_required",
-        "column_break_tech_3",
         "reverse_power_flow_allowed",
         "tariff_billing_tab",
         "tariff_order_year",
@@ -233,8 +231,7 @@
         {
             "fieldname": "officer_name",
             "fieldtype": "Data",
-            "label": "Officer Name",
-            "reqd": 1
+            "label": "Officer Name"
         },
         {
             "fieldname": "designation",
@@ -293,7 +290,7 @@
             "fieldname": "grid_voltage_level",
             "fieldtype": "Select",
             "label": "Grid Voltage Level",
-            "options": "\nLT (230V / 415V)\nHT\nEHT"
+            "options": "\nSingle Phase\nThree Phase\nLT (230V / 415V)\nHT\nEHT"
         },
         {
             "fieldname": "max_sanctioned_load",
@@ -333,23 +330,13 @@
             "fieldname": "applicable_connection_type",
             "fieldtype": "Select",
             "label": "Applicable Connection Type",
-            "options": "\nLT\nHT\nBoth"
+            "options": "\nSingle Phase\nThree Phase\nLT\nHT\nBoth ( LT & HT )"
         },
         {
             "fieldname": "feeder_type",
             "fieldtype": "Select",
             "label": "Feeder Type",
             "options": "\nUrban\nRural\nAgricultural\nMixed"
-        },
-        {
-            "fieldname": "meter_type_required",
-            "fieldtype": "Select",
-            "label": "Meter Type Required",
-            "options": "\nBi-directional (Net Meter)\nSmart Meter\nGross Meter\nDual Meter"
-        },
-        {
-            "fieldname": "column_break_tech_3",
-            "fieldtype": "Column Break"
         },
         {
             "fieldname": "reverse_power_flow_allowed",
