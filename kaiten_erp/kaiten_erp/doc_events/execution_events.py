@@ -213,3 +213,43 @@ def on_update(doc, method=None):
         frappe.logger("kaiten_erp").error(
             f"Failed to sync Job File execution status for {doc.doctype} {doc.name}: {str(e)}"
         )
+
+
+def update_job_file_on_approval(doc, method=None):
+    """
+    When a Verification Handover is approved, set the linked Job File's
+    workflow_state to "Completed".
+    """
+    import frappe
+
+    if doc.doctype != "Verification Handover" or doc.workflow_state != "Approved":
+        return
+
+    job_file = frappe.db.get_value(
+        "Job File",
+        {"custom_verification_handover": doc.name},
+        "name",
+    )
+
+    if not job_file:
+        frappe.logger("kaiten_erp").warning(
+            f"update_job_file_on_approval: No Job File linked to Verification Handover {doc.name}"
+        )
+        return
+
+    current_state = frappe.db.get_value("Job File", job_file, "workflow_state")
+    if current_state == "Completed":
+        return
+
+    frappe.db.set_value(
+        "Job File",
+        job_file,
+        "workflow_state",
+        "Completed",
+        update_modified=False,
+    )
+    # Clear the cache so subsequent reads reflect the new state
+    frappe.clear_document_cache("Job File", job_file)
+    frappe.logger("kaiten_erp").info(
+        f"Job File {job_file} workflow_state set to Completed (triggered by VH {doc.name} approval)"
+    )
