@@ -183,22 +183,28 @@ def _populate_saleable_item(doc):
         )
         return
 
-    # 6. Replace items table with the single saleable system item
+    # 6. Resolve income_account and cost_center for the saleable item
+    income_account = _get_income_account(saleable_item_code, doc.company)
+    cost_center = _get_cost_center(saleable_item_code, doc.company)
+
+    # 7. Replace items table with the single saleable system item
     doc.items = []
-    doc.append(
-        "items",
-        {
-            "item_code": saleable_item_code,
-            "item_name": item_details.item_name,
-            "qty": 1,
-            "uom": item_details.stock_uom,
-            "stock_uom": item_details.stock_uom,
-            "rate": so_grand_total,
-            "price_list_rate": so_grand_total,
-            "description": item_details.description or item_details.item_name,
-            "sales_order": so_name,
-        },
-    )
+    row_data = {
+        "item_code": saleable_item_code,
+        "item_name": item_details.item_name,
+        "qty": 1,
+        "uom": item_details.stock_uom,
+        "stock_uom": item_details.stock_uom,
+        "rate": so_grand_total,
+        "price_list_rate": so_grand_total,
+        "description": item_details.description or item_details.item_name,
+        "sales_order": so_name,
+    }
+    if income_account:
+        row_data["income_account"] = income_account
+    if cost_center:
+        row_data["cost_center"] = cost_center
+    doc.append("items", row_data)
 
     # 7. Populate header traceability custom fields
     doc.custom_technical_survey = ts_name
@@ -225,28 +231,62 @@ def make_sales_invoice_from_dn(source_name, target_doc=None, args=None):
         return si
 
     # Replace items with the single saleable item
+    income_account = _get_income_account(saleable["item_code"], si.company)
+    cost_center = _get_cost_center(saleable["item_code"], si.company)
     si.items = []
-    si.append(
-        "items",
-        {
-            "item_code": saleable["item_code"],
-            "item_name": saleable["item_name"],
-            "qty": saleable["qty"],
-            "uom": saleable["uom"],
-            "stock_uom": saleable["stock_uom"],
-            "conversion_factor": 1,
-            "rate": saleable["rate"],
-            "price_list_rate": saleable["price_list_rate"],
-            "description": saleable["description"],
-            "sales_order": saleable["sales_order"],
-            "delivery_note": source_name,
-        },
-    )
+    row_data = {
+        "item_code": saleable["item_code"],
+        "item_name": saleable["item_name"],
+        "qty": saleable["qty"],
+        "uom": saleable["uom"],
+        "stock_uom": saleable["stock_uom"],
+        "conversion_factor": 1,
+        "rate": saleable["rate"],
+        "price_list_rate": saleable["price_list_rate"],
+        "description": saleable["description"],
+        "sales_order": saleable["sales_order"],
+        "delivery_note": source_name,
+    }
+    if income_account:
+        row_data["income_account"] = income_account
+    if cost_center:
+        row_data["cost_center"] = cost_center
+    si.append("items", row_data)
 
     si.custom_technical_survey = saleable["technical_survey"]
     si.custom_sales_order = saleable["sales_order"]
 
     return si
+
+
+def _get_income_account(item_code, company):
+    """Resolve income_account for an item from Item Default or Company default."""
+    if item_code and company:
+        account = frappe.db.get_value(
+            "Item Default",
+            {"parent": item_code, "company": company},
+            "income_account",
+        )
+        if account:
+            return account
+    if company:
+        return frappe.db.get_value("Company", company, "default_income_account")
+    return None
+
+
+def _get_cost_center(item_code, company):
+    """Resolve cost_center for an item from Item Default or Company default."""
+    if item_code and company:
+        cc = frappe.db.get_value(
+            "Item Default",
+            {"parent": item_code, "company": company},
+            "buying_cost_center",
+        )
+        if cc:
+            return cc
+    if company:
+        return frappe.db.get_value("Company", company, "cost_center")
+    return None
 
 
 def validate(doc, method=None):
