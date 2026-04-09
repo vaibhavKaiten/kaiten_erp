@@ -313,6 +313,10 @@ doc_events = {
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.stock_entry_events.on_submit",
         "on_cancel": "kaiten_erp.kaiten_erp.doc_events.stock_entry_events.on_cancel",
     },
+    "Payment Entry": {
+        "on_submit": "kaiten_erp.kaiten_erp.doc_events.payment_entry_events.on_submit",
+        "on_cancel": "kaiten_erp.kaiten_erp.doc_events.payment_entry_events.on_cancel",
+    },
     
     # Execution DocTypes (Technical Survey , Structure Mounting, Project Installation, Meter Installation, Meter Commissioning, Verification Handover) - Workflow Validation & Vendor Continuity
     "Technical Survey": {
