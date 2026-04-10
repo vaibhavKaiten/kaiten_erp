@@ -300,7 +300,11 @@ def _create_payment_milestone_todos(doc):
     for row in milestones:
         amount = float(row.amount or 0)
         status = (row.status or "Pending")
-        if amount <= 0 or status == "Paid":
+        if amount <= 0:
+            continue
+        # If already Paid on submit, create PE ToDo instead of SI & PE ToDo
+        if status == "Paid":
+            _create_payment_entry_todo(doc, row)
             continue
 
         description = _milestone_todo_description(
@@ -364,9 +368,10 @@ def _sync_payment_milestone_todos(doc):
         status = row.status or "Pending"
         has_linked_doc = bool(row.get("invoice") or row.get("payment_entry"))
 
-        # 1. Status is Paid → close todos
+        # 1. Status is Paid → close "Create SI & PE" todos, create "Create Payment Entry" todo
         if status == "Paid":
             _close_milestone_todos(doc.name, row.milestone)
+            _create_payment_entry_todo(doc, row)
             continue
 
         # 2. Amount dropped to 0 with no linked invoice/PE → close todos
@@ -450,6 +455,86 @@ def _sync_payment_milestone_todos(doc):
 
     # ── Sync Stock Manager transfer ToDo ─────────────────────────────────────
     _create_stock_manager_transfer_todo(doc)
+
+
+# ---------------------------------------------------------------------------
+# Payment Entry ToDo helpers (created when milestone status → Paid)
+# ---------------------------------------------------------------------------
+
+def _payment_entry_todo_description(sales_order_name, milestone_label, amount, customer_name, k_number):
+    """Build a standardised ToDo description for a 'Create Payment Entry' task."""
+    k_part = f" - {k_number}" if k_number else ""
+    amt_fmt = frappe.utils.fmt_money(amount, currency="INR")
+    return (
+        f"Create Payment Entry for {customer_name}{k_part}"
+        f" | {milestone_label} {amt_fmt}"
+        f" | {sales_order_name}"
+    )
+
+
+def _open_payment_entry_todos(sales_order_name, milestone_label):
+    """Return Open Accounts Manager 'Create Payment Entry' ToDos for a milestone."""
+    return frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Sales Order",
+            "reference_name": sales_order_name,
+            "role": "Accounts Manager",
+            "status": "Open",
+            "description": ["like", f"Create Payment Entry for% | {milestone_label} %| {sales_order_name}"],
+        },
+        fields=["name", "description"],
+    )
+
+
+def _close_payment_entry_todos(sales_order_name, milestone_label):
+    """Close all Open 'Create Payment Entry' ToDos for a milestone on this SO."""
+    todos = _open_payment_entry_todos(sales_order_name, milestone_label)
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    return len(todos)
+
+
+def _create_payment_entry_todo(doc, row):
+    """Create 'Create Payment Entry' ToDos for Accounts Managers when a milestone becomes Paid."""
+    amount = float(row.amount or 0)
+    if amount <= 0:
+        return
+
+    managers = _get_accounts_manager_users()
+    if not managers:
+        return
+
+    customer_name, k_number = _get_so_customer_info(doc)
+    description = _payment_entry_todo_description(
+        doc.name, row.milestone, amount, customer_name, k_number
+    )
+
+    for user in managers:
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "role": "Accounts Manager",
+                "status": "Open",
+                "description": ["like", f"Create Payment Entry for% | {row.milestone} %| {doc.name}"],
+            },
+        )
+        if existing:
+            continue
+
+        frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "reference_type": "Sales Order",
+            "reference_name": doc.name,
+            "description": description,
+            "role": "Accounts Manager",
+            "priority": "High",
+            "status": "Open",
+        }).insert(ignore_permissions=True)
 
 
 def _close_structure_payment_todo_if_filled(doc):

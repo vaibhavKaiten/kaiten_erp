@@ -3834,11 +3834,11 @@
   "workflow_state": "Draft"
  },
  {
-  "completed_by": null,
-  "completed_by_role": null,
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
   "docstatus": 0,
   "doctype": "Workflow Action",
-  "modified": "2026-04-06 12:25:05.447736",
+  "modified": "2026-04-10 11:10:36.907165",
   "name": "tuukiksd4a",
   "permitted_roles": [
    {
@@ -3847,7 +3847,7 @@
   ],
   "reference_doctype": "Job File",
   "reference_name": "JOB-HANS-2026-00001",
-  "status": "Open",
+  "status": "Completed",
   "user": null,
   "workflow_state": "In Progress"
  },
@@ -33016,6 +33016,114 @@
   ],
   "reference_doctype": "Verification Handover",
   "reference_name": "Test-7987878-0320",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-10 11:10:36.935767",
+  "name": "1ahr5mcdha",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Hans-5758757855-0321",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-10 11:10:37.099837",
+  "name": "1ajcr9iru1",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "Hans-5758757855-0322",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-10 11:10:37.235181",
+  "name": "1akpi8o7k8",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "Hans-5758757855-0323",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-10 11:10:37.331672",
+  "name": "1alpd89gu4",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "Hans-5758757855-0324",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-10 11:10:37.441186",
+  "name": "1amtqfvumh",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "Hans-5758757855-0325",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-10 11:10:37.584200",
+  "name": "1an8scm4vh",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Hans-5758757855-0326",
   "status": "Open",
   "user": null,
   "workflow_state": "Draft"
