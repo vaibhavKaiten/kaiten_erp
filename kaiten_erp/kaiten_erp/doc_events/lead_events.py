@@ -489,40 +489,53 @@ def set_lead_owner(lead, allow_override=True, final=False):
 
 def get_user_from_sales_person(sales_person_name):
     """
-    Resolve User email from Sales Person via Employee linkage.
-    Sales Person → Employee → user_id
-    
-    Args:
-        sales_person_name: Name of the Sales Person
-        
-    Returns:
-        str: User email or None if not found/linked
+    Resolve User email from Sales Person.
+    Primary:  Sales Person → Employee → user_id
+    Fallback: Sales Person.sales_person_name matched against User.full_name
     """
     if not sales_person_name:
         return None
-    
-    # Primary: Get employee from Sales Person.employee field
-    employee = frappe.db.get_value("Sales Person", sales_person_name, "employee")
-    
-    
-    if not employee:
-        frappe.logger().warning(
-            f"Sales Person '{sales_person_name}' has no linked Employee. "
-            "Cannot resolve user for ToDo assignment."
+
+    sp_data = frappe.db.get_value(
+        "Sales Person", sales_person_name,
+        ["employee", "sales_person_name"], as_dict=True
+    )
+    if not sp_data:
+        frappe.msgprint(
+            _(f"Sales Person '{sales_person_name}' not found. ToDo not created."),
+            indicator="red", alert=True
         )
         return None
-    
-    # Get user_id from Employee
-    user_id = frappe.db.get_value("Employee", employee, "user_id")
-    
-    if not user_id:
+
+    # Primary: Employee → user_id
+    if sp_data.employee:
+        user_id = frappe.db.get_value("Employee", sp_data.employee, "user_id")
+        if user_id:
+            return user_id
         frappe.logger().warning(
-            f"Employee '{employee}' (linked to Sales Person '{sales_person_name}') "
-            "has no user_id. Cannot assign ToDo."
+            f"Employee '{sp_data.employee}' linked to Sales Person '{sales_person_name}' "
+            "has no User ID set."
         )
-        return None
-    
-    return user_id
+
+    # Fallback: match sales_person_name against User.full_name
+    if sp_data.sales_person_name:
+        uid = frappe.db.get_value(
+            "User", {"full_name": sp_data.sales_person_name, "enabled": 1}, "name"
+        )
+        if uid:
+            return uid
+
+    # Both paths failed — show a clear error so the admin knows what to fix
+    frappe.msgprint(
+        _(
+            "Could not resolve a User for Sales Person <b>{0}</b>. "
+            "Please ensure the Sales Person has a linked Employee with a User ID set, "
+            "or that the Sales Person name exactly matches a User's full name."
+        ).format(sales_person_name),
+        indicator="red",
+        title=_("ToDo Not Created"),
+    )
+    return None
 
 
 def assign_active_sales_manager(doc):
