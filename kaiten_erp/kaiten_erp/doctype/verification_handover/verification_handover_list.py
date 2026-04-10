@@ -41,6 +41,25 @@ def get_permission_query_conditions(user=None):
     ):
         return None
 
+    # Sales Manager: can only see VH docs they are explicitly assigned via ToDo
+    if "Sales Manager" in roles:
+        todos = frappe.db.sql(
+            """
+            SELECT DISTINCT reference_name
+            FROM `tabToDo`
+            WHERE reference_type = 'Verification Handover'
+              AND allocated_to = %s
+              AND status != 'Cancelled'
+            """,
+            (user,),
+            as_dict=True,
+        )
+        doc_names = [t.reference_name for t in todos]
+        if not doc_names:
+            return "`tabVerification Handover`.name = ''"
+        doc_list = ", ".join(frappe.db.escape(d) for d in doc_names)
+        return f"`tabVerification Handover`.name IN ({doc_list})"
+
     # Only vendor roles are allowed beyond this point
     is_vendor_manager = "Vendor Manager" in roles
     is_vendor_executive = "Vendor Executive" in roles

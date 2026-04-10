@@ -37,6 +37,10 @@ def has_permission(doc, ptype=None, user=None):
     if isinstance(doc, str):
         return True
 
+    # Sales Manager: access only if they have an active ToDo for this doc
+    if "Sales Manager" in roles:
+        return bool(_has_active_todo(user, doc.name))
+
     is_vendor_user = any(r in roles for r in ["Vendor Executive", "Vendor Manager"])
     if not is_vendor_user:
         return False

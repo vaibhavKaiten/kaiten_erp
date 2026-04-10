@@ -30,6 +30,11 @@ def _validate_verification_handover(doc, state):
     Sales Managers execute; Vendor Heads approve.
     """
     if state == "Assigned to Vendor":
+        if not doc.get("assigned_internal_user"):
+            frappe.throw(
+                frappe._("Please select an <b>Assigned Internal User</b> (Sales Manager) before marking this Verification Handover as 'Assigned to Vendor'."),
+                title=frappe._("Missing Assignment"),
+            )
         close_open_todos_by_role(doc, "Vendor Head")
         assign_to_sales_managers_for_execution(doc)
 
