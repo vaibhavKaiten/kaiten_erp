@@ -963,34 +963,26 @@ def assign_to_vendor_heads_for_approval(doc):
 
 def assign_to_sales_managers_for_execution(doc):
     """
-    Create ToDos for Sales Managers to execute the Verification Handover
-    and share the document with write permission so they can edit it.
+    Create a ToDo for the specifically assigned Sales Manager (assigned_internal_user)
+    to execute the Verification Handover, and share the document with write permission.
 
-    If assigned_internal_user is set, only that specific user is assigned.
-    Otherwise, all enabled Sales Manager users are assigned.
+    assigned_internal_user must be set before calling this function.
     """
-    # If a specific Sales Manager is selected, assign only to that user
     selected_user = getattr(doc, "assigned_internal_user", None)
-    if selected_user:
-        if not frappe.db.get_value("User", selected_user, "enabled"):
-            frappe.logger("kaiten_erp").warning(
-                f"Selected user {selected_user} is disabled. Skipping assignment for {doc.doctype} {doc.name}"
-            )
-            return
-        sales_managers = [{"user": selected_user}]
-    else:
-        sales_managers = frappe.db.sql(
-            """
-            SELECT DISTINCT u.name AS user
-            FROM `tabUser` u
-            INNER JOIN `tabHas Role` hr ON hr.parent = u.name AND hr.parenttype = 'User'
-            WHERE hr.role = 'Sales Manager'
-              AND u.enabled = 1
-              AND u.name NOT IN ('Administrator', 'Guest')
-              AND u.user_type = 'System User'
-            """,
-            as_dict=True,
+    if not selected_user:
+        frappe.logger("kaiten_erp").warning(
+            f"assign_to_sales_managers_for_execution: assigned_internal_user not set on "
+            f"{doc.doctype} {doc.name}. Skipping ToDo assignment."
         )
+        return
+
+    if not frappe.db.get_value("User", selected_user, "enabled"):
+        frappe.logger("kaiten_erp").warning(
+            f"Selected user {selected_user} is disabled. Skipping assignment for {doc.doctype} {doc.name}"
+        )
+        return
+
+    sales_managers = [{"user": selected_user}]
 
     if not sales_managers:
         frappe.logger("kaiten_erp").warning(
