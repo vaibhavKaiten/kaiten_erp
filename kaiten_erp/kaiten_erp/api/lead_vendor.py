@@ -211,6 +211,7 @@ def get_suppliers_in_territory(doctype, txt, searchfield, start, page_len, filte
 
 
 @frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
 def get_technical_vendors(doctype, txt, searchfield, start, page_len, filters):
     territory = filters.get("territory")
 
@@ -227,28 +228,28 @@ def get_technical_vendors(doctype, txt, searchfield, start, page_len, filters):
             ON st.parent = s.name
         WHERE
             s.disabled = 0
-            AND st.territory = %s
+            AND st.territory = %(territory)s
             AND st.status = 'Active'
             AND s.supplier_group IN (
                 'Structure and Project Installation Vendor',
                 'Solar Installation Vendor'
             )
             AND (
-                s.name LIKE %s
-                OR s.supplier_name LIKE %s
+                s.name LIKE %(txt)s
+                OR s.supplier_name LIKE %(txt)s
             )
         ORDER BY s.supplier_name
-        LIMIT %s OFFSET %s
-    """, (
-        territory,
-        f"%{txt}%",
-        f"%{txt}%",
-        page_len,
-        start
-    ))
+        LIMIT %(page_len)s OFFSET %(start)s
+    """, {
+        "territory": territory,
+        "txt": f"%{txt}%",
+        "start": start,
+        "page_len": page_len,
+    })
 
     
 @frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
 def get_meter_vendors(doctype, txt, searchfield, start, page_len, filters):
     territory = filters.get("territory")
 
@@ -265,25 +266,24 @@ def get_meter_vendors(doctype, txt, searchfield, start, page_len, filters):
             ON st.parent = s.name
         WHERE
             s.disabled = 0
-            AND st.territory = %s
+            AND st.territory = %(territory)s
             AND st.status = 'Active'
             AND s.supplier_group IN (
                 'Meter Installation & Commissioning Vendor',
                 'Solar Installation Vendor'
             )
             AND (
-                s.name LIKE %s
-                OR s.supplier_name LIKE %s
+                s.name LIKE %(txt)s
+                OR s.supplier_name LIKE %(txt)s
             )
         ORDER BY s.supplier_name
-        LIMIT %s OFFSET %s
-    """, (
-        territory,
-        f"%{txt}%",
-        f"%{txt}%",
-        page_len,
-        start
-    ))
+        LIMIT %(page_len)s OFFSET %(start)s
+    """, {
+        "territory": territory,
+        "txt": f"%{txt}%",
+        "start": start,
+        "page_len": page_len,
+    })
 
 
 @frappe.whitelist()

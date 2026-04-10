@@ -147,8 +147,9 @@
     },
     {
       "fieldname": "assigned_vendor",
-      "fieldtype": "Data",
-      "label": "Assigned Vendor"
+      "fieldtype": "Link",
+      "label": "Assigned Vendor",
+      "options": "Supplier"
     },
     {
       "fieldname": "column_break_gopt",
