@@ -5,6 +5,7 @@ frappe.ui.form.on("Technical Survey", {
 
 	onload(frm) {
 		set_vendor_user_filter(frm);
+		setup_assigned_vendor_filter(frm);
 		if (frm.doc.custom_job_file && frm.is_new()) {
 			fetch_job_file_data(frm);
 		}
@@ -12,6 +13,7 @@ frappe.ui.form.on("Technical Survey", {
 
 	refresh(frm) {
 		set_vendor_user_filter(frm);
+		setup_assigned_vendor_filter(frm);
 	},
 
 	custom_job_file(frm) {
@@ -24,9 +26,26 @@ frappe.ui.form.on("Technical Survey", {
 			frm.set_value('assigned_internal_user', '');
 		}
 		set_vendor_user_filter(frm);
+		setup_assigned_vendor_filter(frm);
 	}
 
 });
+
+
+function setup_assigned_vendor_filter(frm) {
+	const territory = frm.doc.territory;
+	if (!territory) return;
+
+	frm.set_query('assigned_vendor', function() {
+		return {
+			query: 'kaiten_erp.kaiten_erp.api.lead_vendor.get_technical_vendors',
+			filters: { territory: territory }
+		};
+	});
+
+	frm.set_df_property('assigned_vendor', 'description',
+		__('Technical vendors active in {0}', [territory]));
+}
 
 
 function fetch_job_file_data(frm) {

@@ -4,6 +4,7 @@
 frappe.ui.form.on('Structure Mounting', {
     refresh: function (frm) {
         setup_custom_location_log_link_formatter_structure_mounting(frm);
+        setup_assigned_vendor_filter_structure_mounting(frm);
 
         // Override the assignment functionality to filter users based on assigned_vendor
         if (frm.doc.assigned_vendor && !frm.is_new()) {
@@ -156,6 +157,12 @@ frappe.ui.form.on('Structure Mounting', {
         });
     },
 
+    assigned_vendor: function(frm) {
+        if (frm.doc.assigned_internal_user) {
+            frm.set_value('assigned_internal_user', '');
+        }
+    },
+
     before_workflow_action: async function(frm) {
         await capture_workflow_gps_structure_mounting(frm);
     }
@@ -208,6 +215,28 @@ async function capture_workflow_gps_structure_mounting(frm) {
     } finally {
         frappe.dom.unfreeze();
     }
+}
+
+function setup_assigned_vendor_filter_structure_mounting(frm) {
+    const job_file = frm.doc.custom_job_file || frm.doc.job_file;
+    if (!job_file) return;
+
+    frappe.db.get_value('Job File', job_file, ['custom_assignment_territory', 'territory'])
+        .then(r => {
+            if (!r || !r.message) return;
+            const territory = r.message.custom_assignment_territory || r.message.territory;
+            if (!territory) return;
+
+            frm.set_query('assigned_vendor', function() {
+                return {
+                    query: 'kaiten_erp.kaiten_erp.api.lead_vendor.get_technical_vendors',
+                    filters: { territory: territory }
+                };
+            });
+
+            frm.set_df_property('assigned_vendor', 'description',
+                __('Technical vendors active in {0}', [territory]));
+        });
 }
 
 function setup_custom_location_log_link_formatter_structure_mounting(frm) {
