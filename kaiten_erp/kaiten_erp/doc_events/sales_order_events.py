@@ -887,11 +887,20 @@ def _sf_check_delivery_after_structure_paid(doc):
 
 
 def _sf_create_vh_todo_for_next(job_file_name, next_doctype, jf_field):
-    """Create a Vendor Head todo to initiate the given next execution doctype."""
+    """Create a Vendor Head todo to initiate the given next execution doctype.
+
+    Skips if the target document's workflow has already progressed past Draft
+    (i.e. the execution step has already been initiated).
+    """
     from frappe.utils import nowdate
 
     next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
     if not next_doc_name:
+        return
+
+    # If the target doc is already past Draft, it has been initiated — skip
+    wf_state = frappe.db.get_value(next_doctype, next_doc_name, "workflow_state")
+    if wf_state and wf_state != "Draft":
         return
 
     customer_first_name = frappe.db.get_value("Job File", job_file_name, "first_name") or job_file_name
