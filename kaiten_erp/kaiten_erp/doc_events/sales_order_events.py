@@ -51,6 +51,7 @@ def on_update_after_submit(doc, method=None):
     _sync_payment_milestone_todos(doc)
     _sf_sync_todos(doc)
     _close_structure_payment_todo_if_filled(doc)
+    _close_final_payment_todo_if_filled(doc)
 
 
 def _recalculate_job_file_profitability(doc):
@@ -179,6 +180,9 @@ def _close_all_milestone_todos(doc):
     _close_stock_transfer_todos(doc.name)
     # Self Finance SM collect-payment ToDo
     _sf_close_collect_todos(doc)
+    # Self Finance: close Collect Final Payment and Transfer Remaining Materials todos
+    _sf_close_remaining_transfer_todos(doc.name)
+    _close_final_payment_sm_todos(doc.name)
 
 
 # ---------------------------------------------------------------------------
@@ -567,6 +571,38 @@ def _close_structure_payment_todo_if_filled(doc):
             return
 
 
+def _close_final_payment_todo_if_filled(doc):
+    """
+    Close the Sales Manager 'Collect Final Payment' ToDo when the
+    Final milestone row in custom_payment_plan has amount > 0.
+    """
+    for row in (doc.get("custom_payment_plan") or []):
+        if row.milestone == "Final" and float(row.amount or 0) > 0:
+            todos = frappe.db.get_all("ToDo", filters={
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "role": "Sales Manager",
+                "status": "Open",
+                "description": ["like", "Collect Final Payment%"],
+            }, fields=["name"])
+            for t in todos:
+                frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+            return
+
+
+def _close_final_payment_sm_todos(sales_order_name):
+    """Close SM 'Collect Final Payment' todos for this SO (used on cancel)."""
+    todos = frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": sales_order_name,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "Collect Final Payment%"],
+    }, fields=["name"])
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+
 # ---------------------------------------------------------------------------
 # Self Finance – Chained ToDo Workflow
 # ---------------------------------------------------------------------------
@@ -647,23 +683,58 @@ def _sf_close_collect_todos(doc):
 
 # ── AM Payment-Entry ToDo (Self Finance) ─────────────────────────────────
 
+# Map milestone name → action text for Self Finance AM todos
+_SF_MILESTONE_ACTION = {
+    "Advance": "Create the {milestone} payment entry of {amount}",
+    "Structure": "Create the Sales Invoice and do the payment entry of {amount}",
+    "Final": "Create the payment entry of {amount}",
+}
+
+
 def _sf_am_todo_description(customer_first_name, k_number, idx, milestone, amount):
-    """Build Self Finance AM description:
-    '{FirstName} - {KNumber}. Row {idx} - {Milestone} - ₹{Amount}'
+    """Build Self Finance AM description.
+    Uses action-based text per milestone, e.g.:
+      'Ram - K001. Create the Advance payment entry of ₹20,000'
+    Falls back to generic format for unknown milestones.
     """
     amt_fmt = frappe.utils.fmt_money(amount, currency="INR")
     k_part = f" - {k_number}" if k_number else ""
-    return f"{customer_first_name}{k_part}. Row {idx} - {milestone} - {amt_fmt}"
+    action_tpl = _SF_MILESTONE_ACTION.get(milestone)
+    if action_tpl:
+        action = action_tpl.format(milestone=milestone, amount=amt_fmt)
+    else:
+        action = f"Row {idx} - {milestone} - {amt_fmt}"
+    return f"{customer_first_name}{k_part}. {action}"
+
+
+def _sf_am_todo_like_pattern(milestone):
+    """Return a SQL LIKE pattern that matches any SF AM todo for a given milestone."""
+    action_tpl = _SF_MILESTONE_ACTION.get(milestone)
+    if action_tpl:
+        # e.g. "%. Create the Advance payment entry of%"
+        prefix = action_tpl.split("{amount}")[0].format(milestone=milestone)
+        return f"%. {prefix}%"
+    return f"%. Row % - {milestone} -%"
 
 
 def _sf_open_am_todos(sales_order_name, milestone):
-    return frappe.db.get_all("ToDo", filters={
+    base_filters = {
         "reference_type": "Sales Order",
         "reference_name": sales_order_name,
         "role": "Accounts Manager",
         "status": "Open",
-        "description": ["like", f"%. Row % - {milestone} -%"],
-    }, fields=["name", "description"])
+    }
+    new_pattern = _sf_am_todo_like_pattern(milestone)
+    todos = frappe.db.get_all("ToDo", filters={**base_filters, "description": ["like", new_pattern]},
+                              fields=["name", "description"])
+    # Also match legacy "Row X - Milestone - Amount" format for known milestones
+    old_pattern = f"%. Row % - {milestone} -%"
+    if old_pattern != new_pattern:
+        old_todos = frappe.db.get_all("ToDo", filters={**base_filters, "description": ["like", old_pattern]},
+                                      fields=["name", "description"])
+        seen = {t.name for t in todos}
+        todos.extend(t for t in old_todos if t.name not in seen)
+    return todos
 
 
 def _sf_close_am_todos(sales_order_name, milestone):
@@ -724,43 +795,32 @@ def _sf_sync_todos(doc):
         )
         existing_todos = _sf_open_am_todos(doc.name, row.milestone)
 
-        if existing_todos:
-            if existing_todos[0].get("description", "") != new_desc:
-                # Amount or idx changed — replace
-                _sf_close_am_todos(doc.name, row.milestone)
-                for user in managers:
-                    frappe.get_doc({
-                        "doctype": "ToDo",
-                        "allocated_to": user,
-                        "reference_type": "Sales Order",
-                        "reference_name": doc.name,
-                        "description": new_desc,
-                        "role": "Accounts Manager",
-                        "priority": "Medium",
-                        "status": "Open",
-                    }).insert(ignore_permissions=True)
-        else:
-            for user in managers:
-                existing = frappe.db.exists("ToDo", {
-                    "reference_type": "Sales Order",
-                    "reference_name": doc.name,
-                    "allocated_to": user,
-                    "role": "Accounts Manager",
-                    "status": "Open",
-                    "description": ["like", f"%. Row % - {row.milestone} -%"],
-                })
-                if existing:
-                    continue
-                frappe.get_doc({
-                    "doctype": "ToDo",
-                    "allocated_to": user,
-                    "reference_type": "Sales Order",
-                    "reference_name": doc.name,
-                    "description": new_desc,
-                    "role": "Accounts Manager",
-                    "priority": "Medium",
-                    "status": "Open",
-                }).insert(ignore_permissions=True)
+        # Close any stale/old-format todos that don't match the current description
+        for t in existing_todos:
+            if t.get("description", "") != new_desc:
+                frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+        # Create new todo for each AM user that doesn't already have one
+        for user in managers:
+            if frappe.db.exists("ToDo", {
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "allocated_to": user,
+                "role": "Accounts Manager",
+                "status": "Open",
+                "description": new_desc,
+            }):
+                continue
+            frappe.get_doc({
+                "doctype": "ToDo",
+                "allocated_to": user,
+                "reference_type": "Sales Order",
+                "reference_name": doc.name,
+                "description": new_desc,
+                "role": "Accounts Manager",
+                "priority": "Medium",
+                "status": "Open",
+            }).insert(ignore_permissions=True)
 
     # Close orphaned AM todos for deleted milestone rows
     all_open = frappe.db.get_all("ToDo", filters={
@@ -768,18 +828,167 @@ def _sf_sync_todos(doc):
         "reference_name": doc.name,
         "role": "Accounts Manager",
         "status": "Open",
-        "description": ["like", "%. Row % - % -%"],
     }, fields=["name", "description"])
     for todo in all_open:
         desc = todo.get("description", "")
-        todo_milestone = next(
-            (m for m in _MILESTONE_OPTIONS if f" - {m} - " in desc), None
-        )
+        todo_milestone = None
+        for m in _MILESTONE_OPTIONS:
+            action_tpl = _SF_MILESTONE_ACTION.get(m)
+            if action_tpl:
+                prefix = action_tpl.split("{amount}")[0].format(milestone=m)
+                if prefix in desc:
+                    todo_milestone = m
+                    break
+            elif f" - {m} - " in desc:
+                todo_milestone = m
+                break
         if todo_milestone and todo_milestone not in current_milestones:
             frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
 
     # Stock Manager transfer ToDo (fires when first row is Paid)
     _create_stock_manager_transfer_todo(doc)
+
+    # After Structure milestone is Paid, check delivery and trigger next step
+    _sf_check_delivery_after_structure_paid(doc)
+
+    # After Final milestone is Paid, create VH todo for Verification Handover
+    _sf_create_vh_todo_on_final_paid(doc)
+
+
+def _sf_check_delivery_after_structure_paid(doc):
+    """
+    After Structure milestone is Paid (Self Finance), check whether all TS items
+    have been delivered:
+      (a) All delivered → create VH todo for Project Installation
+      (b) Not all delivered → create Stock Manager todo for remaining material transfer
+    """
+    milestones = doc.get("custom_payment_plan") or []
+    structure_row = next((r for r in milestones if r.milestone == "Structure"), None)
+    if not structure_row or (structure_row.status or "Pending") != "Paid":
+        return
+
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        return
+
+    # Check delivery status on the SO
+    per_delivered = float(frappe.db.get_value("Sales Order", doc.name, "per_delivered") or 0)
+
+    if per_delivered >= 100.0:
+        # All items delivered — create VH todo for Project Installation
+        _sf_create_vh_todo_for_next(job_file_name, "Project Installation", "custom_project_installation")
+    else:
+        # Not all delivered — create Stock Manager todo for remaining transfer
+        _sf_create_remaining_transfer_todo(doc)
+
+
+def _sf_create_vh_todo_for_next(job_file_name, next_doctype, jf_field):
+    """Create a Vendor Head todo to initiate the given next execution doctype."""
+    from frappe.utils import nowdate
+
+    next_doc_name = frappe.db.get_value("Job File", job_file_name, jf_field)
+    if not next_doc_name:
+        return
+
+    customer_first_name = frappe.db.get_value("Job File", job_file_name, "first_name") or job_file_name
+
+    vendor_heads = frappe.get_all(
+        "Has Role",
+        filters={"role": "Vendor Head", "parenttype": "User"},
+        fields=["parent as user"],
+    )
+    if not vendor_heads:
+        return
+
+    description = f"{customer_first_name} - {next_doc_name} - Initiate {next_doctype}"
+
+    for vh in vendor_heads:
+        user = vh.user
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        if frappe.db.exists("ToDo", {
+            "reference_type": next_doctype,
+            "reference_name": next_doc_name,
+            "allocated_to": user,
+            "status": "Open",
+        }):
+            continue
+        frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "description": description,
+            "reference_type": next_doctype,
+            "reference_name": next_doc_name,
+            "role": "Vendor Head",
+            "priority": "High",
+            "status": "Open",
+            "date": nowdate(),
+        }).insert(ignore_permissions=True)
+
+
+def _sf_create_remaining_transfer_todo(doc):
+    """Create Stock Manager todo to transfer remaining materials (partial delivery)."""
+    customer_name, k_number = _get_so_customer_info(doc)
+    k_part = f" ({k_number})" if k_number else ""
+    description = (
+        f"Transfer Remaining Materials"
+        f" - {customer_name}{k_part}"
+        f" | {doc.name}"
+    )
+
+    managers = _get_stock_manager_users()
+    for user in managers:
+        if frappe.db.exists("ToDo", {
+            "reference_type": "Sales Order",
+            "reference_name": doc.name,
+            "allocated_to": user,
+            "role": "Stock Manager",
+            "status": "Open",
+            "description": ["like", "Transfer Remaining Materials%"],
+        }):
+            continue
+        frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "reference_type": "Sales Order",
+            "reference_name": doc.name,
+            "description": description,
+            "role": "Stock Manager",
+            "priority": "High",
+            "status": "Open",
+        }).insert(ignore_permissions=True)
+
+
+def _sf_close_remaining_transfer_todos(sales_order_name):
+    """Close Stock Manager 'Transfer Remaining Materials' todos for this SO."""
+    todos = frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": sales_order_name,
+        "role": "Stock Manager",
+        "status": "Open",
+        "description": ["like", "Transfer Remaining Materials%"],
+    }, fields=["name"])
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+
+def _sf_create_vh_todo_on_final_paid(doc):
+    """
+    When the Final milestone status becomes 'Paid' (Self Finance),
+    create a VH todo for Verification Handover.
+    """
+    milestones = doc.get("custom_payment_plan") or []
+    final_row = next((r for r in milestones if r.milestone == "Final"), None)
+    if not final_row or (final_row.status or "Pending") != "Paid":
+        return
+
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        return
+
+    _sf_create_vh_todo_for_next(
+        job_file_name, "Verification Handover", "custom_verification_handover"
+    )
 
 
 def link_technical_survey_to_sales_order(sales_order):

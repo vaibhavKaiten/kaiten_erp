@@ -13,6 +13,7 @@ import frappe
 from kaiten_erp.kaiten_erp.doc_events.sales_order_events import (
     _close_stock_transfer_todos,
     _create_stock_manager_transfer_todo,
+    _sf_close_remaining_transfer_todos,
 )
 
 
@@ -78,6 +79,7 @@ def on_submit(doc, method=None):
 
         if mr_status in ("Transferred", "Partially Received"):
             _close_stock_transfer_todos(sales_order)
+            _sf_close_remaining_transfer_todos(sales_order)
             frappe.logger("kaiten_erp").info(
                 f"Closed Stock Manager transfer ToDos for Sales Order {sales_order} "
                 f"— MR {mr_name} is now {mr_status}"
