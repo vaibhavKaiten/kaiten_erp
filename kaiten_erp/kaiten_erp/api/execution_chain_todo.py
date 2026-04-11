@@ -59,6 +59,13 @@ def on_update(doc, method=None):
     if not next_doctype:
         return
 
+    # Structure Mounting Approved → only create PI todo if Structure milestone is Paid
+    if doc.doctype == "Structure Mounting" and next_doctype == "Project Installation":
+        if not _structure_milestone_is_paid(doc):
+            # PI todo will be created later by _sf_check_delivery_after_structure_paid
+            # (triggered when AM marks the Structure milestone as Paid on the Sales Order)
+            return
+
     # Self Finance intercept: MC Approved → SM "Collect Final Payment" instead of VH todo
     if doc.doctype == "Meter Commissioning" and next_doctype == "Verification Handover":
         if _sf_intercept_mc_approved(doc):
@@ -163,6 +170,38 @@ def _create_vendor_head_todos(doc, next_doctype):
             alert=True,
             indicator="blue",
         )
+
+
+# ---------------------------------------------------------------------------
+# Structure Mounting: gate PI todo on Structure milestone being Paid
+# ---------------------------------------------------------------------------
+
+def _structure_milestone_is_paid(doc):
+    """
+    Return True if the Sales Order linked to this Structure Mounting doc has its
+    'Structure' payment milestone marked as 'Paid'.
+
+    Falls through (returns True) when no payment plan / no Structure row exists,
+    so orders without a payment plan are unaffected and proceed normally.
+    """
+    job_file_name = doc.get("job_file") or doc.get("custom_job_file")
+    if not job_file_name:
+        return True  # Can't check — let normal chain proceed
+
+    so_name = frappe.db.get_value("Job File", job_file_name, "sales_order")
+    if not so_name:
+        return True  # No SO linked — let normal chain proceed
+
+    milestones = frappe.db.get_all(
+        "Payment Milestone",
+        filters={"parent": so_name, "parenttype": "Sales Order", "milestone": "Structure"},
+        fields=["status"],
+        limit=1,
+    )
+    if not milestones:
+        return True  # No Structure milestone row — proceed normally
+
+    return (milestones[0].status or "Pending") == "Paid"
 
 
 # ---------------------------------------------------------------------------
