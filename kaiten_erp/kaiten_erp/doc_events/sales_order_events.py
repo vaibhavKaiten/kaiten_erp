@@ -248,16 +248,20 @@ def _close_stock_transfer_todos(sales_order_name):
 
 def _create_stock_manager_transfer_todo(doc):
     """
-    Create Stock Manager ToDos when the first payment milestone row (idx=1) is Paid.
+    Create Stock Manager ToDos when the Advance payment milestone is Paid.
     Deduplicates — will not create a second todo if one is already open.
+
+    Gate: only proceeds when the Advance milestone row status == 'Paid'.
+    Falls through (allows creation) if no Advance row exists so
+    non-standard payment plans are unaffected.
     """
     milestones = doc.get("custom_payment_plan") or []
     if not milestones:
         return
 
-    # Find the first row (lowest idx)
-    first_row = min(milestones, key=lambda r: r.idx)
-    if (first_row.status or "Pending") != "Paid":
+    # Gate on the Advance milestone being Paid (by name, not by idx)
+    advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
+    if advance_row and (advance_row.status or "Pending") != "Paid":
         return
 
     managers = _get_stock_manager_users()

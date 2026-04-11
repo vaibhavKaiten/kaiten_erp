@@ -109,9 +109,9 @@ def on_cancel(doc, method=None):
             if not milestones:
                 continue
 
-            first_row = min(milestones, key=lambda r: r.idx)
-            if (first_row.status or "Pending") == "Paid":
-                # First milestone is still paid — recreate the transfer ToDo
+            advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
+            if advance_row and (advance_row.status or "Pending") == "Paid":
+                # Advance milestone is still paid — recreate the transfer ToDo
                 _create_stock_manager_transfer_todo(so_doc)
                 frappe.logger("kaiten_erp").info(
                     f"Recreated Stock Manager transfer ToDo for Sales Order {sales_order} "
