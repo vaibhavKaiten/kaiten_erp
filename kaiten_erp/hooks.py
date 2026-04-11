@@ -306,6 +306,7 @@ doc_events = {
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_submit",
+        "on_cancel": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.on_cancel",
     },
     "Material Request": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.material_request_events.before_insert",
