@@ -150,8 +150,14 @@ def validate(doc, method=None):
 
 
 def on_submit(doc, method=None):
-    """Close Stock Manager todos when Delivery Note is submitted."""
+    """Close Stock Manager todos and sync SO delivery % when Delivery Note is submitted."""
     _close_delivery_note_todos(doc)
+    _sync_so_delivery_percent(doc)
+
+
+def on_cancel(doc, method=None):
+    """Re-sync SO delivery % when Delivery Note is cancelled."""
+    _sync_so_delivery_percent(doc)
 
 
 def _close_delivery_note_todos(doc):
@@ -331,6 +337,7 @@ def populate_items_from_technical_survey(doc, method=None):
                     "warehouse": meta["warehouse"],
                     "rate": rate,
                     "price_list_rate": rate,
+                    "against_sales_order": sales_order_name,
                 }
             )
 
@@ -365,6 +372,100 @@ def populate_items_from_technical_survey(doc, method=None):
         ).format(technical_survey_name, len(remaining_items)),
         alert=True,
         indicator="green",
+    )
+
+
+def _sync_so_delivery_percent(doc):
+    """
+    Manually compute per_delivered on the linked Sales Order based on
+    how much of the Technical Survey BOM items have been delivered.
+
+    Needed because SO items (saleable item, qty=1) differ from DN items
+    (BOM components), so ERPNext's standard update_delivery_status cannot
+    calculate per_delivered correctly.
+    """
+    so_name = get_linked_sales_order(doc)
+    if not so_name:
+        return
+
+    ts_name = frappe.db.get_value("Sales Order", so_name, "custom_technical_survey")
+    if not ts_name:
+        return  # No TS — let standard ERPNext mechanism handle it
+
+    ts = frappe.get_doc("Technical Survey", ts_name)
+
+    # Build survey qty map
+    survey_items = {}
+
+    def _add(item_code, qty_raw):
+        if not item_code:
+            return
+        try:
+            qty = float(qty_raw or 0)
+        except (ValueError, TypeError):
+            return
+        if qty <= 0:
+            return
+        survey_items[item_code] = survey_items.get(item_code, 0.0) + qty
+
+    if ts.panel:
+        _add(ts.panel, ts.panel_qty_bom)
+    if ts.inverter:
+        _add(ts.inverter, ts.inverter_qty_bom)
+    if ts.battery:
+        _add(ts.battery, ts.battery_qty_bom)
+    for row in ts.get("table_vctx") or []:
+        _add(row.item_code, row.qty)
+
+    if not survey_items:
+        return
+
+    total_survey_qty = sum(survey_items.values())
+    if total_survey_qty <= 0:
+        return
+
+    # Sum delivered qty from all submitted DNs for this SO
+    delivered_rows = frappe.db.sql(
+        """
+        SELECT dni.item_code, SUM(dni.qty) AS delivered_qty
+        FROM `tabDelivery Note Item` dni
+        INNER JOIN `tabDelivery Note` dn ON dn.name = dni.parent
+        WHERE dn.docstatus = 1
+          AND (
+              dni.against_sales_order = %(so)s
+              OR dn.against_sales_order = %(so)s
+          )
+        GROUP BY dni.item_code
+        """,
+        {"so": so_name},
+        as_dict=True,
+    )
+    delivered_map = {r.item_code: float(r.delivered_qty or 0) for r in delivered_rows}
+
+    # Cap each item at survey qty to avoid >100%
+    total_delivered = sum(
+        min(delivered_map.get(item_code, 0.0), qty)
+        for item_code, qty in survey_items.items()
+    )
+
+    per_delivered = round((total_delivered / total_survey_qty) * 100, 2)
+    per_delivered = min(per_delivered, 100.0)
+
+    if per_delivered >= 100.0:
+        delivery_status = "Fully Delivered"
+    elif per_delivered > 0:
+        delivery_status = "Partly Delivered"
+    else:
+        delivery_status = "Not Delivered"
+
+    frappe.db.set_value(
+        "Sales Order",
+        so_name,
+        {
+            "per_delivered": per_delivered,
+            "delivery_status": delivery_status,
+        },
+        update_modified=False,
     )
 
 
