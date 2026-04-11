@@ -8,7 +8,7 @@ from kaiten_erp.kaiten_erp.doc_events.tax_bifurcation import fill_tax_bifurcatio
 
 
 def before_insert(doc, method=None):
-    _populate_saleable_item(doc)
+    pass
 
 
 @frappe.whitelist()
@@ -213,50 +213,12 @@ def _populate_saleable_item(doc):
 
 @frappe.whitelist()
 def make_sales_invoice_from_dn(source_name, target_doc=None, args=None):
-    """Override ERPNext's make_sales_invoice to replace BOM items with the
-    single saleable system item from the linked Technical Survey."""
+    """Pass-through to ERPNext's standard make_sales_invoice. DN items are preserved as-is."""
     from erpnext.stock.doctype.delivery_note.delivery_note import (
         make_sales_invoice as _original_make_sales_invoice,
     )
 
-    si = _original_make_sales_invoice(source_name, target_doc=target_doc, args=args)
-
-    # Resolve SO from DN header
-    so_name = frappe.db.get_value("Delivery Note", source_name, "against_sales_order")
-    if not so_name:
-        return si
-
-    saleable = get_saleable_item_for_si(delivery_note=source_name, sales_order=so_name)
-    if not saleable:
-        return si
-
-    # Replace items with the single saleable item
-    income_account = _get_income_account(saleable["item_code"], si.company)
-    cost_center = _get_cost_center(saleable["item_code"], si.company)
-    si.items = []
-    row_data = {
-        "item_code": saleable["item_code"],
-        "item_name": saleable["item_name"],
-        "qty": saleable["qty"],
-        "uom": saleable["uom"],
-        "stock_uom": saleable["stock_uom"],
-        "conversion_factor": 1,
-        "rate": saleable["rate"],
-        "price_list_rate": saleable["price_list_rate"],
-        "description": saleable["description"],
-        "sales_order": saleable["sales_order"],
-        "delivery_note": source_name,
-    }
-    if income_account:
-        row_data["income_account"] = income_account
-    if cost_center:
-        row_data["cost_center"] = cost_center
-    si.append("items", row_data)
-
-    si.custom_technical_survey = saleable["technical_survey"]
-    si.custom_sales_order = saleable["sales_order"]
-
-    return si
+    return _original_make_sales_invoice(source_name, target_doc=target_doc, args=args)
 
 
 def _get_income_account(item_code, company):

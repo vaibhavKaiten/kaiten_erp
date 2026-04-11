@@ -40504,5 +40504,221 @@
   "status": "Open",
   "user": null,
   "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:21.942554",
+  "name": "r8gbn3904b",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-NAVY2-2026-00002",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:23.885961",
+  "name": "rebuetaicp",
+  "permitted_roles": [
+   {
+    "role": "Sales Manager"
+   }
+  ],
+  "reference_doctype": "Job File",
+  "reference_name": "JOB-NAVY2-2026-00002",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:56.304094",
+  "name": "reueuc7oqj",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Navy2-8587587558-0333",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:24.030717",
+  "name": "rf0q5ml0rl",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Structure Mounting",
+  "reference_name": "Navy2-8587587558-0334",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:24.119193",
+  "name": "rf1ctdjikf",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Project Installation",
+  "reference_name": "Navy2-8587587558-0335",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:24.202063",
+  "name": "rf2v9rcqse",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Installation",
+  "reference_name": "Navy2-8587587558-0336",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:24.276367",
+  "name": "rf21hfk2jj",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Meter Commissioning",
+  "reference_name": "Navy2-8587587558-0337",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": null,
+  "completed_by_role": null,
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:24.349091",
+  "name": "rf38vvtd2e",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Verification Handover",
+  "reference_name": "Navy2-8587587558-0338",
+  "status": "Open",
+  "user": null,
+  "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:24:58.777120",
+  "name": "rp3dnlprhv",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Navy2-8587587558-0333",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:25:01.410285",
+  "name": "rprln046k7",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Navy2-8587587558-0333",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:25:03.183810",
+  "name": "rqmt0c5enm",
+  "permitted_roles": [
+   {
+    "role": "Vendor Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Navy2-8587587558-0333",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-11 13:25:04.665959",
+  "name": "rr7uva0pqg",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "Navy2-8587587558-0333",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
  }
 ]
