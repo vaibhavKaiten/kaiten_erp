@@ -41,6 +41,7 @@ def on_submit(doc, method=None):
     _close_source_quotation_todos(doc)
     _close_create_sales_order_todos(doc)
     _create_payment_milestone_todos(doc)
+    _sf_create_collect_payment_todo(doc)
     _create_stock_manager_transfer_todo(doc)
     _recalculate_job_file_profitability(doc)
 
@@ -48,6 +49,7 @@ def on_submit(doc, method=None):
 def on_update_after_submit(doc, method=None):
     """Handle Payment Milestone changes after Sales Order is submitted."""
     _sync_payment_milestone_todos(doc)
+    _sf_sync_todos(doc)
     _close_structure_payment_todo_if_filled(doc)
 
 
@@ -156,7 +158,8 @@ def _close_milestone_todos(sales_order_name, milestone_label):
 
 
 def _close_all_milestone_todos(doc):
-    """Close all Open Accounts Manager payment milestone ToDos and Stock Manager transfer ToDos for this SO."""
+    """Close all Open Accounts Manager payment milestone ToDos, Stock Manager transfer ToDos,
+    and Self Finance SM collect-payment ToDos for this SO."""
     todos = frappe.db.get_all(
         "ToDo",
         filters={
@@ -174,6 +177,8 @@ def _close_all_milestone_todos(doc):
             f"Closed {len(todos)} Accounts Manager milestone ToDo(s) for Sales Order {doc.name} on cancel"
         )
     _close_stock_transfer_todos(doc.name)
+    # Self Finance SM collect-payment ToDo
+    _sf_close_collect_todos(doc)
 
 
 # ---------------------------------------------------------------------------
@@ -286,7 +291,10 @@ def _create_stock_manager_transfer_todo(doc):
 
 
 def _create_payment_milestone_todos(doc):
-    """Create Accounts Manager ToDos for all unpaid milestones with amount > 0 on submit."""
+    """Create Accounts Manager ToDos for all unpaid milestones with amount > 0 on submit.
+    Skipped for Self Finance — handled by _sf_sync_todos chain."""
+    if _is_self_finance(doc):
+        return
     milestones = doc.get("custom_payment_plan") or []
     if not milestones:
         return
@@ -343,6 +351,7 @@ def _sync_payment_milestone_todos(doc):
     """
     Called on_update_after_submit. Syncs open Accounts Manager ToDos with the
     current state of each Payment Milestone row.
+    Skipped for Self Finance — handled by _sf_sync_todos chain.
 
     Rules per row:
     - status == 'Paid'              → close all open todos for that milestone
@@ -355,6 +364,8 @@ def _sync_payment_milestone_todos(doc):
     After processing all current rows, close todos for milestone names that no longer
     exist in the table (deleted rows).
     """
+    if _is_self_finance(doc):
+        return
     managers = _get_accounts_manager_users()
     if not managers:
         return
@@ -554,6 +565,221 @@ def _close_structure_payment_todo_if_filled(doc):
             for t in todos:
                 frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
             return
+
+
+# ---------------------------------------------------------------------------
+# Self Finance – Chained ToDo Workflow
+# ---------------------------------------------------------------------------
+# Flow:
+#   Submit (SF) → SM (collect payment) → SM fills amount → AM (create PE)
+#   → AM marks Paid → AM ToDo closed → Stock Manager (transfer material)
+# ---------------------------------------------------------------------------
+
+_MILESTONE_OPTIONS = ["Advance", "Structure", "Final", "Margin", "Tranche 1", "Tranche 2"]
+
+
+def _is_self_finance(doc):
+    """Return True if the Sales Order finance type is Self Finance."""
+    return (doc.get("custom_finance_type") or "").strip() == "Self Finance"
+
+
+def _get_customer_first_name(customer_name):
+    """Extract first name from customer_name (e.g. 'Ram Chandra' → 'Ram')."""
+    return (customer_name or "").split()[0] if customer_name else ""
+
+
+# ── SM Collect-Payment ToDo (Self Finance) ───────────────────────────────
+
+def _sf_collect_todo_description(customer_name, sales_order_name):
+    return f"Collect payment from {customer_name} | {sales_order_name}"
+
+
+def _sf_create_collect_payment_todo(doc):
+    """On submit (Self Finance): create SM ToDo for job file owner to collect payment."""
+    if not _is_self_finance(doc):
+        return
+
+    job_file = doc.get("custom_job_file")
+    if not job_file:
+        return
+    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
+    if not owner or not frappe.db.get_value("User", owner, "enabled"):
+        return
+
+    customer_name, _ = _get_so_customer_info(doc)
+    description = _sf_collect_todo_description(customer_name, doc.name)
+
+    existing = frappe.db.exists("ToDo", {
+        "reference_type": "Sales Order",
+        "reference_name": doc.name,
+        "allocated_to": owner,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "Collect payment from%"],
+    })
+    if existing:
+        return
+
+    frappe.get_doc({
+        "doctype": "ToDo",
+        "allocated_to": owner,
+        "reference_type": "Sales Order",
+        "reference_name": doc.name,
+        "description": description,
+        "role": "Sales Manager",
+        "priority": "Medium",
+        "status": "Open",
+    }).insert(ignore_permissions=True)
+
+
+def _sf_close_collect_todos(doc):
+    """Close SM collect-payment ToDo(s) for this SO."""
+    todos = frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": doc.name,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "Collect payment from%"],
+    }, fields=["name"])
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+
+# ── AM Payment-Entry ToDo (Self Finance) ─────────────────────────────────
+
+def _sf_am_todo_description(customer_first_name, k_number, idx, milestone, amount):
+    """Build Self Finance AM description:
+    '{FirstName} - {KNumber}. Row {idx} - {Milestone} - ₹{Amount}'
+    """
+    amt_fmt = frappe.utils.fmt_money(amount, currency="INR")
+    k_part = f" - {k_number}" if k_number else ""
+    return f"{customer_first_name}{k_part}. Row {idx} - {milestone} - {amt_fmt}"
+
+
+def _sf_open_am_todos(sales_order_name, milestone):
+    return frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": sales_order_name,
+        "role": "Accounts Manager",
+        "status": "Open",
+        "description": ["like", f"%. Row % - {milestone} -%"],
+    }, fields=["name", "description"])
+
+
+def _sf_close_am_todos(sales_order_name, milestone):
+    todos = _sf_open_am_todos(sales_order_name, milestone)
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+    return len(todos)
+
+
+# ── Self Finance sync (on_update_after_submit) ───────────────────────────
+
+def _sf_sync_todos(doc):
+    """
+    Self Finance sync — called on every post-submit save.
+
+    1. First row amount > 0 → close SM collect-payment ToDo
+    2. Row amount > 0, not Paid → create / update AM ToDo
+    3. Row Paid → close AM ToDo (Stock Manager handled separately)
+    """
+    if not _is_self_finance(doc):
+        return
+
+    milestones = doc.get("custom_payment_plan") or []
+    if not milestones:
+        return
+
+    # 1. Close SM collect-payment ToDo when first milestone has amount
+    first_row = min(milestones, key=lambda r: r.idx)
+    if float(first_row.amount or 0) > 0:
+        _sf_close_collect_todos(doc)
+
+    # 2 & 3. Sync AM ToDos per row
+    managers = _get_accounts_manager_users()
+    if not managers:
+        return
+
+    customer_name, k_number = _get_so_customer_info(doc)
+    customer_first_name = _get_customer_first_name(customer_name)
+    current_milestones = {row.milestone for row in milestones}
+
+    for row in milestones:
+        amount = float(row.amount or 0)
+        status = row.status or "Pending"
+
+        # Paid → close AM ToDo
+        if status == "Paid":
+            _sf_close_am_todos(doc.name, row.milestone)
+            continue
+
+        # Amount dropped to 0 → close AM ToDo
+        if amount <= 0:
+            _sf_close_am_todos(doc.name, row.milestone)
+            continue
+
+        # Amount > 0 and not Paid → ensure AM ToDo exists
+        new_desc = _sf_am_todo_description(
+            customer_first_name, k_number, row.idx, row.milestone, amount
+        )
+        existing_todos = _sf_open_am_todos(doc.name, row.milestone)
+
+        if existing_todos:
+            if existing_todos[0].get("description", "") != new_desc:
+                # Amount or idx changed — replace
+                _sf_close_am_todos(doc.name, row.milestone)
+                for user in managers:
+                    frappe.get_doc({
+                        "doctype": "ToDo",
+                        "allocated_to": user,
+                        "reference_type": "Sales Order",
+                        "reference_name": doc.name,
+                        "description": new_desc,
+                        "role": "Accounts Manager",
+                        "priority": "Medium",
+                        "status": "Open",
+                    }).insert(ignore_permissions=True)
+        else:
+            for user in managers:
+                existing = frappe.db.exists("ToDo", {
+                    "reference_type": "Sales Order",
+                    "reference_name": doc.name,
+                    "allocated_to": user,
+                    "role": "Accounts Manager",
+                    "status": "Open",
+                    "description": ["like", f"%. Row % - {row.milestone} -%"],
+                })
+                if existing:
+                    continue
+                frappe.get_doc({
+                    "doctype": "ToDo",
+                    "allocated_to": user,
+                    "reference_type": "Sales Order",
+                    "reference_name": doc.name,
+                    "description": new_desc,
+                    "role": "Accounts Manager",
+                    "priority": "Medium",
+                    "status": "Open",
+                }).insert(ignore_permissions=True)
+
+    # Close orphaned AM todos for deleted milestone rows
+    all_open = frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": doc.name,
+        "role": "Accounts Manager",
+        "status": "Open",
+        "description": ["like", "%. Row % - % -%"],
+    }, fields=["name", "description"])
+    for todo in all_open:
+        desc = todo.get("description", "")
+        todo_milestone = next(
+            (m for m in _MILESTONE_OPTIONS if f" - {m} - " in desc), None
+        )
+        if todo_milestone and todo_milestone not in current_milestones:
+            frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+    # Stock Manager transfer ToDo (fires when first row is Paid)
+    _create_stock_manager_transfer_todo(doc)
 
 
 def link_technical_survey_to_sales_order(sales_order):
