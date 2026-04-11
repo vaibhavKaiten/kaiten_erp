@@ -246,14 +246,35 @@ def _close_stock_transfer_todos(sales_order_name):
         )
 
 
+def _primary_mr_already_transferred(doc):
+    """Return True if the primary Material Request for this SO is already Transferred.
+
+    The primary MR is the one created from the Technical Survey linked to the SO.
+    If no MR is found, returns False (allow todo creation).
+    """
+    ts_name = doc.get("custom_technical_survey")
+    if not ts_name:
+        return False
+
+    mr_data = frappe.db.get_value(
+        "Material Request",
+        {"custom_source_technical_survey": ts_name, "docstatus": 1},
+        "status",
+    )
+    if not mr_data:
+        return False
+
+    return mr_data in ("Transferred", "Received", "Partially Received")
+
+
 def _create_stock_manager_transfer_todo(doc):
     """
     Create Stock Manager ToDos when the Advance payment milestone is Paid.
     Deduplicates — will not create a second todo if one is already open.
 
-    Gate: only proceeds when the Advance milestone row status == 'Paid'.
-    Falls through (allows creation) if no Advance row exists so
-    non-standard payment plans are unaffected.
+    Gates:
+      1. Advance milestone must be Paid (falls through if no Advance row).
+      2. Primary Material Request must NOT already be fully transferred.
     """
     milestones = doc.get("custom_payment_plan") or []
     if not milestones:
@@ -262,6 +283,10 @@ def _create_stock_manager_transfer_todo(doc):
     # Gate on the Advance milestone being Paid (by name, not by idx)
     advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
     if advance_row and (advance_row.status or "Pending") != "Paid":
+        return
+
+    # Gate: skip if the primary Material Request is already fully transferred
+    if _primary_mr_already_transferred(doc):
         return
 
     managers = _get_stock_manager_users()
