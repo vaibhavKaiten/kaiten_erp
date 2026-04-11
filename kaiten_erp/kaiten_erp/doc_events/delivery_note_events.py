@@ -498,7 +498,10 @@ def _sf_create_structure_mounting_vh_todo(doc):
     """
     When a Delivery Note is submitted for a Self Finance Sales Order,
     create a Vendor Head todo to Initiate Structure Mounting.
-    Only fires once — skips if a VH todo already exists for that SM doc.
+
+    Skips if:
+      - Structure Mounting is already Approved (e.g. second DN for remaining items)
+      - A VH todo already exists for that SM doc (dedup inside _sf_create_vh_todo_for_next)
     """
     so_name = get_linked_sales_order(doc)
     if not so_name:
@@ -513,6 +516,13 @@ def _sf_create_structure_mounting_vh_todo(doc):
     job_file_name = frappe.db.get_value("Sales Order", so_name, "custom_job_file")
     if not job_file_name:
         return
+
+    # If Structure Mounting is already Approved, skip — this is a later DN (remaining items)
+    sm_name = frappe.db.get_value("Job File", job_file_name, "custom_structure_mounting")
+    if sm_name:
+        sm_state = frappe.db.get_value("Structure Mounting", sm_name, "workflow_state")
+        if sm_state == "Approved":
+            return
 
     from kaiten_erp.kaiten_erp.doc_events.sales_order_events import _sf_create_vh_todo_for_next
     _sf_create_vh_todo_for_next(job_file_name, "Structure Mounting", "custom_structure_mounting")
