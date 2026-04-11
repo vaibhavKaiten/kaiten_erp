@@ -150,9 +150,11 @@ def validate(doc, method=None):
 
 
 def on_submit(doc, method=None):
-    """Close Stock Manager todos and sync SO delivery % when Delivery Note is submitted."""
+    """Close Stock Manager todos, sync SO delivery %, and trigger SF chain todos."""
     _close_delivery_note_todos(doc)
     _sync_so_delivery_percent(doc)
+    _sf_create_structure_mounting_vh_todo(doc)
+    _sf_check_remaining_delivery_and_create_pi_todo(doc)
 
 
 def on_cancel(doc, method=None):
@@ -486,3 +488,79 @@ def get_linked_sales_order(delivery_note):
             return item.against_sales_order
 
     return None
+
+
+# ---------------------------------------------------------------------------
+# Self Finance: VH "Initiate Structure Mounting" on first DN submit
+# ---------------------------------------------------------------------------
+
+def _sf_create_structure_mounting_vh_todo(doc):
+    """
+    When a Delivery Note is submitted for a Self Finance Sales Order,
+    create a Vendor Head todo to Initiate Structure Mounting.
+
+    Skips if:
+      - Structure Mounting is already Approved (e.g. second DN for remaining items)
+      - A VH todo already exists for that SM doc (dedup inside _sf_create_vh_todo_for_next)
+    """
+    so_name = get_linked_sales_order(doc)
+    if not so_name:
+        return
+
+    # Check Self Finance
+    finance_type = frappe.db.get_value("Sales Order", so_name, "custom_finance_type")
+    if (finance_type or "").strip() != "Self Finance":
+        return
+
+    # Get Job File from SO
+    job_file_name = frappe.db.get_value("Sales Order", so_name, "custom_job_file")
+    if not job_file_name:
+        return
+
+    # If Structure Mounting is already Approved, skip — this is a later DN (remaining items)
+    sm_name = frappe.db.get_value("Job File", job_file_name, "custom_structure_mounting")
+    if sm_name:
+        sm_state = frappe.db.get_value("Structure Mounting", sm_name, "workflow_state")
+        if sm_state == "Approved":
+            return
+
+    from kaiten_erp.kaiten_erp.doc_events.sales_order_events import _sf_create_vh_todo_for_next
+    _sf_create_vh_todo_for_next(job_file_name, "Structure Mounting", "custom_structure_mounting")
+
+
+def _sf_check_remaining_delivery_and_create_pi_todo(doc):
+    """
+    After a DN is submitted for a Self Finance SO where Structure is Paid
+    and all items are now delivered, close the 'Transfer Remaining Materials'
+    Stock Manager todo and create a VH todo for Project Installation.
+    """
+    so_name = get_linked_sales_order(doc)
+    if not so_name:
+        return
+
+    finance_type = frappe.db.get_value("Sales Order", so_name, "custom_finance_type")
+    if (finance_type or "").strip() != "Self Finance":
+        return
+
+    # Only act if Structure milestone is Paid
+    so_doc = frappe.get_doc("Sales Order", so_name)
+    milestones = so_doc.get("custom_payment_plan") or []
+    structure_row = next((r for r in milestones if r.milestone == "Structure"), None)
+    if not structure_row or (structure_row.status or "Pending") != "Paid":
+        return
+
+    per_delivered = float(frappe.db.get_value("Sales Order", so_name, "per_delivered") or 0)
+    if per_delivered < 100.0:
+        return
+
+    job_file_name = so_doc.get("custom_job_file")
+    if not job_file_name:
+        return
+
+    # Close remaining transfer todos
+    from kaiten_erp.kaiten_erp.doc_events.sales_order_events import (
+        _sf_close_remaining_transfer_todos,
+        _sf_create_vh_todo_for_next,
+    )
+    _sf_close_remaining_transfer_todos(so_name)
+    _sf_create_vh_todo_for_next(job_file_name, "Project Installation", "custom_project_installation")

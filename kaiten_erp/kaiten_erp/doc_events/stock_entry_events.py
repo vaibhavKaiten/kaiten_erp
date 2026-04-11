@@ -13,6 +13,7 @@ import frappe
 from kaiten_erp.kaiten_erp.doc_events.sales_order_events import (
     _close_stock_transfer_todos,
     _create_stock_manager_transfer_todo,
+    _sf_close_remaining_transfer_todos,
 )
 
 
@@ -76,11 +77,12 @@ def on_submit(doc, method=None):
         mr_status = info["status"]
         sales_order = info["sales_order"]
 
-        if mr_status == "Transferred":
+        if mr_status in ("Transferred", "Partially Received"):
             _close_stock_transfer_todos(sales_order)
+            _sf_close_remaining_transfer_todos(sales_order)
             frappe.logger("kaiten_erp").info(
                 f"Closed Stock Manager transfer ToDos for Sales Order {sales_order} "
-                f"— MR {mr_name} is now Transferred"
+                f"— MR {mr_name} is now {mr_status}"
             )
 
 
@@ -107,9 +109,9 @@ def on_cancel(doc, method=None):
             if not milestones:
                 continue
 
-            first_row = min(milestones, key=lambda r: r.idx)
-            if (first_row.status or "Pending") == "Paid":
-                # First milestone is still paid — recreate the transfer ToDo
+            advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
+            if advance_row and (advance_row.status or "Pending") == "Paid":
+                # Advance milestone is still paid — recreate the transfer ToDo
                 _create_stock_manager_transfer_todo(so_doc)
                 frappe.logger("kaiten_erp").info(
                     f"Recreated Stock Manager transfer ToDo for Sales Order {sales_order} "
