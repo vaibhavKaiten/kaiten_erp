@@ -37564,7 +37564,7 @@
   "name": "Sales Order-custom_so_delivery_status",
   "no_copy": 0,
   "non_negative": 0,
-  "options": "To Deliver and Bill\nPartially Delivered\nTo Bill\nCompleted\nCancelled\nClosed\nOn Hold",
+  "options": "To Deliver and Bill\nPartially Delivered\nTo Bill\nDelivered\nCancelled\nClosed\nOn Hold",
   "permlevel": 0,
   "placeholder": null,
   "precision": "",

@@ -455,10 +455,13 @@ def _sync_so_delivery_percent(doc):
 
     if per_delivered >= 100.0:
         delivery_status = "Fully Delivered"
+        custom_delivery_status = "Delivered"
     elif per_delivered > 0:
         delivery_status = "Partly Delivered"
+        custom_delivery_status = "Partially Delivered"
     else:
         delivery_status = "Not Delivered"
+        custom_delivery_status = "To Deliver and Bill"
 
     frappe.db.set_value(
         "Sales Order",
@@ -466,6 +469,7 @@ def _sync_so_delivery_percent(doc):
         {
             "per_delivered": per_delivered,
             "delivery_status": delivery_status,
+            "custom_so_delivery_status": custom_delivery_status,
         },
         update_modified=False,
     )
