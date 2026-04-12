@@ -165,6 +165,32 @@ def on_update(job_file, method):
     if job_file.has_value_changed("token_amount_recieved") and job_file.token_amount_recieved:
         _create_token_amount_todo(job_file)
 
+    # Link customer to DISCOM Master when discom is set/changed
+    if job_file.discom and job_file.customer:
+        _link_customer_to_discom(job_file)
+
+
+def _link_customer_to_discom(job_file):
+    """Add Job File's customer to the DISCOM Master's Linked Customers table (if not already present)."""
+    discom = frappe.get_doc("DISCOM Master", job_file.discom)
+
+    # Check if this customer + job_file combination already exists
+    already_linked = any(
+        row.customer == job_file.customer and row.job_file == job_file.name
+        for row in discom.linked_customers
+    )
+    if already_linked:
+        return
+
+    discom.append("linked_customers", {
+        "customer": job_file.customer,
+        "job_file": job_file.name,
+        "status": "Pending",
+    })
+    discom.flags.ignore_permissions = True
+    discom.flags.ignore_validate = True
+    discom.save()
+
 
 def _create_token_amount_todo(job_file):
     """Create a ToDo for each Accounts Manager to make a Payment Entry

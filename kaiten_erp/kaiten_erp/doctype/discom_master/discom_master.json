@@ -437,7 +437,8 @@
             "fieldname": "linked_customers",
             "fieldtype": "Table",
             "label": "Linked Customers",
-            "options": "DISCOM Linked Customer"
+            "options": "DISCOM Linked Customer",
+            "allow_on_submit": 1
         },
         {
             "fieldname": "column_break_linked_1",

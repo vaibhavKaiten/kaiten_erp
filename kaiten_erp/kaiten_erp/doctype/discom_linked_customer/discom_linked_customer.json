@@ -4,7 +4,9 @@
     "doctype": "DocType",
     "engine": "InnoDB",
     "field_order": [
-        "customer"
+        "customer",
+        "job_file",
+        "status"
     ],
     "fields": [
         {
@@ -14,6 +16,23 @@
             "label": "Customer",
             "options": "Customer",
             "reqd": 1
+        },
+        {
+            "fieldname": "job_file",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Job File",
+            "options": "Job File",
+            "read_only": 1
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Status",
+            "options": "Pending\nIN Progress\nCompleted\nFailed",
+            "default": "Pending",
+            "allow_on_submit": 1
         }
     ],
     "index_web_pages_for_search": 1,
