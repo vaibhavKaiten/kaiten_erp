@@ -29708,7 +29708,7 @@
   "insert_after": "custom_property_ownership_document",
   "is_system_generated": 0,
   "is_virtual": 0,
-  "label": "Property Photo",
+  "label": "Property Photo with Geo tagging",
   "length": 0,
   "link_filters": null,
   "mandatory_depends_on": null,
