@@ -4801,6 +4801,23 @@
     "translatable": 0,
     "unique": 0,
     "width": null
+   },
+   {
+    "fieldname": "job_file",
+    "fieldtype": "Link",
+    "in_list_view": 1,
+    "label": "Job File",
+    "options": "Job File",
+    "read_only": 1
+   },
+   {
+    "allow_on_submit": 1,
+    "default": "Pending",
+    "fieldname": "status",
+    "fieldtype": "Select",
+    "in_list_view": 1,
+    "label": "Status",
+    "options": "Pending\nIN Progress\nCompleted\nFailed"
    }
   ],
   "force_re_route_to_default_view": 0,
