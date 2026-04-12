@@ -34,4 +34,5 @@ kaiten_erp.patches.remove_tax_biffurication_fields
 kaiten_erp.patches.backfill_material_request_titles
 kaiten_erp.patches.update_discom_master_select_options
 kaiten_erp.patches.quotation_allow_on_submit_and_move_profitability_tab
+kaiten_erp.patches.rename_property_photo_label
 
