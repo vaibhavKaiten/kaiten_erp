@@ -165,31 +165,91 @@ def on_update(job_file, method):
     if job_file.has_value_changed("token_amount_recieved") and job_file.token_amount_recieved:
         _create_token_amount_todo(job_file)
 
-    # Link customer to DISCOM Master when discom is set/changed
+    # Sync customer ↔ DISCOM link (only when a DISCOM is or was set)
+    if job_file.customer and (job_file.discom or (job_file.get_doc_before_save() or frappe._dict()).get("discom")):
+        _sync_customer_discom_link(job_file)
+
+
+def on_trash(job_file, method):
+    """When a Job File is deleted, remove its customer from the DISCOM linked table."""
     if job_file.discom and job_file.customer:
-        _link_customer_to_discom(job_file)
+        _remove_customer_from_discom(job_file.customer, job_file.discom)
 
 
-def _link_customer_to_discom(job_file):
-    """Add Job File's customer to the DISCOM Master's Linked Customers table (if not already present)."""
-    discom = frappe.get_doc("DISCOM Master", job_file.discom)
+def _sync_customer_discom_link(job_file):
+    """Sync customer link in DISCOM Master's Linked Customers table.
 
-    # Check if this customer + job_file combination already exists
-    already_linked = any(
-        row.customer == job_file.customer and row.job_file == job_file.name
-        for row in discom.linked_customers
-    )
-    if already_linked:
+    Handles:
+    - First save with DISCOM set → add customer row
+    - DISCOM changed from A to B → remove from A, add to B
+    - DISCOM cleared → remove from old DISCOM
+    - Repeated saves without change → no-op (DB-level dedup)
+    """
+    old_doc = job_file.get_doc_before_save()
+    old_discom = (old_doc.discom if old_doc else None) or None
+    new_discom = job_file.discom or None
+
+    # Nothing to do
+    if not old_discom and not new_discom:
         return
 
-    discom.append("linked_customers", {
-        "customer": job_file.customer,
-        "job_file": job_file.name,
+    # DISCOM unchanged → ensure link exists (idempotent, single DB check)
+    if old_discom == new_discom:
+        if new_discom:
+            _ensure_customer_in_discom(job_file.customer, new_discom, job_file.name)
+        return
+
+    # DISCOM changed → remove from old, add to new
+    if old_discom:
+        _remove_customer_from_discom(job_file.customer, old_discom)
+
+    if new_discom:
+        _ensure_customer_in_discom(job_file.customer, new_discom, job_file.name)
+
+
+def _ensure_customer_in_discom(customer, discom_name, job_file_name):
+    """Add customer to DISCOM's Linked Customers if not already present (dedup by customer)."""
+    existing = frappe.db.get_value(
+        "DISCOM Linked Customer",
+        {"parent": discom_name, "parenttype": "DISCOM Master", "customer": customer},
+        ["name", "job_file"],
+        as_dict=True,
+    )
+    if existing:
+        # Backfill job_file if it was missing from older rows
+        if not existing.job_file and job_file_name:
+            frappe.db.set_value(
+                "DISCOM Linked Customer", existing.name,
+                "job_file", job_file_name, update_modified=False,
+            )
+        return
+
+    discom_doc = frappe.get_doc("DISCOM Master", discom_name)
+    discom_doc.append("linked_customers", {
+        "customer": customer,
+        "job_file": job_file_name,
         "status": "Pending",
     })
-    discom.flags.ignore_permissions = True
-    discom.flags.ignore_validate = True
-    discom.save()
+    discom_doc.flags.ignore_permissions = True
+    discom_doc.flags.ignore_validate = True
+    discom_doc.save()
+
+
+def _remove_customer_from_discom(customer, discom_name):
+    """Remove a customer's row from a DISCOM Master's Linked Customers table."""
+    if not frappe.db.exists("DISCOM Master", discom_name):
+        return
+
+    discom_doc = frappe.get_doc("DISCOM Master", discom_name)
+    before = len(discom_doc.linked_customers)
+    discom_doc.linked_customers = [
+        row for row in discom_doc.linked_customers
+        if row.customer != customer
+    ]
+    if len(discom_doc.linked_customers) < before:
+        discom_doc.flags.ignore_permissions = True
+        discom_doc.flags.ignore_validate = True
+        discom_doc.save()
 
 
 def _create_token_amount_todo(job_file):
