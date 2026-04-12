@@ -278,7 +278,8 @@ override_whitelisted_methods = {
 doc_events = {
     "Lead": {"on_update": "kaiten_erp.kaiten_erp.doc_events.lead_events.on_update"},
     "Job File": {
-        "on_update": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_update"
+        "on_update": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_update",
+        "on_trash": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_trash",
     },
     "Sales Order": {
         "validate": "kaiten_erp.kaiten_erp.doc_events.sales_order_events.validate",

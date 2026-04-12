@@ -469,14 +469,14 @@ def assign_to_vendor_managers(doc):
             title=_("Validation Error"),
         )
 
-    # Check for existing ToDos dynamically
+    # Check for existing *Open* ToDos dynamically
     existing_todos = frappe.db.sql(
         """
         SELECT DISTINCT allocated_to
         FROM `tabToDo`
         WHERE reference_type = %(doctype)s
             AND reference_name = %(doc_name)s
-            AND status != 'Cancelled'
+            AND status = 'Open'
         """,
         {"doctype": doc.doctype, "doc_name": doc.name},
         as_dict=True,
