@@ -423,8 +423,10 @@ def _create_payment_milestone_todos(doc):
         if amount <= 0:
             continue
         # If already Paid on submit, create PE ToDo instead of SI & PE ToDo
+        # (Bank Loan: AM creates PE before marking Paid, so skip)
         if status == "Paid":
-            _create_payment_entry_todo(doc, row)
+            if not _is_bank_loan(doc):
+                _create_payment_entry_todo(doc, row)
             continue
 
         description = _milestone_todo_description(
@@ -491,10 +493,13 @@ def _sync_payment_milestone_todos(doc):
         status = row.status or "Pending"
         has_linked_doc = bool(row.get("invoice") or row.get("payment_entry"))
 
-        # 1. Status is Paid → close "Create SI & PE" todos, create "Create Payment Entry" todo
+        # 1. Status is Paid → close "Create SI & PE" todos
+        #    For non-BL: also create "Create Payment Entry" todo
+        #    For Bank Loan: AM already created PE before marking Paid — skip
         if status == "Paid":
             _close_milestone_todos(doc.name, row.milestone)
-            _create_payment_entry_todo(doc, row)
+            if not _is_bank_loan(doc):
+                _create_payment_entry_todo(doc, row)
             continue
 
         # 2. Amount dropped to 0 with no linked invoice/PE → close todos
@@ -722,9 +727,30 @@ def _close_final_payment_sm_todos(sales_order_name):
 _MILESTONE_OPTIONS = ["Advance", "Structure", "Final", "Margin", "Tranche 1", "Tranche 2"]
 
 
+def _resolve_finance_type(value):
+    """Resolve the finance type from a custom_finance_type field value.
+
+    The field may contain a raw finance type ("Self Finance", "Bank Loan")
+    from old records, or a Payment Milestone Template name from new records.
+    Returns the canonical finance type string.
+    """
+    value = (value or "").strip()
+    if not value:
+        return ""
+    if value in ("Self Finance", "Bank Loan"):
+        return value
+    ft = frappe.db.get_value("Payment Milestone Template", value, "finance_type")
+    return (ft or "").strip()
+
+
 def _is_self_finance(doc):
     """Return True if the Sales Order finance type is Self Finance."""
-    return (doc.get("custom_finance_type") or "").strip() == "Self Finance"
+    return _resolve_finance_type(doc.get("custom_finance_type")) == "Self Finance"
+
+
+def _is_bank_loan(doc):
+    """Return True if the Sales Order finance type is Bank Loan."""
+    return _resolve_finance_type(doc.get("custom_finance_type")) == "Bank Loan"
 
 
 def _get_customer_first_name(customer_name):
