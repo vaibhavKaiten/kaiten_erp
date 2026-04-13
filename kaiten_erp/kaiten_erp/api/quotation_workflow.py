@@ -178,3 +178,34 @@ def customer_rejects(docname, reason):
         "status": "success",
         "message": _("Quotation marked as Rejected. No further actions allowed."),
     }
+
+
+# =============================================================================
+# RESCHEDULE FOLLOW-UP
+# Updates custom_next_followup_date directly (bypasses full save to avoid
+# in_words allow_on_submit restriction on submitted Quotation)
+# =============================================================================
+
+
+@frappe.whitelist()
+def reschedule_followup(docname, new_date):
+    """Update the next follow-up date and reschedule the ToDo without full doc save."""
+    doc = frappe.get_doc("Quotation", docname)
+
+    if doc.docstatus != 1:
+        frappe.throw(_("Can only reschedule follow-up on a submitted Quotation."))
+
+    frappe.db.set_value(
+        "Quotation",
+        docname,
+        "custom_next_followup_date",
+        new_date,
+        update_modified=False,
+    )
+    doc.reload()
+
+    from kaiten_erp.kaiten_erp.doc_events.quotation_events import _reschedule_followup
+    _reschedule_followup(doc)
+
+    frappe.db.commit()
+    return {"status": "success"}
