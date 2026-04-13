@@ -10,6 +10,7 @@ Generic doc_events hooks for all non-Technical-Survey execution doctypes:
 Imports shared helper functions from technical_survey_events so logic
 stays in one place but is wired correctly per doctype.
 """
+import frappe
 
 from kaiten_erp.kaiten_erp.doc_events.technical_survey_events import (
     assign_to_vendor_managers,
@@ -96,8 +97,6 @@ def _create_structure_payment_todo(doc):
     Create a Sales Manager ToDo for the Job File owner and the Sales Order
     submitter to collect the Structure payment after Structure Mounting is approved.
     """
-    import frappe
-
     job_file_name = doc.get("job_file") or doc.get("custom_job_file")
     if not job_file_name:
         return
