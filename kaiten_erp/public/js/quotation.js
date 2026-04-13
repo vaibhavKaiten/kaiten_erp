@@ -22,8 +22,13 @@ frappe.ui.form.on('Quotation', {
                         default: frm.doc.custom_next_followup_date || frappe.datetime.add_days(frappe.datetime.nowdate(), 4),
                     },
                     function (values) {
-                        frm.set_value('custom_next_followup_date', values.new_date);
-                        frm.save();
+                        frappe.call({
+                            method: 'kaiten_erp.kaiten_erp.api.quotation_workflow.reschedule_followup',
+                            args: { docname: frm.doc.name, new_date: values.new_date },
+                            callback: function (r) {
+                                frm.reload_doc();
+                            }
+                        });
                     },
                     __('Reschedule Follow-up'),
                     __('Update')
