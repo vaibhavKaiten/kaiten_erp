@@ -303,6 +303,8 @@ doc_events = {
     "Sales Invoice": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.before_insert",
         "validate": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.validate",
+        "on_submit": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.on_submit",
+        "on_cancel": "kaiten_erp.kaiten_erp.doc_events.sales_invoice_events.on_cancel",
     },
     "Delivery Note": {
         "before_insert": "kaiten_erp.kaiten_erp.doc_events.delivery_note_events.populate_items_from_technical_survey",
