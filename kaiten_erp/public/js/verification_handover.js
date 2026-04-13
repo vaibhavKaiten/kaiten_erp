@@ -30,15 +30,14 @@ function resolve_territory_for_vh(frm) {
     const job_file = frm.doc.custom_job_file || frm.doc.job_file;
     if (!job_file) return;
 
-    frappe.db.get_value('Job File', job_file, 'lead').then(r => {
-        const lead = r && r.message && r.message.lead;
-        if (!lead) return;
-        frappe.db.get_value('Lead', lead, 'territory').then(r2 => {
-            const territory = r2 && r2.message && r2.message.territory;
-            if (territory) {
-                frm.doc.__territory = territory;
+    frappe.call({
+        method: 'kaiten_erp.kaiten_erp.api.lead_vendor.get_job_file_lead_territory',
+        args: { job_file: job_file },
+        callback: function(r) {
+            if (r && r.message) {
+                frm.doc.__territory = r.message;
             }
-        });
+        }
     });
 }
 

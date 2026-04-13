@@ -221,8 +221,10 @@ function setup_assigned_vendor_filter_meter_commissioning(frm) {
     const job_file = frm.doc.custom_job_file || frm.doc.job_file;
     if (!job_file) return;
 
-    frappe.db.get_value('Job File', job_file, ['custom_assignment_territory', 'territory'])
-        .then(r => {
+    frappe.call({
+        method: 'kaiten_erp.kaiten_erp.api.lead_vendor.get_job_file_territory',
+        args: { job_file: job_file },
+        callback: function(r) {
             if (!r || !r.message) return;
             const territory = r.message.custom_assignment_territory || r.message.territory;
             if (!territory) return;
@@ -236,7 +238,8 @@ function setup_assigned_vendor_filter_meter_commissioning(frm) {
 
             frm.set_df_property('assigned_vendor', 'description',
                 __('Meter vendors active in {0}', [territory]));
-        });
+        }
+    });
 }
 
 function setup_custom_location_log_link_formatter_meter_commissioning(frm) {

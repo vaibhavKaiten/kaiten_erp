@@ -167,6 +167,30 @@ def _validate_supplier_territory(supplier, territory):
 
 
 @frappe.whitelist()
+def get_job_file_territory(job_file):
+    """Return assignment territory for a Job File (no Job File read permission required)."""
+    if not job_file or not frappe.db.exists("Job File", job_file):
+        return {}
+    vals = frappe.db.get_value(
+        "Job File", job_file,
+        ["custom_assignment_territory", "territory"],
+        as_dict=True,
+    )
+    return vals or {}
+
+
+@frappe.whitelist()
+def get_job_file_lead_territory(job_file):
+    """Return the territory from the Lead linked to a Job File (no Job File/Lead read permission required)."""
+    if not job_file or not frappe.db.exists("Job File", job_file):
+        return ""
+    lead = frappe.db.get_value("Job File", job_file, "lead")
+    if not lead:
+        return ""
+    return frappe.db.get_value("Lead", lead, "territory") or ""
+
+
+@frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def get_suppliers_in_territory(doctype, txt, searchfield, start, page_len, filters):
     """
