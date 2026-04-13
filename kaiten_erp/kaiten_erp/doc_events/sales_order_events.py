@@ -44,6 +44,7 @@ def on_submit(doc, method=None):
     _sf_create_collect_payment_todo(doc)
     _create_stock_manager_transfer_todo(doc)
     _recalculate_job_file_profitability(doc)
+    _sync_billing_from_milestones(doc.name)
 
 
 def on_update_after_submit(doc, method=None):
@@ -52,6 +53,7 @@ def on_update_after_submit(doc, method=None):
     _sf_sync_todos(doc)
     _close_structure_payment_todo_if_filled(doc)
     _close_final_payment_todo_if_filled(doc)
+    _sync_billing_from_milestones(doc.name)
 
 
 def _recalculate_job_file_profitability(doc):
@@ -60,6 +62,83 @@ def _recalculate_job_file_profitability(doc):
     if job_file:
         from kaiten_erp.kaiten_erp.api.profitability import update_profitability
         update_profitability(job_file)
+
+
+# ---------------------------------------------------------------------------
+# Milestone-based billing % override
+# ---------------------------------------------------------------------------
+
+def _sync_billing_from_milestones(sales_order_name):
+    """Recalculate per_billed from Payment Milestone paid amounts.
+
+    When a Sales Order has a payment plan (custom_payment_plan), per_billed
+    should reflect the sum of *paid* milestone amounts divided by grand_total,
+    NOT the standard ERPNext SI-based calculation.
+
+    Also updates billing_status, SO item billed_amt, and SO status.
+    """
+    from frappe.utils import flt
+
+    so = frappe.get_doc("Sales Order", sales_order_name)
+    milestones = so.get("custom_payment_plan") or []
+    if not milestones:
+        return  # No payment plan – leave standard ERPNext behaviour
+
+    grand_total = flt(so.grand_total)
+    if not grand_total:
+        return
+
+    total_paid = sum(
+        flt(r.amount) for r in milestones if (r.status or "Pending") == "Paid"
+    )
+    per_billed = min(flt(total_paid / grand_total * 100, 2), 100)
+
+    if per_billed >= 100:
+        billing_status = "Fully Billed"
+    elif per_billed > 0:
+        billing_status = "Partly Billed"
+    else:
+        billing_status = "Not Billed"
+
+    # Derive correct status from per_delivered and per_billed
+    per_delivered = flt(so.per_delivered)
+    if so.status in ("Closed", "On Hold"):
+        new_status = so.status
+    elif flt(per_delivered, 2) < 100 and flt(per_billed, 2) < 100:
+        new_status = "To Deliver and Bill"
+    elif flt(per_delivered, 2) < 100 and flt(per_billed, 2) >= 100:
+        new_status = "To Deliver"
+    elif flt(per_delivered, 2) >= 100 and flt(per_billed, 2) < 100:
+        new_status = "To Bill"
+    elif flt(per_delivered, 2) >= 100 and flt(per_billed, 2) >= 100:
+        new_status = "Completed"
+    else:
+        new_status = so.status
+
+    # Update SO header
+    frappe.db.set_value(
+        "Sales Order",
+        sales_order_name,
+        {
+            "per_billed": per_billed,
+            "billing_status": billing_status,
+            "status": new_status,
+        },
+        update_modified=False,
+    )
+
+    # Distribute billed_amt across SO items proportionally
+    net_total = flt(so.net_total) or grand_total
+    for item in so.items:
+        item_amount = flt(item.net_amount) or flt(item.amount)
+        item_billed = flt(item_amount * per_billed / 100, 2) if item_amount else 0
+        frappe.db.set_value(
+            "Sales Order Item",
+            item.name,
+            "billed_amt",
+            item_billed,
+            update_modified=False,
+        )
 
 
 def _close_source_quotation_todos(sales_order):

@@ -256,6 +256,38 @@ def validate(doc, method=None):
     fill_tax_bifurcation(doc)
 
 
+def on_submit(doc, method=None):
+    """After SI submit, re-sync SO billing from milestones."""
+    _resync_linked_so_billing(doc)
+
+
+def on_cancel(doc, method=None):
+    """After SI cancel, re-sync SO billing from milestones."""
+    _resync_linked_so_billing(doc)
+
+
+def _resync_linked_so_billing(doc):
+    """Re-override SO per_billed with milestone-based calculation.
+
+    ERPNext's standard on_submit/on_cancel updates per_billed from SI amounts.
+    We need to re-override it with the milestone-based calculation when the SO
+    has a payment plan.
+    """
+    from kaiten_erp.kaiten_erp.doc_events.sales_order_events import (
+        _sync_billing_from_milestones,
+    )
+
+    so_names = set()
+    for item in doc.get("items") or []:
+        if item.get("sales_order"):
+            so_names.add(item.sales_order)
+    if doc.get("custom_sales_order"):
+        so_names.add(doc.custom_sales_order)
+
+    for so_name in so_names:
+        _sync_billing_from_milestones(so_name)
+
+
 def _set_place_of_supply(doc):
     """Ensure place_of_supply is set before india_compliance GST validations run.
 
