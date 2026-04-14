@@ -150,10 +150,10 @@ def validate(doc, method=None):
 
 
 def on_submit(doc, method=None):
-    """Close Stock Manager todos, sync SO delivery %, and trigger SF chain todos."""
+    """Close Stock Manager todos, sync SO delivery %, and trigger chain todos."""
     _close_delivery_note_todos(doc)
     _sync_so_delivery_percent(doc)
-    _sf_create_structure_mounting_vh_todo(doc)
+    _create_structure_mounting_vh_todo(doc)
     _sf_check_remaining_delivery_and_create_pi_todo(doc)
 
 
@@ -495,38 +495,30 @@ def get_linked_sales_order(delivery_note):
 
 
 # ---------------------------------------------------------------------------
-# Self Finance: VH "Initiate Structure Mounting" on first DN submit
+# VH "Initiate Structure Mounting" on first DN submit (all finance types)
 # ---------------------------------------------------------------------------
 
-def _sf_create_structure_mounting_vh_todo(doc):
+def _create_structure_mounting_vh_todo(doc):
     """
-    When a Delivery Note is submitted for a Self Finance Sales Order,
-    create a Vendor Head todo to Initiate Structure Mounting.
+    When a Delivery Note is submitted, create a Vendor Head todo to Initiate
+    Structure Mounting — for all finance types.
 
     Skips if:
-      - Structure Mounting is already Approved (e.g. second DN for remaining items)
+      - No Job File linked to the Sales Order
+      - Structure Mounting is already past Draft (already initiated)
       - A VH todo already exists for that SM doc (dedup inside _sf_create_vh_todo_for_next)
     """
     so_name = get_linked_sales_order(doc)
     if not so_name:
-        return
-
-    # Check Self Finance
-    finance_type = frappe.db.get_value("Sales Order", so_name, "custom_finance_type")
-    if (finance_type or "").strip() != "Self Finance":
+        # Fallback: check custom_linked_sales_order field
+        so_name = doc.get("custom_linked_sales_order")
+    if not so_name:
         return
 
     # Get Job File from SO
     job_file_name = frappe.db.get_value("Sales Order", so_name, "custom_job_file")
     if not job_file_name:
         return
-
-    # If Structure Mounting is already Approved, skip — this is a later DN (remaining items)
-    sm_name = frappe.db.get_value("Job File", job_file_name, "custom_structure_mounting")
-    if sm_name:
-        sm_state = frappe.db.get_value("Structure Mounting", sm_name, "workflow_state")
-        if sm_state == "Approved":
-            return
 
     from kaiten_erp.kaiten_erp.doc_events.sales_order_events import _sf_create_vh_todo_for_next
     _sf_create_vh_todo_for_next(job_file_name, "Structure Mounting", "custom_structure_mounting")

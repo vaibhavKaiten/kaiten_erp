@@ -70,6 +70,8 @@ def on_update(doc, method=None):
     if doc.doctype == "Meter Commissioning" and next_doctype == "Verification Handover":
         if _sf_intercept_mc_approved(doc):
             return
+        # Defer VH ToDo to Tranche 2 Paid event (handled in Sales Order event)
+        return
 
     _create_vendor_head_todos(doc, next_doctype)
 
