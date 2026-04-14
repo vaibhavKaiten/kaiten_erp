@@ -85,6 +85,28 @@ def close_open_todos_by_role(doc, role):
         )
 
 
+def _close_initiate_technical_survey_todos(doc):
+    """Close the acceptance-driven Vendor Head ToDos once the TS is initiated."""
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": doc.doctype,
+            "reference_name": doc.name,
+            "role": "Vendor Head",
+            "status": "Open",
+            "description": ["like", "%Initiate Technical Survey%"],
+        },
+        fields=["name"],
+    )
+    for todo in todos:
+        frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Vendor Head 'Initiate Technical Survey' ToDo(s) for {doc.doctype} {doc.name}"
+        )
+
+
 def _guard_approved_system_config(doc):
     """Prevent changes to system-configuration fields once the survey is Approved.
 
@@ -144,6 +166,7 @@ def validate(doc, method=None):
     state = doc.workflow_state
 
     if state == "Assigned to Vendor":
+        _close_initiate_technical_survey_todos(doc)
         close_open_todos_by_role(doc, "Vendor Head")
         assign_to_vendor_managers(doc)
 

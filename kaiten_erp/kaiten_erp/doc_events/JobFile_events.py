@@ -152,9 +152,6 @@ def on_update(job_file, method):
                 update_data["custom_opportunity"] = opportunity.name
 
             frappe.db.set_value("Job File", job_file.name, update_data, update_modified=False)
-           
-            # Create ToDo for Vendor Heads to start the Technical Survey
-            assign_vendor_head_todos(job_file, technical_survey.name)
 
             # 6. Show success message
             opportunity_url = f"/app/opportunity/{opportunity.name}"

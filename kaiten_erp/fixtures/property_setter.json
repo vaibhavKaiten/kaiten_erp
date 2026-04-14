@@ -4718,5 +4718,53 @@
   "property_type": "Check",
   "row_name": null,
   "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Sales Order",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "per_billed",
+  "is_system_generated": 0,
+  "modified": "2026-04-13 12:00:00",
+  "module": "Kaiten Erp",
+  "name": "Sales Order-per_billed-allow_on_submit",
+  "property": "allow_on_submit",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Sales Order",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "billing_status",
+  "is_system_generated": 0,
+  "modified": "2026-04-13 12:00:00",
+  "module": "Kaiten Erp",
+  "name": "Sales Order-billing_status-allow_on_submit",
+  "property": "allow_on_submit",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Sales Order Item",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "billed_amt",
+  "is_system_generated": 0,
+  "modified": "2026-04-13 12:00:00",
+  "module": "Kaiten Erp",
+  "name": "Sales Order Item-billed_amt-allow_on_submit",
+  "property": "allow_on_submit",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "1"
  }
 ]
