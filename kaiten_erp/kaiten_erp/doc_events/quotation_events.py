@@ -24,6 +24,13 @@ def validate(doc, method=None):
         _lock_final_approved_item_structure(doc)
 
 
+def on_update(doc, method=None):
+    """Sync customer-acceptance ToDos on draft saves."""
+    if doc.docstatus != 0:
+        return
+    _sync_customer_acceptance_todos(doc)
+
+
 def on_submit(doc, method=None):
     """Create a follow-up ToDo when a Quotation is submitted."""
     if doc.status in ("Ordered", "Lost"):
@@ -47,6 +54,8 @@ def on_update_after_submit(doc, method=None):
         before.get("status") != "Lost" and doc.status == "Lost"
     )
     if status_changed_to_lost:
+        _close_vendor_head_initiate_ts_todos(doc)
+        _close_sales_order_todos(doc)
         close_quotation_todos(doc.name)
         return
 
@@ -58,11 +67,10 @@ def on_update_after_submit(doc, method=None):
     if curr_date and curr_date != prev_date:
         _reschedule_followup(doc)
 
-    # Customer Acceptance changed to "Yes" after submit
     prev_acceptance = str(before.get("custom_customer_acceptance") or "")
     curr_acceptance = str(doc.get("custom_customer_acceptance") or "")
-    if curr_acceptance == "Yes" and prev_acceptance != "Yes":
-        _handle_customer_acceptance(doc)
+    if curr_acceptance != prev_acceptance:
+        _sync_customer_acceptance_todos(doc)
 
 
 # ---------------------------------------------------------------------------
@@ -335,39 +343,46 @@ def on_submit(doc, method=None):
                 f"Closed {len(todos)} Sales Manager ToDo(s) for Opportunity {opportunity_name} on Quotation {doc.name} submit"
             )
 
-    # Customer Acceptance ToDo handling
-    if doc.get("custom_customer_acceptance") == "Yes":
-        _handle_customer_acceptance(doc)
+    _sync_customer_acceptance_todos(doc)
 
 
 # ---------------------------------------------------------------------------
 # Customer Acceptance ToDo helpers
 # ---------------------------------------------------------------------------
 
-def _handle_customer_acceptance(doc):
-    """Dispatch ToDo creation based on whether a Technical Survey is linked.
+def _sync_customer_acceptance_todos(doc):
+    """Create or close acceptance-driven ToDos based on the Quotation value."""
+    if doc.get("custom_customer_acceptance") == "Yes":
+        if not doc.get("custom_technical_survey"):
+            _create_vendor_head_initiate_ts_todo(doc)
+        else:
+            _create_sales_order_todo(doc)
+        return
 
-    Case 1: No TS on Quotation → Vendor Head ToDo to initiate TS.
-    Case 2: TS is present → Sales Manager ToDo to create Sales Order.
-    """
-    if not doc.get("custom_technical_survey"):
-        _create_vendor_head_initiate_ts_todo(doc)
-    else:
-        _create_sales_order_todo(doc)
+    _close_vendor_head_initiate_ts_todos(doc)
+    _close_sales_order_todos(doc)
+
+
+def _get_technical_survey_for_acceptance(doc):
+    """Resolve the Technical Survey linked to the accepted Quotation."""
+    technical_survey = doc.get("custom_technical_survey")
+    if technical_survey:
+        return technical_survey
+
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        return None
+
+    return frappe.db.get_value("Job File", job_file_name, "custom_technical_survey")
 
 
 def _create_vendor_head_initiate_ts_todo(doc):
-    """Case 1: Create ToDo for Vendor Head users to initiate Technical Survey.
+    """Create ToDo for Vendor Head users to initiate Technical Survey.
 
-    The Technical Survey reference is fetched from the linked Job File.
     Closes automatically when TS transitions to 'Assigned to Vendor'
-    (handled in technical_survey_events.close_open_todos_by_role).
+    and also when Quotation customer acceptance changes away from Yes.
     """
-    job_file_name = doc.get("custom_job_file")
-    if not job_file_name:
-        return
-
-    ts_name = frappe.db.get_value("Job File", job_file_name, "custom_technical_survey")
+    ts_name = _get_technical_survey_for_acceptance(doc)
     if not ts_name:
         return
 
@@ -389,7 +404,9 @@ def _create_vendor_head_initiate_ts_todo(doc):
             "reference_type": "Technical Survey",
             "reference_name": ts_name,
             "allocated_to": user,
+            "role": "Vendor Head",
             "status": "Open",
+            "description": ["like", "%Initiate Technical Survey%"],
         })
         if existing:
             continue
@@ -414,6 +431,32 @@ def _create_vendor_head_initiate_ts_todo(doc):
     )
 
 
+def _close_vendor_head_initiate_ts_todos(doc):
+    """Close open Vendor Head 'Initiate Technical Survey' ToDos for this Quotation's TS."""
+    ts_name = _get_technical_survey_for_acceptance(doc)
+    if not ts_name:
+        return
+
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Technical Survey",
+            "reference_name": ts_name,
+            "role": "Vendor Head",
+            "status": "Open",
+            "description": ["like", "%Initiate Technical Survey%"],
+        },
+        fields=["name"],
+    )
+    for todo in todos:
+        frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Vendor Head 'Initiate TS' ToDo(s) for Technical Survey {ts_name} from Quotation {doc.name}"
+        )
+
+
 def _create_sales_order_todo(doc):
     """Case 2: Create ToDo for the Sales Manager who submitted the Quotation
     to create a Sales Order.
@@ -434,6 +477,7 @@ def _create_sales_order_todo(doc):
         "reference_type": "Quotation",
         "reference_name": doc.name,
         "allocated_to": assigned_to,
+        "role": "Sales Manager",
         "status": "Open",
         "description": ["like", "%Create Sales Order%"],
     })
@@ -457,6 +501,28 @@ def _create_sales_order_todo(doc):
     frappe.logger("kaiten_erp").info(
         f"Created 'Create Sales Order' ToDo for {assigned_to} on Quotation {doc.name}"
     )
+
+
+def _close_sales_order_todos(doc):
+    """Close open 'Create Sales Order' ToDos for this Quotation."""
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Quotation",
+            "reference_name": doc.name,
+            "role": "Sales Manager",
+            "status": "Open",
+            "description": ["like", "%Create Sales Order%"],
+        },
+        fields=["name"],
+    )
+    for todo in todos:
+        frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} 'Create Sales Order' ToDo(s) for Quotation {doc.name}"
+        )
 
 
 def _lock_final_approved_item_structure(doc):
