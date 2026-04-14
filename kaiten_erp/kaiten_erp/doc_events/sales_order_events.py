@@ -348,21 +348,27 @@ def _primary_mr_already_transferred(doc):
 
 def _create_stock_manager_transfer_todo(doc):
     """
-    Create Stock Manager ToDos when the Advance payment milestone is Paid.
+    Create Stock Manager ToDos when the Trance 1 payment milestone is Paid.
     Deduplicates — will not create a second todo if one is already open.
 
     Gates:
       1. Advance milestone must be Paid (falls through if no Advance row).
       2. Primary Material Request must NOT already be fully transferred.
     """
+
     milestones = doc.get("custom_payment_plan") or []
     if not milestones:
         return
 
-    # Gate on the Advance milestone being Paid (by name, not by idx)
-    advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
-    if advance_row and (advance_row.status or "Pending") != "Paid":
-        return
+    # Gate logic: For Bank Loan, require Tranche 1 Paid. For Self Finance, require Advance Paid.
+    if _is_bank_loan(doc):
+        tranche1_row = next((r for r in milestones if r.milestone == "Tranche 1"), None)
+        if not tranche1_row or (tranche1_row.status or "Pending") != "Paid":
+            return
+    else:
+        advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
+        if not advance_row or (advance_row.status or "Pending") != "Paid":
+            return
 
     # Gate: skip if the primary Material Request is already fully transferred
     if _primary_mr_already_transferred(doc):
