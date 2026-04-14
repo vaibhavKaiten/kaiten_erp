@@ -137,7 +137,83 @@ def on_update_after_submit(doc, method=None):
     _close_structure_payment_todo_if_filled(doc)
     _close_final_payment_todo_if_filled(doc)
     close_tranche2_followup_todo_if_filled(doc)
+    _create_verification_handover_todo_on_tranche2_paid(doc)
     _sync_billing_from_milestones(doc.name)
+# --- Create VH ToDo for Vendor Head when Tranche 2 is Paid ---
+def _create_verification_handover_todo_on_tranche2_paid(doc):
+    """
+    When Tranche 2 milestone is marked Paid, create Vendor Head ToDo for Initiate Verification Handover
+    if Meter Commissioning is already Approved.
+    """
+    # Find Tranche 2 milestone
+    tranche2_row = next((r for r in (doc.get("custom_payment_plan") or []) if r.milestone == "Tranche 2" and (r.status or "Pending") == "Paid"), None)
+    if not tranche2_row:
+        return
+
+    # Get Job File
+    job_file = doc.get("custom_job_file")
+    if not job_file:
+        return
+
+    # Get Meter Commissioning doc name from Job File
+    mc_name = frappe.db.get_value("Job File", job_file, "custom_meter_commissioning")
+    if not mc_name:
+        return
+
+    # Check MC is Approved
+    mc_state_field = frappe.db.get_value(
+        "Workflow", {"document_type": "Meter Commissioning", "is_active": 1}, "workflow_state_field"
+    ) or "workflow_state"
+    mc_state = frappe.db.get_value("Meter Commissioning", mc_name, mc_state_field)
+    if mc_state != "Approved":
+        return
+
+    # Get Verification Handover doc name from Job File
+    vh_name = frappe.db.get_value("Job File", job_file, "custom_verification_handover")
+    if not vh_name:
+        return
+
+    # Get customer first name
+    customer_first_name = frappe.db.get_value("Job File", job_file, "first_name") or job_file
+
+    # Get all enabled Vendor Head users
+    vendor_heads = frappe.get_all(
+        "Has Role",
+        filters={"role": "Vendor Head", "parenttype": "User"},
+        fields=["parent as user"],
+    )
+    if not vendor_heads:
+        return
+
+    description = f"{customer_first_name} - {vh_name} - Initiate Verification Handover"
+
+    for vh in vendor_heads:
+        user = vh.user
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        # Deduplication
+        if frappe.db.exists("ToDo", {
+            "reference_type": "Verification Handover",
+            "reference_name": vh_name,
+            "allocated_to": user,
+            "role": "Vendor Head",
+            "status": "Open",
+            "description": ["like", "%Initiate Verification Handover%"],
+        }):
+            continue
+        todo = frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "description": description,
+            "reference_type": "Verification Handover",
+            "reference_name": vh_name,
+            "role": "Vendor Head",
+            "priority": "High",
+            "status": "Open",
+        })
+        todo.flags.ignore_permissions = True
+        todo.insert()
+
 
 
 def _recalculate_job_file_profitability(doc):
