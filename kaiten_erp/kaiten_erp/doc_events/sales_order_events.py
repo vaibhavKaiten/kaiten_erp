@@ -1,3 +1,86 @@
+# --- Tranche 2 Followup ToDo on MC Approval ---
+def create_tranche2_followup_todo_on_mc_approved(doc, method=None):
+    """
+    When Meter Commissioning is approved, create a followup ToDo for the Sales Manager (Job File Owner)
+    to follow up for the second tranche of payment.
+    """
+    # Get the linked Sales Order
+    sales_order = None
+    if hasattr(doc, "custom_sales_order") and doc.custom_sales_order:
+        sales_order = frappe.get_doc("Sales Order", doc.custom_sales_order)
+    if not sales_order:
+        return
+
+    # Get Job File owner
+    job_file = sales_order.get("custom_job_file")
+    if not job_file:
+        return
+    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
+    if not owner or not frappe.db.get_value("User", owner, "enabled"):
+        return
+
+    # Check for duplicate open ToDo
+    existing = frappe.db.exists("ToDo", {
+        "reference_type": "Sales Order",
+        "reference_name": sales_order.name,
+        "allocated_to": owner,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "%Followup for the second tranche of payment%"],
+    })
+    if existing:
+        return
+
+    # Get customer name and k_number
+    customer_name = (
+        sales_order.get("customer_name")
+        or frappe.db.get_value("Customer", sales_order.customer, "customer_name")
+        or sales_order.customer
+        or ""
+    )
+    k_number = frappe.db.get_value("Job File", job_file, "k_number") or ""
+    k_part = f" ({k_number})" if k_number else ""
+    description = f"{customer_name}{k_part}. Followup for the second tranche of payment."
+
+    todo = frappe.get_doc({
+        "doctype": "ToDo",
+        "allocated_to": owner,
+        "reference_type": "Sales Order",
+        "reference_name": sales_order.name,
+        "description": description,
+        "role": "Sales Manager",
+        "priority": "High",
+        "status": "Open",
+    })
+    todo.flags.ignore_permissions = True
+    todo.insert()
+
+# --- Auto-close Tranche 2 Followup ToDo when amount is filled ---
+def close_tranche2_followup_todo_if_filled(doc, method=None):
+    """
+    Close the Sales Manager followup ToDo for Tranche 2 when amount is filled.
+    """
+    tranche2_row = next((r for r in (doc.get("custom_payment_plan") or []) if r.milestone == "Tranche 2" and float(r.amount or 0) > 0), None)
+    if not tranche2_row:
+        return
+
+    job_file = doc.get("custom_job_file")
+    if not job_file:
+        return
+    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
+    if not owner:
+        return
+
+    todos = frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": doc.name,
+        "allocated_to": owner,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "%Followup for the second tranche of payment%"],
+    }, fields=["name"])
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
 # Copyright (c) 2026, Kaiten Software and contributors
 # For license information, please see license.txt
 
@@ -53,6 +136,7 @@ def on_update_after_submit(doc, method=None):
     _sf_sync_todos(doc)
     _close_structure_payment_todo_if_filled(doc)
     _close_final_payment_todo_if_filled(doc)
+    close_tranche2_followup_todo_if_filled(doc)
     _sync_billing_from_milestones(doc.name)
 
 
