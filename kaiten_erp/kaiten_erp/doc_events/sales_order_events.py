@@ -4,12 +4,27 @@ def create_tranche2_followup_todo_on_mc_approved(doc, method=None):
     When Meter Commissioning is approved, create a followup ToDo for the Sales Manager (Job File Owner)
     to follow up for the second tranche of payment.
     """
-    # Get the linked Sales Order
-    sales_order = None
-    if hasattr(doc, "custom_sales_order") and doc.custom_sales_order:
-        sales_order = frappe.get_doc("Sales Order", doc.custom_sales_order)
-    if not sales_order:
+    # Only fire when workflow_state transitions to "Approved"
+    try:
+        wf_field = frappe.db.get_value(
+            "Workflow", {"document_type": "Meter Commissioning", "is_active": 1}, "workflow_state_field"
+        ) or "workflow_state"
+        changed = bool(doc.has_value_changed(wf_field))
+    except Exception:
+        changed = True
+        wf_field = "workflow_state"
+
+    if not changed or doc.get(wf_field) != "Approved":
         return
+
+    # Resolve Sales Order via custom_job_file → Job File → sales_order
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        return
+    so_name = frappe.db.get_value("Job File", job_file_name, "sales_order")
+    if not so_name:
+        return
+    sales_order = frappe.get_doc("Sales Order", so_name)
 
     # Get Job File owner
     job_file = sales_order.get("custom_job_file")

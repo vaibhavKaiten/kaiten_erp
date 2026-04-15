@@ -13,6 +13,7 @@ import frappe
 from kaiten_erp.kaiten_erp.doc_events.sales_order_events import (
     _close_stock_transfer_todos,
     _create_stock_manager_transfer_todo,
+    _is_bank_loan,
     _sf_close_remaining_transfer_todos,
 )
 
@@ -109,9 +110,12 @@ def on_cancel(doc, method=None):
             if not milestones:
                 continue
 
-            advance_row = next((r for r in milestones if r.milestone == "Advance"), None)
-            if advance_row and (advance_row.status or "Pending") == "Paid":
-                # Advance milestone is still paid — recreate the transfer ToDo
+            if _is_bank_loan(so_doc):
+                trigger_row = next((r for r in milestones if r.milestone == "Tranche 1"), None)
+            else:
+                trigger_row = next((r for r in milestones if r.milestone == "Advance"), None)
+            if trigger_row and (trigger_row.status or "Pending") == "Paid":
+                # Trigger milestone is still paid — recreate the transfer ToDo
                 _create_stock_manager_transfer_todo(so_doc)
                 frappe.logger("kaiten_erp").info(
                     f"Recreated Stock Manager transfer ToDo for Sales Order {sales_order} "

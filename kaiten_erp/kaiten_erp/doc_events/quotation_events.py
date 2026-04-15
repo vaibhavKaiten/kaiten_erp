@@ -31,35 +31,29 @@ def on_update(doc, method=None):
     _sync_customer_acceptance_todos(doc)
 
 
-def on_submit(doc, method=None):
-    """Create a follow-up ToDo when a Quotation is submitted."""
-    if doc.status in ("Ordered", "Lost"):
-        return
-    if not doc.get("custom_next_followup_date"):
-        return
-    _create_followup_todo(doc)
-
-
 def on_update_after_submit(doc, method=None):
     """
-    Handles two post-submit changes:
-    1. Next Follow-up Date changed → reschedule ToDo.
-    2. Status changed to Lost → close all open Quotation ToDos.
-    """
-    before = doc.get_doc_before_save()
-    if not before:
-        return
+    Handles post-submit changes:
+    1. Status is Lost → close all open ToDos (follow-up, initiate TS, create SO).
+    2. Next Follow-up Date changed → reschedule follow-up ToDo.
+    3. customer_acceptance changed → open/close the right next-step ToDos.
 
-    status_changed_to_lost = (
-        before.get("status") != "Lost" and doc.status == "Lost"
-    )
-    if status_changed_to_lost:
+    NOTE: ERPNext's declare_enquiry_lost uses db_set("status", "Lost") before
+    calling save(), so get_doc_before_save() already sees "Lost" in the DB.
+    We therefore check doc.status == "Lost" directly rather than a before/after
+    comparison — all close helpers are idempotent (already-closed todos are skipped).
+    """
+    if doc.status == "Lost":
         _close_vendor_head_initiate_ts_todos(doc)
         _close_sales_order_todos(doc)
         close_quotation_todos(doc.name)
         return
 
-    if doc.status in ("Ordered", "Lost"):
+    if doc.status == "Ordered":
+        return
+
+    before = doc.get_doc_before_save()
+    if not before:
         return
 
     prev_date = str(before.get("custom_next_followup_date") or "")
@@ -101,14 +95,19 @@ def _get_followup_assignee(doc):
 
 def _create_followup_todo(doc):
     """Create an Open ToDo for the Quotation's Sales Manager / job file owner."""
+    if not doc.get("custom_next_followup_date"):
+        return
+
     assigned_to = _get_followup_assignee(doc)
 
-    # Duplicate guard
+    # Duplicate guard — targeted to follow-up todos so "Create Sales Order" todos don't block
     if frappe.db.exists("ToDo", {
         "reference_type": "Quotation",
         "reference_name": doc.name,
         "allocated_to": assigned_to,
+        "role": "Sales Manager",
         "status": "Open",
+        "description": ["like", "%Follow-up:%"],
     }):
         return
 
@@ -131,8 +130,18 @@ def _create_followup_todo(doc):
 
 
 def _reschedule_followup(doc):
-    """Close existing open ToDos, create a new one, update tracking fields."""
-    close_quotation_todos(doc.name)
+    """Close existing follow-up ToDos, create a new one, update tracking fields.
+
+    Only acts when customer acceptance is not yet confirmed — once the customer
+    has accepted (acceptance = 'Yes') there is nothing to follow up on.
+    """
+    # Close only follow-up todos; leave "Create Sales Order" or other open todos intact
+    _close_followup_todos(doc.name)
+
+    if doc.get("custom_customer_acceptance") == "Yes":
+        # Acceptance already given — no new follow-up todo needed
+        return
+
     _create_followup_todo(doc)
 
     current_count = frappe.db.get_value("Quotation", doc.name, "custom_followup_count") or 0
@@ -160,6 +169,27 @@ def close_quotation_todos(quotation_name):
     )
     for todo in todos:
         frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+
+def _close_followup_todos(quotation_name):
+    """Close open Follow-up ToDos for a Quotation (without touching other open ToDos)."""
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Quotation",
+            "reference_name": quotation_name,
+            "status": "Open",
+            "description": ["like", "%Follow-up:%"],
+        },
+        fields=["name"],
+    )
+    for todo in todos:
+        frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+
+    if todos:
+        frappe.logger("kaiten_erp").info(
+            f"Closed {len(todos)} Follow-up ToDo(s) for Quotation {quotation_name}"
+        )
 
 
 def _fill_item_name_and_uom(doc):
@@ -353,14 +383,22 @@ def on_submit(doc, method=None):
 def _sync_customer_acceptance_todos(doc):
     """Create or close acceptance-driven ToDos based on the Quotation value."""
     if doc.get("custom_customer_acceptance") == "Yes":
+        # Customer accepted — close the pending follow-up ToDo and open the next step
+        _close_followup_todos(doc.name)
         if not doc.get("custom_technical_survey"):
             _create_vendor_head_initiate_ts_todo(doc)
         else:
             _create_sales_order_todo(doc)
         return
 
+    # Acceptance is NOT Yes — close acceptance-driven todos
     _close_vendor_head_initiate_ts_todos(doc)
     _close_sales_order_todos(doc)
+
+    # For submitted, active quotations recreate the follow-up ToDo so the Sales Manager
+    # keeps following up (covers: never accepted yet, acceptance reverted from Yes)
+    if doc.docstatus == 1 and doc.status not in ("Ordered", "Lost"):
+        _create_followup_todo(doc)
 
 
 def _get_technical_survey_for_acceptance(doc):
