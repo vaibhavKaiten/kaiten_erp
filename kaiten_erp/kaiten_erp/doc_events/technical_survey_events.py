@@ -314,6 +314,9 @@ def assign_to_internal_user(doc):
 
     description = _format_todo_description(doc, f"Execute {doc.doctype}")
 
+    from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+    due_date = get_execution_todo_due_date(doc.doctype, doc.name)
+
     # Create ToDo assignment
     try:
         assign_to.add(
@@ -324,6 +327,7 @@ def assign_to_internal_user(doc):
                 "description": description,
                 "priority": "Medium",
                 "notify": 1,
+                "date": due_date,
             }
         )
 
@@ -526,6 +530,9 @@ def assign_to_vendor_managers(doc):
 
             description = _format_todo_description(doc, f"Start {doc.doctype}")
 
+            from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+            due_date = get_execution_todo_due_date(doc.doctype, doc.name)
+
             # Dynamic permission check
             if not frappe.has_permission(doctype=doc.doctype, doc=doc.name, user=user):
                 frappe.share.add(
@@ -549,6 +556,7 @@ def assign_to_vendor_managers(doc):
                     "name": doc.name,
                     "description": description,
                     "priority": "Medium",
+                    "date": due_date,
                 }
             )
 
@@ -886,6 +894,9 @@ def assign_to_vendor_executives_on_in_progress(doc):
 
     description = _format_todo_description(doc, f"Execute {doc.doctype}")
 
+    from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+    due_date = get_execution_todo_due_date(doc.doctype, doc.name)
+
     for user in users_to_assign:
         if not frappe.db.get_value("User", user, "enabled"):
             continue
@@ -910,6 +921,7 @@ def assign_to_vendor_executives_on_in_progress(doc):
                     "role": "Vendor Executive",
                     "priority": "High",
                     "status": "Open",
+                    "date": due_date,
                 }
             )
             todo.flags.ignore_permissions = True
@@ -1014,6 +1026,10 @@ def assign_to_sales_managers_for_execution(doc):
         return
 
     description = _format_todo_description(doc, f"Execute {doc.doctype}")
+
+    from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+    due_date = get_execution_todo_due_date(doc.doctype, doc.name)
+
     successful = []
 
     for sm in sales_managers:
@@ -1042,6 +1058,7 @@ def assign_to_sales_managers_for_execution(doc):
                     "name": doc.name,
                     "description": description,
                     "priority": "Medium",
+                    "date": due_date,
                 }
             )
             user_full_name = frappe.db.get_value("User", user, "full_name") or user

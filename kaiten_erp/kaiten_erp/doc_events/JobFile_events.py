@@ -678,6 +678,9 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
         customer_first_name = job_file.first_name or job_file.name
         description = f"{customer_first_name} - {technical_survey_name} - Initiate Technical Survey"
 
+        from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+        due_date = get_execution_todo_due_date("Technical Survey", technical_survey_name)
+
         try:
             todo = frappe.get_doc(
                 {
@@ -689,6 +692,7 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
                     "description": description,
                     "priority": "High",
                     "status": "Open",
+                    "date": due_date,
                 }
             )
             todo.flags.ignore_permissions = True

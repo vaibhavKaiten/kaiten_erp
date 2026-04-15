@@ -129,15 +129,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-05 13:51:24.077978",
-  "name": "Submitted",
-  "style": "",
-  "workflow_state_name": "Submitted"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
   "modified": "2026-04-06 13:01:21.348326",
   "name": "Open",
   "style": "",
@@ -156,6 +147,24 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
+  "modified": "2026-03-05 13:51:33.675220",
+  "name": "Completed",
+  "style": "",
+  "workflow_state_name": "Completed"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-05 13:51:24.077978",
+  "name": "Submitted",
+  "style": "",
+  "workflow_state_name": "Submitted"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
   "modified": "2026-03-05 13:50:49.763623",
   "name": "Assigned to Vendor",
   "style": "",
@@ -169,15 +178,6 @@
   "name": "In Progress",
   "style": "",
   "workflow_state_name": "In Progress"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-03-05 13:51:33.675220",
-  "name": "Completed",
-  "style": "",
-  "workflow_state_name": "Completed"
  },
  {
   "docstatus": 0,
