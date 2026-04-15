@@ -204,6 +204,9 @@ def reschedule_followup(docname, new_date):
     )
     doc.reload()
 
+    if doc.get("custom_customer_acceptance") == "Yes":
+        frappe.throw(_("Cannot reschedule follow-up after customer has accepted the quotation."))
+
     from kaiten_erp.kaiten_erp.doc_events.quotation_events import _reschedule_followup
     _reschedule_followup(doc)
 
