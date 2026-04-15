@@ -361,6 +361,7 @@ doc_events = {
         "on_update": [
             "kaiten_erp.kaiten_erp.doc_events.execution_events.on_update",
             "kaiten_erp.kaiten_erp.api.execution_chain_todo.on_update",
+            "kaiten_erp.kaiten_erp.doc_events.sales_order_events.create_tranche2_followup_todo_on_mc_approved",
         ],
     },
     "Verification Handover": {
