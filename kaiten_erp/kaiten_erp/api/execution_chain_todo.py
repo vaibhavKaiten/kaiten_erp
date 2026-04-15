@@ -14,7 +14,7 @@ Chain order:
 
 import frappe
 from frappe import _
-from frappe.utils import nowdate
+from frappe.utils import nowdate, add_days, getdate
 
 EXECUTION_CHAIN = {
     "Structure Mounting": "Project Installation",
@@ -29,6 +29,36 @@ CHAIN_JOB_FILE_FIELD = {
     "Meter Commissioning": "custom_meter_commissioning",
     "Verification Handover": "custom_verification_handover",
 }
+
+# Maps each execution doctype to the date field used for ToDo due dates
+DUE_DATE_FIELD_MAP = {
+    "Technical Survey": "data_ycke",
+    "Structure Mounting": "plannned_start_date",
+    "Project Installation": "planned_start_date",
+    "Meter Installation": "actual_installation_date",
+    "Meter Commissioning": "commissioning_date",
+    "Verification Handover": "custom_schedule_date",
+}
+
+
+def get_execution_todo_due_date(reference_doctype, reference_name):
+    """Return the due date for an execution chain ToDo.
+
+    Looks up the date field defined in DUE_DATE_FIELD_MAP on the referenced
+    document.  If the field is empty or not found, falls back to today + 2 days.
+    """
+    fallback = add_days(nowdate(), 2)
+    date_field = DUE_DATE_FIELD_MAP.get(reference_doctype)
+    if not date_field or not reference_name:
+        return fallback
+
+    val = frappe.db.get_value(reference_doctype, reference_name, date_field)
+    if val:
+        try:
+            return str(getdate(val))
+        except Exception:
+            return fallback
+    return fallback
 
 
 def _get_workflow_state_field(doctype: str) -> str:
@@ -128,6 +158,7 @@ def _create_vendor_head_todos(doc, next_doctype):
         return
 
     description = f"{customer_first_name} - {next_doc_name} - Initiate {next_doctype}"
+    due_date = get_execution_todo_due_date(next_doctype, next_doc_name)
 
     created = 0
     for vh in vendor_heads:
@@ -154,7 +185,7 @@ def _create_vendor_head_todos(doc, next_doctype):
                 "role": "Vendor Head",
                 "priority": "High",
                 "status": "Open",
-                "date": nowdate(),
+                "date": due_date,
             })
             todo.flags.ignore_permissions = True
             todo.insert()

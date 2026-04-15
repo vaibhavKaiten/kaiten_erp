@@ -187,6 +187,9 @@ def _create_verification_handover_todo_on_tranche2_paid(doc):
 
     description = f"{customer_first_name} - {vh_name} - Initiate Verification Handover"
 
+    from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+    due_date = get_execution_todo_due_date("Verification Handover", vh_name)
+
     for vh in vendor_heads:
         user = vh.user
         if not frappe.db.get_value("User", user, "enabled"):
@@ -210,6 +213,7 @@ def _create_verification_handover_todo_on_tranche2_paid(doc):
             "role": "Vendor Head",
             "priority": "High",
             "status": "Open",
+            "date": due_date,
         })
         todo.flags.ignore_permissions = True
         todo.insert()
@@ -1211,6 +1215,9 @@ def _sf_create_vh_todo_for_next(job_file_name, next_doctype, jf_field):
 
     description = f"{customer_first_name} - {next_doc_name} - Initiate {next_doctype}"
 
+    from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
+    due_date = get_execution_todo_due_date(next_doctype, next_doc_name)
+
     for vh in vendor_heads:
         user = vh.user
         if not frappe.db.get_value("User", user, "enabled"):
@@ -1231,7 +1238,7 @@ def _sf_create_vh_todo_for_next(job_file_name, next_doctype, jf_field):
             "role": "Vendor Head",
             "priority": "High",
             "status": "Open",
-            "date": nowdate(),
+            "date": due_date,
         }).insert(ignore_permissions=True)
 
 
