@@ -1,101 +1,3 @@
-# --- Tranche 2 Followup ToDo on MC Approval ---
-def create_tranche2_followup_todo_on_mc_approved(doc, method=None):
-    """
-    When Meter Commissioning is approved, create a followup ToDo for the Sales Manager (Job File Owner)
-    to follow up for the second tranche of payment.
-    """
-    # Only fire when workflow_state transitions to "Approved"
-    try:
-        wf_field = frappe.db.get_value(
-            "Workflow", {"document_type": "Meter Commissioning", "is_active": 1}, "workflow_state_field"
-        ) or "workflow_state"
-        changed = bool(doc.has_value_changed(wf_field))
-    except Exception:
-        changed = True
-        wf_field = "workflow_state"
-
-    if not changed or doc.get(wf_field) != "Approved":
-        return
-
-    # Resolve Sales Order via custom_job_file → Job File → sales_order
-    job_file_name = doc.get("custom_job_file")
-    if not job_file_name:
-        return
-    so_name = frappe.db.get_value("Job File", job_file_name, "sales_order")
-    if not so_name:
-        return
-    sales_order = frappe.get_doc("Sales Order", so_name)
-
-    # Get Job File owner
-    job_file = sales_order.get("custom_job_file")
-    if not job_file:
-        return
-    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
-    if not owner or not frappe.db.get_value("User", owner, "enabled"):
-        return
-
-    # Check for duplicate open ToDo
-    existing = frappe.db.exists("ToDo", {
-        "reference_type": "Sales Order",
-        "reference_name": sales_order.name,
-        "allocated_to": owner,
-        "role": "Sales Manager",
-        "status": "Open",
-        "description": ["like", "%Followup for the second tranche of payment%"],
-    })
-    if existing:
-        return
-
-    # Get customer name and k_number
-    customer_name = (
-        sales_order.get("customer_name")
-        or frappe.db.get_value("Customer", sales_order.customer, "customer_name")
-        or sales_order.customer
-        or ""
-    )
-    k_number = frappe.db.get_value("Job File", job_file, "k_number") or ""
-    k_part = f" ({k_number})" if k_number else ""
-    description = f"{customer_name}{k_part}. Followup for the second tranche of payment."
-
-    todo = frappe.get_doc({
-        "doctype": "ToDo",
-        "allocated_to": owner,
-        "reference_type": "Sales Order",
-        "reference_name": sales_order.name,
-        "description": description,
-        "role": "Sales Manager",
-        "priority": "High",
-        "status": "Open",
-    })
-    todo.flags.ignore_permissions = True
-    todo.insert()
-
-# --- Auto-close Tranche 2 Followup ToDo when amount is filled ---
-def close_tranche2_followup_todo_if_filled(doc, method=None):
-    """
-    Close the Sales Manager followup ToDo for Tranche 2 when amount is filled.
-    """
-    tranche2_row = next((r for r in (doc.get("custom_payment_plan") or []) if r.milestone == "Tranche 2" and float(r.amount or 0) > 0), None)
-    if not tranche2_row:
-        return
-
-    job_file = doc.get("custom_job_file")
-    if not job_file:
-        return
-    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
-    if not owner:
-        return
-
-    todos = frappe.db.get_all("ToDo", filters={
-        "reference_type": "Sales Order",
-        "reference_name": doc.name,
-        "allocated_to": owner,
-        "role": "Sales Manager",
-        "status": "Open",
-        "description": ["like", "%Followup for the second tranche of payment%"],
-    }, fields=["name"])
-    for t in todos:
-        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
 # Copyright (c) 2026, Kaiten Software and contributors
 # For license information, please see license.txt
 
@@ -229,6 +131,106 @@ def _create_verification_handover_todo_on_tranche2_paid(doc):
         todo.flags.ignore_permissions = True
         todo.insert()
 
+
+# --- Tranche 2 Followup ToDo on MC Approval ---
+def create_tranche2_followup_todo_on_mc_approved(doc, method=None):
+    """
+    When Meter Commissioning is approved, create a followup ToDo for the Sales Manager (Job File Owner)
+    to follow up for the second tranche of payment.
+    """
+    # Only fire when workflow_state transitions to "Approved"
+    try:
+        wf_field = frappe.db.get_value(
+            "Workflow", {"document_type": "Meter Commissioning", "is_active": 1}, "workflow_state_field"
+        ) or "workflow_state"
+        changed = bool(doc.has_value_changed(wf_field))
+    except Exception:
+        changed = True
+        wf_field = "workflow_state"
+
+    if not changed or doc.get(wf_field) != "Approved":
+        return
+
+    # Resolve Sales Order via custom_job_file → Job File → sales_order
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        return
+    so_name = frappe.db.get_value("Job File", job_file_name, "sales_order")
+    if not so_name:
+        return
+    sales_order = frappe.get_doc("Sales Order", so_name)
+
+    # Get Job File owner
+    job_file = sales_order.get("custom_job_file")
+    if not job_file:
+        return
+    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
+    if not owner or not frappe.db.get_value("User", owner, "enabled"):
+        return
+
+    # Check for duplicate open ToDo
+    existing = frappe.db.exists("ToDo", {
+        "reference_type": "Sales Order",
+        "reference_name": sales_order.name,
+        "allocated_to": owner,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "%Followup for the second tranche of payment%"],
+    })
+    if existing:
+        return
+
+    # Get customer name and k_number
+    customer_name = (
+        sales_order.get("customer_name")
+        or frappe.db.get_value("Customer", sales_order.customer, "customer_name")
+        or sales_order.customer
+        or ""
+    )
+    k_number = frappe.db.get_value("Job File", job_file, "k_number") or ""
+    k_part = f" ({k_number})" if k_number else ""
+    description = f"{customer_name}{k_part}. Followup for the second tranche of payment."
+
+    todo = frappe.get_doc({
+        "doctype": "ToDo",
+        "allocated_to": owner,
+        "reference_type": "Sales Order",
+        "reference_name": sales_order.name,
+        "description": description,
+        "role": "Sales Manager",
+        "priority": "High",
+        "status": "Open",
+    })
+    todo.flags.ignore_permissions = True
+    todo.insert()
+
+
+# --- Auto-close Tranche 2 Followup ToDo when amount is filled ---
+def close_tranche2_followup_todo_if_filled(doc, method=None):
+    """
+    Close the Sales Manager followup ToDo for Tranche 2 when amount is filled.
+    """
+    tranche2_row = next((r for r in (doc.get("custom_payment_plan") or []) if r.milestone == "Tranche 2" and float(r.amount or 0) > 0), None)
+    if not tranche2_row:
+        return
+
+    job_file = doc.get("custom_job_file")
+    if not job_file:
+        return
+    owner = frappe.db.get_value("Job File", job_file, "custom_job_file_owner")
+    if not owner:
+        return
+
+    todos = frappe.db.get_all("ToDo", filters={
+        "reference_type": "Sales Order",
+        "reference_name": doc.name,
+        "allocated_to": owner,
+        "role": "Sales Manager",
+        "status": "Open",
+        "description": ["like", "%Followup for the second tranche of payment%"],
+    }, fields=["name"])
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
 
 
 def _recalculate_job_file_profitability(doc):
@@ -523,11 +525,11 @@ def _primary_mr_already_transferred(doc):
 
 def _create_stock_manager_transfer_todo(doc):
     """
-    Create Stock Manager ToDos when the Trance 1 payment milestone is Paid.
+    Create Stock Manager ToDos when the Tranche 1 payment milestone is Paid.
     Deduplicates — will not create a second todo if one is already open.
 
     Gates:
-      1. Advance milestone must be Paid (falls through if no Advance row).
+      1. Tranche 1 milestone must be Paid for Bank Loan; Advance for Self Finance.
       2. Primary Material Request must NOT already be fully transferred.
     """
 
