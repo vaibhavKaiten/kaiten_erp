@@ -33,24 +33,27 @@ def on_update(doc, method=None):
 
 def on_update_after_submit(doc, method=None):
     """
-    Handles two post-submit changes:
-    1. Next Follow-up Date changed → reschedule ToDo.
-    2. Status changed to Lost → close all open Quotation ToDos.
-    """
-    before = doc.get_doc_before_save()
-    if not before:
-        return
+    Handles post-submit changes:
+    1. Status is Lost → close all open ToDos (follow-up, initiate TS, create SO).
+    2. Next Follow-up Date changed → reschedule follow-up ToDo.
+    3. customer_acceptance changed → open/close the right next-step ToDos.
 
-    status_changed_to_lost = (
-        before.get("status") != "Lost" and doc.status == "Lost"
-    )
-    if status_changed_to_lost:
+    NOTE: ERPNext's declare_enquiry_lost uses db_set("status", "Lost") before
+    calling save(), so get_doc_before_save() already sees "Lost" in the DB.
+    We therefore check doc.status == "Lost" directly rather than a before/after
+    comparison — all close helpers are idempotent (already-closed todos are skipped).
+    """
+    if doc.status == "Lost":
         _close_vendor_head_initiate_ts_todos(doc)
         _close_sales_order_todos(doc)
         close_quotation_todos(doc.name)
         return
 
-    if doc.status in ("Ordered", "Lost"):
+    if doc.status == "Ordered":
+        return
+
+    before = doc.get_doc_before_save()
+    if not before:
         return
 
     prev_date = str(before.get("custom_next_followup_date") or "")
