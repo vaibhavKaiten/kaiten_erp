@@ -30,63 +30,55 @@ CHILD_FIELD_CANDIDATES = {
 
 
 def log_workflow_location(doc):
+    """
+    Append a Location Log row on workflow state transitions.
+
+    - Never throws: missing GPS or missing location_log table is silently skipped.
+    - Only logs when workflow_state actually changed (DB value vs in-memory).
+    - Clears gps_latitude / gps_longitude after logging to prevent stale values.
+    - Must NOT call doc.save() or doc.db_update() — runs inside validate().
+    """
     if not doc.meta.has_field("workflow_state"):
         return
 
-    if not doc.has_value_changed("workflow_state"):
+    # Compare against DB-persisted value to detect actual transitions.
+    # get_db_value returns None for new (unsaved) docs.
+    db_state = frappe.db.get_value(doc.doctype, doc.name, "workflow_state")
+    new_state = doc.workflow_state
+
+    if db_state == new_state:
         return
 
-    old_doc = doc.get_doc_before_save()
-    previous_status = old_doc.workflow_state if old_doc and old_doc.workflow_state else "New"
-    new_status = doc.workflow_state or "New"
+    # Skip silently if GPS is absent — must never block a workflow transition.
+    latitude = _to_float(doc.get("gps_latitude"))
+    longitude = _to_float(doc.get("gps_longitude"))
 
-    if previous_status == new_status:
+    if not latitude and not longitude:
+        # Clear stale fields anyway then bail
+        doc.gps_latitude = None
+        doc.gps_longitude = None
         return
 
-    log_table_field = _first_existing_field(doc, LOCATION_LOG_TABLE_CANDIDATES)
-    if not log_table_field:
-        frappe.throw(
-            _("Missing location log table field in {0}. Expected one of: {1}").format(
-                doc.doctype, ", ".join(LOCATION_LOG_TABLE_CANDIDATES)
-            ),
-            title=_("Configuration Error"),
-        )
+    # Skip silently if the location_log child table doesn't exist on this doctype.
+    if not doc.meta.has_field("location_log"):
+        return
 
-    latitude = _get_first_value(doc, GPS_TEMP_FIELD_CANDIDATES["latitude"])
-    longitude = _get_first_value(doc, GPS_TEMP_FIELD_CANDIDATES["longitude"])
-    location = _get_first_value(doc, GPS_TEMP_FIELD_CANDIDATES["location"])
-    map_link = _get_first_value(doc, GPS_TEMP_FIELD_CANDIDATES["map_link"])
+    previous_status = db_state or "New"
+    location_str = f"{latitude}, {longitude}"
 
-    latitude = _to_float(latitude)
-    longitude = _to_float(longitude)
+    doc.append("location_log", {
+        "date_time": now_datetime(),
+        "previous_status": previous_status,
+        "new_status": new_state,
+        "latitude": latitude,
+        "longitude": longitude,
+        "location": location_str,
+        "changed_by": frappe.session.user,
+    })
 
-    # Recover coordinates from location/map URL when numeric fields are empty/zero.
-    parsed_lat, parsed_lng = _extract_coordinates(location) or _extract_coordinates(map_link) or (None, None)
-    if (latitude is None or longitude is None) and parsed_lat is not None and parsed_lng is not None:
-        latitude, longitude = parsed_lat, parsed_lng
-    elif latitude == 0 and longitude == 0 and parsed_lat is not None and parsed_lng is not None:
-        latitude, longitude = parsed_lat, parsed_lng
-
-    if latitude is None or longitude is None:
-        frappe.throw(
-            _("GPS location is mandatory before workflow transition."),
-            title=_("Location Required"),
-        )
-
-    map_link = map_link or f"https://www.google.com/maps?q={latitude},{longitude}"
-    location = map_link
-
-    log_row = doc.append(log_table_field, {})
-    _set_child_value(log_row, "timestamp", now_datetime())
-    _set_child_value(log_row, "previous_status", previous_status)
-    _set_child_value(log_row, "new_status", new_status)
-    _set_child_value(log_row, "location", location)
-    _set_child_value(log_row, "latitude", latitude)
-    _set_child_value(log_row, "longitude", longitude)
-    _set_child_value(log_row, "map_link", map_link)
-    _set_child_value(log_row, "changed_by", frappe.session.user)
-
-    _clear_temp_fields(doc)
+    # Clear temp GPS fields so they don't persist stale values across saves.
+    doc.gps_latitude = None
+    doc.gps_longitude = None
 
 
 def _clear_temp_fields(doc):

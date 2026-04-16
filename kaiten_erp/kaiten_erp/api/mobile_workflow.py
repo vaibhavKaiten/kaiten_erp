@@ -71,7 +71,7 @@ def get_actions(doc_type, doc_name):
 
 
 @frappe.whitelist()
-def apply_action(doc_type, doc_name, action):
+def apply_action(doc_type, doc_name, action, gps_latitude=None, gps_longitude=None):
 	"""
 	Apply a workflow action to a document.
 
@@ -85,9 +85,11 @@ def apply_action(doc_type, doc_name, action):
 	  - Saves the document
 
 	Args:
-	    doc_type (str): DocType name e.g. "Technical Survey"
-	    doc_name (str): Document name e.g. "TS-2026-00001"
-	    action   (str): Workflow action label e.g. "Submit For Review"
+	    doc_type     (str):   DocType name e.g. "Technical Survey"
+	    doc_name     (str):   Document name e.g. "TS-2026-00001"
+	    action       (str):   Workflow action label e.g. "Submit For Review"
+	    gps_latitude (float): Optional GPS latitude from mobile device
+	    gps_longitude(float): Optional GPS longitude from mobile device
 
 	Returns:
 	    {
@@ -111,6 +113,14 @@ def apply_action(doc_type, doc_name, action):
 	# but we do an explicit get_doc here to surface PermissionError early
 	# with a clear message before any workflow logic runs.
 	doc = frappe.get_doc(doc_type, doc_name)
+
+	# Stamp GPS coordinates on the doc so log_workflow_location() can read them
+	# during validate(). Both fields are optional — missing GPS must never block
+	# the transition (web-desk saves, denied location permission, etc.).
+	if gps_latitude:
+		doc.gps_latitude = gps_latitude
+	if gps_longitude:
+		doc.gps_longitude = gps_longitude
 
 	# Apply — Frappe validates role, conditions, self-approval, then saves
 	apply_workflow(doc, action)
