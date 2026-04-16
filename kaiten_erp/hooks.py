@@ -112,6 +112,7 @@ fixtures = [
                     "Vendor Executive",
                     "Vendor Head",
                     "Sales Executive",
+                    "DISCOM Manager",
                 ],
             ]
         ],
@@ -251,6 +252,7 @@ permission_query_conditions = {
     "Verification Handover": "kaiten_erp.kaiten_erp.doctype.verification_handover.verification_handover_list.get_permission_query_conditions",
     "Job File": "kaiten_erp.kaiten_erp.doctype.job_file.job_file_list.get_permission_query_conditions",
     "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_permission_query",
+    "DISCOM Master": "kaiten_erp.kaiten_erp.permissions.discom_master_permissions.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -262,6 +264,7 @@ has_permission = {
     "Verification Handover": "kaiten_erp.kaiten_erp.permissions.verification_handover_permissions.has_permission",
     "Job File": "kaiten_erp.kaiten_erp.permissions.job_file_permissions.has_permission",
     "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_has_permission",
+    "DISCOM Master": "kaiten_erp.kaiten_erp.permissions.discom_master_permissions.has_permission",
 }
 
 
@@ -277,6 +280,9 @@ override_whitelisted_methods = {
 
 doc_events = {
     "Lead": {"on_update": "kaiten_erp.kaiten_erp.doc_events.lead_events.on_update"},
+    "DISCOM Master": {
+        "on_update": "kaiten_erp.kaiten_erp.doc_events.discom_master_events.on_update",
+    },
     "Job File": {
         "on_update": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_update",
         "on_trash": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_trash",
