@@ -64,3 +64,5 @@ test.py
 *.csv
 
 Client Territory Data .csv
+.github/prompts/*
+.github/copilot-instructions.md
