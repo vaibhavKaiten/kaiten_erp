@@ -15,7 +15,6 @@ LOCATION_LOG_TABLE_CANDIDATES = (
     "location_log",
     "custom_location_activity_log",
     "custom_location__history",
-    "location_log",
 )
 CHILD_FIELD_CANDIDATES = {
     "timestamp": ("timestamp", "custom_timestamp", "date_time"),
@@ -59,14 +58,17 @@ def log_workflow_location(doc):
         doc.gps_longitude = None
         return
 
-    # Skip silently if the location_log child table doesn't exist on this doctype.
-    if not doc.meta.has_field("location_log"):
+    # Skip silently if no location log child table exists on this doctype.
+    log_table_field = next(
+        (f for f in LOCATION_LOG_TABLE_CANDIDATES if doc.meta.has_field(f)), None
+    )
+    if not log_table_field:
         return
 
     previous_status = db_state or "New"
     location_str = f"{latitude}, {longitude}"
 
-    doc.append("location_log", {
+    doc.append(log_table_field, {
         "date_time": now_datetime(),
         "previous_status": previous_status,
         "new_status": new_state,

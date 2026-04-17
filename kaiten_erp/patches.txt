@@ -36,4 +36,5 @@ kaiten_erp.patches.update_discom_master_select_options
 kaiten_erp.patches.quotation_allow_on_submit_and_move_profitability_tab
 kaiten_erp.patches.rename_property_photo_label
 kaiten_erp.patches.set_technical_survey_visit_type_select
+kaiten_erp.patches.remove_meter_installation_location_log_field
 

@@ -54,8 +54,7 @@
     "gps_latitude",
     "gps_longitude",
     "gps_location",
-    "gps_map_link",
-    "location_log"
+    "gps_map_link"
   ],
   "fields": [
     {
@@ -307,14 +306,6 @@
       "allow_on_submit": 1,
       "label": "GPS Map Link"
     },
-    {
-      "fieldname": "location_log",
-      "fieldtype": "Table",
-      "allow_on_submit": 1,
-      "read_only": 1,
-      "label": "Location Log",
-      "options": "Location Log"
-    }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
