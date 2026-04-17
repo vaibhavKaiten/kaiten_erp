@@ -20,7 +20,7 @@ def update_profitability(job_file_name):
             "custom_total_material_cost": material_cost,
             "custom_gross_profit": gross_profit,
             "custom_profit_percentage": profit_pct,
-            "custom_cost_percentage": cost_pct,
+            "custom_cost_": cost_pct,
         },
         update_modified=False,
     )
