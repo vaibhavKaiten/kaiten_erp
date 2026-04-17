@@ -289,8 +289,9 @@
   },
   {
    "fieldname": "visit_type",
-   "fieldtype": "Data",
-   "label": "Visit Type"
+   "fieldtype": "Select",
+   "label": "Visit Type",
+   "options": "Technical Survey\nMarketing"
   },
   {
    "fieldname": "data_ycke",
