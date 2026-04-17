@@ -138,24 +138,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2026-03-03 17:08:35.629239",
-  "name": "Contacted",
-  "style": "",
-  "workflow_state_name": "Contacted"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-03-05 13:51:33.675220",
-  "name": "Completed",
-  "style": "",
-  "workflow_state_name": "Completed"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": "",
   "modified": "2026-03-05 13:51:24.077978",
   "name": "Submitted",
   "style": "",
@@ -183,6 +165,15 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
+  "modified": "2026-03-05 13:51:33.675220",
+  "name": "Completed",
+  "style": "",
+  "workflow_state_name": "Completed"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
   "modified": "2026-03-03 17:08:29.161035",
   "name": "Draft",
   "style": "",
@@ -196,5 +187,14 @@
   "name": "Job File Initiated",
   "style": "",
   "workflow_state_name": "Job File Initiated"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-03-03 17:08:35.629239",
+  "name": "Contacted",
+  "style": "",
+  "workflow_state_name": "Contacted"
  }
 ]
