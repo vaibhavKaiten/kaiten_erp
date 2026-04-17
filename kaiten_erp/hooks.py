@@ -4,6 +4,7 @@ app_publisher = "Kaiten Software"
 app_description = "Kaiten ERP Software"
 app_email = "vaibhav@kaitensoftware.com"
 app_license = "mit"
+app_include_js = "/assets/kaiten_erp/js/desk_override.js"
 
 # Apps
 # ------------------
