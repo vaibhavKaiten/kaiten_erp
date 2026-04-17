@@ -55,6 +55,7 @@ def on_update_after_submit(doc, method=None):
     _close_final_payment_todo_if_filled(doc)
     close_tranche2_followup_todo_if_filled(doc)
     _create_verification_handover_todo_on_tranche2_paid(doc)
+    _sync_discom_process_todo(doc)
     _sync_billing_from_milestones(doc.name)
 # --- Create VH ToDo for Vendor Head when Tranche 2 is Paid ---
 def _create_verification_handover_todo_on_tranche2_paid(doc):
@@ -443,6 +444,8 @@ def _close_all_milestone_todos(doc):
     # Self Finance: close Collect Final Payment and Transfer Remaining Materials todos
     _sf_close_remaining_transfer_todos(doc.name)
     _close_final_payment_sm_todos(doc.name)
+    # DISCOM Manager process ToDo
+    _close_discom_todos_for_so(doc.name, doc.get("custom_job_file"))
 
 
 # ---------------------------------------------------------------------------
@@ -899,6 +902,121 @@ def _close_final_payment_sm_todos(sales_order_name):
         "status": "Open",
         "description": ["like", "Collect Final Payment%"],
     }, fields=["name"])
+    for t in todos:
+        frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
+
+
+# ---------------------------------------------------------------------------
+# DISCOM Process ToDo helpers
+# ---------------------------------------------------------------------------
+
+def _get_discom_manager_users():
+    """Return list of enabled DISCOM Manager user emails."""
+    rows = frappe.db.sql(
+        """
+        SELECT DISTINCT u.name
+        FROM `tabUser` u
+        INNER JOIN `tabHas Role` hr ON hr.parent = u.name AND hr.parenttype = 'User'
+        WHERE hr.role = 'DISCOM Manager'
+          AND u.enabled = 1
+          AND u.name NOT IN ('Administrator', 'Guest')
+        """,
+        as_dict=True,
+    )
+    return [r.name for r in rows]
+
+
+def _sync_discom_process_todo(doc):
+    """
+    Create DISCOM Manager ToDo when the trigger payment milestone is Paid.
+      - Bank Loan (has "Tranche 1" in plan): Tranche 1 row marked Paid
+      - Self Finance (no "Tranche 1"):       Advance row (or first row) marked Paid
+
+    Detection is milestone-name–based so it works regardless of how
+    custom_finance_type is stored (plain string vs. Link to template).
+    """
+    milestones = doc.get("custom_payment_plan") or []
+    if not milestones:
+        return
+
+    # Determine trigger milestone from the payment plan structure itself
+    milestone_names = {r.milestone for r in milestones}
+    if "Tranche 1" in milestone_names:
+        # Bank Loan pattern — trigger when Tranche 1 is Paid
+        trigger_row = next((r for r in milestones if r.milestone == "Tranche 1"), None)
+    else:
+        # Self Finance pattern — trigger when Advance (or first row) is Paid
+        trigger_row = next((r for r in milestones if r.milestone == "Advance"), None)
+        if not trigger_row:
+            trigger_row = min(milestones, key=lambda r: r.idx)
+
+    if not trigger_row or (trigger_row.status or "Pending") != "Paid":
+        return
+
+    # Get DISCOM Master from Job File
+    job_file_name = doc.get("custom_job_file")
+    if not job_file_name:
+        return
+
+    discom_master = frappe.db.get_value("Job File", job_file_name, "discom")
+    if not discom_master:
+        return  # No DISCOM linked to this job file
+
+    customer_name, k_number = _get_so_customer_info(doc)
+    k_part = f" ({k_number})" if k_number else ""
+    description = f"Start DISCOM Process - {customer_name}{k_part} | {doc.name}"
+
+    managers = _get_discom_manager_users()
+    if not managers:
+        return
+
+    for user in managers:
+        existing = frappe.db.exists(
+            "ToDo",
+            {
+                "reference_type": "DISCOM Master",
+                "reference_name": discom_master,
+                "allocated_to": user,
+                "role": "DISCOM Manager",
+                "status": "Open",
+                "description": ["like", f"% | {doc.name}"],
+            },
+        )
+        if existing:
+            continue
+
+        frappe.get_doc({
+            "doctype": "ToDo",
+            "allocated_to": user,
+            "reference_type": "DISCOM Master",
+            "reference_name": discom_master,
+            "description": description,
+            "role": "DISCOM Manager",
+            "priority": "High",
+            "status": "Open",
+        }).insert(ignore_permissions=True)
+
+
+def _close_discom_todos_for_so(sales_order_name, job_file_name):
+    """Close all open DISCOM Manager ToDos related to a Sales Order (used on cancel)."""
+    if not job_file_name:
+        return
+
+    discom_master = frappe.db.get_value("Job File", job_file_name, "discom")
+    if not discom_master:
+        return
+
+    todos = frappe.db.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "DISCOM Master",
+            "reference_name": discom_master,
+            "role": "DISCOM Manager",
+            "status": "Open",
+            "description": ["like", f"% | {sales_order_name}"],
+        },
+        fields=["name"],
+    )
     for t in todos:
         frappe.db.set_value("ToDo", t.name, "status", "Closed", update_modified=False)
 
