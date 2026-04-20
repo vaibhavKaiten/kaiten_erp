@@ -4,7 +4,7 @@
 
 **Kaiten ERP** is a custom Frappe v16 app (`kaiten_erp`) for solar installation project management built on ERPNext. It extends standard ERPNext DocTypes (Lead, Sales Order, Quotation, Delivery Note, etc.) with custom fields and adds custom DocTypes for a 6-stage **execution chain** workflow.
 
-- **Bench directory:** `/home/lakshya/temp/dev-bench`
+- **Bench directory:** `/home/vaibhav/frappe/frappe-bench`
 - **App directory:** `apps/kaiten_erp`
 - **Site:** `dev-bench` (single-site setup)
 - **Python:** ≥ 3.14 | **Frappe:** v16 | **Linting:** ruff + eslint + prettier
@@ -169,3 +169,8 @@ Backups run via cron at 9, 12, 15, 18, 21 hours daily (`cron_job/hourly_backup.p
 - **Agent:** `frappe-erp-builder` — Frappe/ERPNext builder and configurator. See `.github/agents/frappe-erp-builder.agent.md`.
 - **Agent:** `todo-creator` — Specialized for Frappe ToDo creation patterns. See `.github/agents/todo-creator.agent.md`.
 - **Repo memory:** `project_installation_structure.md` — Detailed field map for Project Installation DocType
+
+
+For more deep context read file [DeepContext][deepContextReference]
+
+[deepContextReference]: ../Skills/DEEP_CONTEXT.md
