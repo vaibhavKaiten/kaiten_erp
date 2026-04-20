@@ -52800,11 +52800,11 @@
   "workflow_state": "In Progress"
  },
  {
-  "completed_by": null,
-  "completed_by_role": null,
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
   "docstatus": 0,
   "doctype": "Workflow Action",
-  "modified": "2026-04-20 12:16:38.651336",
+  "modified": "2026-04-20 12:54:24.774874",
   "name": "tgig85ro76",
   "permitted_roles": [
    {
@@ -52813,7 +52813,7 @@
   ],
   "reference_doctype": "Technical Survey",
   "reference_name": "gazani-6986896896896-0674",
-  "status": "Open",
+  "status": "Completed",
   "user": null,
   "workflow_state": "Draft"
  },
@@ -52906,5 +52906,77 @@
   "status": "Open",
   "user": null,
   "workflow_state": "Draft"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-20 12:55:01.388936",
+  "name": "jkndh6bdrp",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "gazani-6986896896896-0674",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Assigned to Vendor"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Executive",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-20 12:55:02.679647",
+  "name": "k05qogfvdb",
+  "permitted_roles": [
+   {
+    "role": "Vendor Executive"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "gazani-6986896896896-0674",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "In Progress"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Manager",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-20 12:55:04.680795",
+  "name": "k0in5asj62",
+  "permitted_roles": [
+   {
+    "role": "Vendor Manager"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "gazani-6986896896896-0674",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Submitted"
+ },
+ {
+  "completed_by": "Administrator",
+  "completed_by_role": "Vendor Head",
+  "docstatus": 0,
+  "doctype": "Workflow Action",
+  "modified": "2026-04-20 12:55:05.990347",
+  "name": "k16f6up90o",
+  "permitted_roles": [
+   {
+    "role": "Vendor Head"
+   }
+  ],
+  "reference_doctype": "Technical Survey",
+  "reference_name": "gazani-6986896896896-0674",
+  "status": "Completed",
+  "user": null,
+  "workflow_state": "Completed"
  }
 ]
