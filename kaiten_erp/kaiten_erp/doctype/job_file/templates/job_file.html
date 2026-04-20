@@ -1,7 +1,649 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
-<h1>{{ title |e }}</h1>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+    href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+
+<style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        --clr-sun-50: oklch(97% 0.02 80);
+        --clr-sun-100: oklch(93% 0.04 78);
+        --clr-sun-200: oklch(86% 0.08 76);
+        --clr-sun-400: oklch(72% 0.16 68);
+        --clr-sun-500: oklch(65% 0.18 62);
+        --clr-sun-600: oklch(55% 0.16 58);
+        --clr-sun-700: oklch(45% 0.14 55);
+        --clr-bg: oklch(98% 0.006 75);
+        --clr-surface: oklch(100% 0.003 75);
+        --clr-border: oklch(90% 0.01 75);
+        --clr-text: oklch(18% 0.01 75);
+        --clr-text-2: oklch(42% 0.015 75);
+        --clr-text-3: oklch(58% 0.012 75);
+        --clr-success: oklch(62% 0.17 148);
+        --clr-success-bg: oklch(95% 0.04 148);
+        --clr-hold: oklch(58% 0.18 28);
+        --clr-hold-bg: oklch(94% 0.04 28);
+        --clr-active: oklch(58% 0.14 250);
+        --clr-active-bg: oklch(94% 0.04 250);
+        --clr-pending: oklch(72% 0.01 75);
+        --clr-pending-bg: oklch(96% 0.005 75);
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 24px;
+        --sp-6: 32px;
+        --sp-7: 48px;
+        --sp-8: 64px;
+        --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+        --font-body: "General Sans", system-ui, sans-serif;
+        --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+        --dur-fast: 150ms;
+        --dur-med: 300ms;
+        --dur-slow: 500ms;
+    }
+
+    .job-tracker-page {
+        font-family: var(--font-body);
+        color: var(--clr-text);
+        background: var(--clr-bg);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.55;
+        min-height: 100dvh;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    .app {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: var(--sp-6) var(--sp-5);
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-7);
+    }
+
+    .logo-mark {
+        width: 48px;
+        height: 48px;
+        background: var(--clr-sun-500);
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+    .logo-mark svg {
+        width: 28px;
+        height: 28px;
+        fill: var(--clr-surface);
+    }
+
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .logo-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        color: var(--clr-text);
+    }
+
+    .logo-sub {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--clr-text-3);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .customer-bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-5);
+        padding: var(--sp-5);
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: 16px;
+        margin-bottom: var(--sp-7);
+    }
+
+    .customer-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-5);
+        padding: var(--sp-5);
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: 16px;
+        margin-bottom: var(--sp-7);
+    }
+
+    @media (max-width: 580px) {
+
+        .customer-bar,
+        .customer-meta {
+            grid-template-columns: 1fr;
+            gap: var(--sp-4);
+        }
+
+        .app {
+            padding: var(--sp-5) var(--sp-4);
+        }
+    }
+
+    .cust-field-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--clr-text-3);
+        margin-bottom: var(--sp-1);
+    }
+
+    .cust-field-value {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--clr-text);
+        line-height: 1.35;
+    }
+
+    .progress-overview {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-4);
+        padding: var(--sp-5);
+        background: var(--clr-sun-50);
+        border: 1px solid var(--clr-sun-200);
+        border-radius: 16px;
+        margin-bottom: var(--sp-7);
+    }
+
+    .progress-ring {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        flex-shrink: 0;
+    }
+
+    .progress-ring svg {
+        transform: rotate(-90deg);
+        width: 64px;
+        height: 64px;
+    }
+
+    .progress-ring .track {
+        fill: none;
+        stroke: var(--clr-sun-200);
+        stroke-width: 5;
+    }
+
+    .progress-ring .fill {
+        fill: none;
+        stroke: var(--clr-sun-500);
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-dasharray: 163.36;
+        stroke-dashoffset: 163.36;
+        transition: stroke-dashoffset var(--dur-slow) var(--ease-out-quart);
+    }
+
+    .progress-pct {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--clr-sun-700);
+    }
+
+    .progress-info {
+        flex: 1;
+    }
+
+    .progress-title {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--clr-sun-700);
+        margin-bottom: 2px;
+    }
+
+    .progress-desc {
+        font-size: 0.85rem;
+        color: var(--clr-text-2);
+        max-width: 55ch;
+    }
+
+    .pipeline {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .pipeline::before {
+        content: "";
+        position: absolute;
+        left: 23px;
+        top: 24px;
+        bottom: 24px;
+        width: 2px;
+        background: var(--clr-border);
+        z-index: 0;
+    }
+
+    .pipeline::after {
+        content: "";
+        position: absolute;
+        left: 23px;
+        top: 24px;
+        width: 2px;
+        height: var(--completed-track, 0%);
+        background: var(--clr-success);
+        z-index: 0;
+        transition: height var(--dur-slow) var(--ease-out-quart);
+    }
+
+    .stage {
+        position: relative;
+        z-index: 1;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: stage-enter var(--dur-slow) var(--ease-out-quart) forwards;
+    }
+
+    @keyframes stage-enter {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stage-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-4);
+        padding: var(--sp-4) 0;
+    }
+
+    .stage-dot {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        font-family: var(--font-display);
+        font-size: 0.85rem;
+        font-weight: 700;
+        transition: all var(--dur-med) var(--ease-out-quart);
+        position: relative;
+    }
+
+    .stage-dot--pending {
+        background: var(--clr-pending-bg);
+        color: var(--clr-pending);
+        border: 2px solid var(--clr-border);
+    }
+
+    .stage-dot--active {
+        background: var(--clr-active-bg);
+        color: var(--clr-active);
+        border: 2px solid var(--clr-active);
+        box-shadow: 0 0 0 4px oklch(58% 0.14 250 / 0.12);
+    }
+
+    .stage-dot--active::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px solid oklch(58% 0.14 250 / 0.2);
+        animation: pulse-ring 2s var(--ease-out-quart) infinite;
+    }
+
+    @keyframes pulse-ring {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1.3);
+            opacity: 0;
+        }
+    }
+
+    .stage-dot--completed {
+        background: var(--clr-success);
+        color: var(--clr-surface);
+        border: 2px solid var(--clr-success);
+    }
+
+    .stage-dot--hold {
+        background: var(--clr-hold-bg);
+        color: var(--clr-hold);
+        border: 2px solid var(--clr-hold);
+        box-shadow: 0 0 0 4px oklch(58% 0.18 28 / 0.12);
+    }
+
+    .stage-meta {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .stage-number {
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--clr-text-3);
+        margin-bottom: 2px;
+    }
+
+    .stage-title {
+        font-family: var(--font-display);
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        font-weight: 700;
+        color: var(--clr-text);
+        line-height: 1.25;
+    }
+
+    .stage-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .stage-badge--completed {
+        background: var(--clr-success-bg);
+        color: var(--clr-success);
+    }
+
+    .stage-badge--active {
+        background: var(--clr-active-bg);
+        color: var(--clr-active);
+    }
+
+    .stage-badge--hold {
+        background: var(--clr-hold-bg);
+        color: var(--clr-hold);
+    }
+
+    .stage-badge--pending {
+        background: var(--clr-pending-bg);
+        color: var(--clr-pending);
+    }
+
+    .footer {
+        text-align: center;
+        padding: var(--sp-8) 0 var(--sp-6);
+        font-size: 0.75rem;
+        color: var(--clr-text-3);
+    }
+
+    .footer strong {
+        color: var(--clr-sun-600);
+        font-weight: 600;
+    }
+</style>
+
+<div class="job-tracker-page">
+    <div class="app" id="app">
+        <header class="header">
+            <div class="logo-mark">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path
+                        d="M12 1.8l1.2 3.4a7.5 7.5 0 0 1 5.6 5.6l3.4 1.2-3.4 1.2a7.5 7.5 0 0 1-5.6 5.6L12 22.2l-1.2-3.4a7.5 7.5 0 0 1-5.6-5.6L1.8 12l3.4-1.2a7.5 7.5 0 0 1 5.6-5.6L12 1.8z">
+                    </path>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <h1 class="logo-title">Raj Solar</h1>
+                <span class="logo-sub">Project Tracker</span>
+            </div>
+        </header>
+
+        <section class="customer-bar">
+            <div>
+                <div class="cust-field-label">Customer Name</div>
+                <div class="cust-field-value">{{ doc.customer | e }}</div>
+            </div>
+            <div>
+                <div class="cust-field-label">Job File ID</div>
+                <div class="cust-field-value">{{ doc.name | e }}</div>
+            </div>
+        </section>
+
+        <section class="customer-meta">
+            <div>
+                <div class="cust-field-label">Account Manager</div>
+                <div class="cust-field-value">{{ (doc.custom_job_file_owner or "Not Assigned Yet") | e }}</div>
+            </div>
+            <div>
+                <div class="cust-field-label">Mobile Number</div>
+                <div class="cust-field-value">{{ (customer_mobile or "Not Available") | e }}</div>
+            </div>
+        </section>
+
+        <section class="progress-overview">
+            <div class="progress-ring">
+                <svg viewBox="0 0 64 64">
+                    <circle class="track" cx="32" cy="32" r="26"></circle>
+                    <circle class="fill" id="progressArc" cx="32" cy="32" r="26"></circle>
+                </svg>
+                <div class="progress-pct" id="progressPct">0%</div>
+            </div>
+            <div class="progress-info">
+                <div class="progress-title" id="progressTitle">Project Progress</div>
+                <div class="progress-desc" id="progressDesc"></div>
+            </div>
+        </section>
+
+        <div class="pipeline" id="pipeline"></div>
+
+        <footer class="footer">
+            Powered by <strong>Raj Solar</strong> · Trusted Solar Solutions
+        </footer>
+
+<!-- Removed: Powered by ERPNext footer -->
+    </div>
+</div>
+
+<script id="execution-stage-data" type="application/json">{{ (execution_stages or []) | tojson | safe }}</script>
+
+<script>
+    const executionStageJson = document.getElementById("execution-stage-data");
+    const executionStages = executionStageJson ? JSON.parse(executionStageJson.textContent || "[]") : [];
+
+    const STAGES = [
+        { key: "technicalsurvey", label: "Technical Survey", aliases: ["technical survey"] },
+        { key: "structuremounting", label: "Structure Mounting", aliases: ["structure mounting"] },
+        { key: "projectinstallation", label: "Project Installation", aliases: ["project installation"] },
+        { key: "meterinstallation", label: "Meter Installation", aliases: ["meter installation"] },
+        { key: "metercommissioning", label: "Meter Commissioning", aliases: ["meter commissioning"] },
+        {
+            key: "verificationhandover",
+            label: "Verification & Handover",
+            aliases: ["verification handover", "verification & handover"]
+        }
+    ];
+
+    function normalizeText(value) {
+        return String(value || "")
+            .toLowerCase()
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]/g, "");
+    }
+
+    function normalizeStatus(statusValue) {
+        const raw = String(statusValue || "Not Created").toLowerCase();
+        if (raw.includes("hold")) return "hold";
+        if (raw.includes("completed") || raw.includes("done") || raw.includes("approved")) return "completed";
+        if (
+            raw.includes("in progress") ||
+            raw.includes("progress") ||
+            raw.includes("active") ||
+            raw.includes("open") ||
+            raw.includes("submitted")
+        ) {
+            return "active";
+        }
+        return "pending";
+    }
+
+    function getStageRow(stageDef) {
+        const aliasSet = new Set(stageDef.aliases.map((name) => normalizeText(name)));
+        aliasSet.add(stageDef.key);
+        return executionStages.find((row) => aliasSet.has(normalizeText(row.stage)));
+    }
+
+    function statusMeta(status) {
+        if (status === "completed") {
+            return {
+                badge: "Completed",
+                badgeClass: "completed",
+                dot: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+            };
+        }
+        if (status === "active") {
+            return {
+                badge: "In Progress",
+                badgeClass: "active",
+                dot: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" fill="currentColor"></circle></svg>'
+            };
+        }
+        if (status === "hold") {
+            return {
+                badge: "On Hold",
+                badgeClass: "hold",
+                dot: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="8" x2="10" y2="16"></line><line x1="14" y1="8" x2="14" y2="16"></line></svg>'
+            };
+        }
+        return {
+            badge: "Pending",
+            badgeClass: "pending",
+            dot: '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5"></circle></svg>'
+        };
+    }
+
+    function renderPipeline(stagesWithStatus) {
+        const pipeline = document.getElementById("pipeline");
+        let html = "";
+
+        stagesWithStatus.forEach((stage, index) => {
+            const stageNum = String(index + 1).padStart(2, "0");
+            const meta = statusMeta(stage.status);
+            html += `
+<div class="stage" style="animation-delay: ${(index + 1) * 80}ms;">
+<div class="stage-header">
+<div class="stage-dot stage-dot--${stage.status}">${meta.dot}</div>
+<div class="stage-meta">
+<div class="stage-number">Stage ${stageNum}</div>
+<div class="stage-title">${stage.label}</div>
+</div>
+<span class="stage-badge stage-badge--${meta.badgeClass}">${meta.badge}</span>
+</div>
+</div>
+`;
+        });
+
+        pipeline.innerHTML = html;
+
+        const completedCount = stagesWithStatus.filter((stage) => stage.status === "completed").length;
+        const completedTrack = (completedCount / Math.max(1, STAGES.length - 1)) * 100;
+        pipeline.style.setProperty("--completed-track", Math.min(100, completedTrack) + "%");
+    }
+
+    function renderProgress(stagesWithStatus) {
+        const completedCount = stagesWithStatus.filter((stage) => stage.status === "completed").length;
+        const activeStage = stagesWithStatus.find((stage) => stage.status === "active" || stage.status === "hold");
+        const pct = Math.round((completedCount / STAGES.length) * 100);
+        const circumference = 2 * Math.PI * 26;
+        const offset = circumference - (pct / 100) * circumference;
+
+        document.getElementById("progressArc").style.strokeDashoffset = offset;
+        document.getElementById("progressPct").textContent = pct + "%";
+
+        const titleEl = document.getElementById("progressTitle");
+        const descEl = document.getElementById("progressDesc");
+
+        if (completedCount === STAGES.length) {
+            titleEl.textContent = "Project Complete!";
+            descEl.textContent = "Congratulations! Your solar installation is fully complete and handed over.";
+            return;
+        }
+
+        if (activeStage && activeStage.status === "hold") {
+            titleEl.textContent = "Project On Hold";
+            descEl.textContent = `Stage "${activeStage.label}" is currently on hold. We will resume shortly.`;
+            return;
+        }
+
+        if (activeStage) {
+            titleEl.textContent = activeStage.label;
+            descEl.textContent = `Current stage is "${activeStage.label}". ${pct}% of your project is complete.`;
+            return;
+        }
+
+        titleEl.textContent = "Project Progress";
+        descEl.textContent = "Your solar installation workflow has started. Stage updates will appear here.";
+    }
+
+    function init() {
+        const stagesWithStatus = STAGES.map((stageDef) => {
+            const matchedRow = getStageRow(stageDef);
+            return {
+                label: stageDef.label,
+                status: normalizeStatus(matchedRow ? matchedRow.status : "Not Created")
+            };
+        });
+
+        renderPipeline(stagesWithStatus);
+        renderProgress(stagesWithStatus);
+    }
+
+    init();
+</script>
 {% endblock %}
 
-<!-- this is a sample default web page template -->
+{% block footer %}{% endblock %}

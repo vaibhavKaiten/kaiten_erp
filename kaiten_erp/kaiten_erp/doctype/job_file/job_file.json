@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_guest_to_view": 1,
  "allow_rename": 1,
  "creation": "2026-04-17 18:29:56.569435",
  "doctype": "DocType",
@@ -307,7 +308,7 @@
  "has_web_view": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2026-04-18 14:19:26.291817",
+ "modified": "2026-04-20 12:44:45.197613",
  "modified_by": "Administrator",
  "module": "Kaiten Erp",
  "name": "Job File",
