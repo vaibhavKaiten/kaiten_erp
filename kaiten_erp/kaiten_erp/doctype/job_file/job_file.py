@@ -2,12 +2,19 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.model.document import Document
+import secrets
 from frappe.model.naming import make_autoname
-import re
+from frappe.website.website_generator import WebsiteGenerator
 
 
-class JobFile(Document):
+class JobFile(WebsiteGenerator):
+	def before_save(self):
+		if (
+			not self.custom_web_access_token
+			and self.workflow_state in {"Job File Initiated", "In Progress"}
+		):
+			self.custom_web_access_token = secrets.token_urlsafe(32)
+
 	def autoname(self):
 		# Get first_name from lead if not already set
 		if not self.first_name and self.lead:
@@ -21,3 +28,25 @@ class JobFile(Document):
 		
 		# Generate the name using the existing pattern but with populated first_name
 		self.name = make_autoname(f"JOB-{clean_first_name}-.YYYY.-.#####")
+
+	def get_context(self, context):
+		request_token = frappe.form_dict.get("token")
+		if frappe.session.user != "Administrator":
+			if not request_token or request_token != self.custom_web_access_token:
+				frappe.throw(
+					"Invalid or missing web access token for this Job File.",
+					frappe.PermissionError,
+				)
+
+		context.title = self.name
+		context.doc = self
+		context.execution_stages = [
+			{
+				"stage": row.stage or "",
+				"status": row.status or "",
+				"supplier": row.supplier or "",
+				"referrence_doctype": row.referrence_doctype or "",
+			}
+			for row in (self.table_royw or [])
+		]
+		context.customer_mobile = getattr(self, "mobile_number", "") or ""

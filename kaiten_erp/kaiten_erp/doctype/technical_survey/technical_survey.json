@@ -288,6 +288,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Technical Survey",
    "fieldname": "visit_type",
    "fieldtype": "Select",
    "label": "Visit Type",

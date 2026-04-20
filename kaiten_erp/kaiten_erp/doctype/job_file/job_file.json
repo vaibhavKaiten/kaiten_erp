@@ -1,7 +1,8 @@
 {
  "actions": [],
+ "allow_guest_to_view": 1,
  "allow_rename": 1,
- "creation": "2026-04-10 11:20:35.400755",
+ "creation": "2026-04-17 18:29:56.569435",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -51,7 +52,9 @@
   "discom",
   "job_control_tab",
   "job_execution_control_section",
-  "table_royw"
+  "table_royw",
+  "route",
+  "published"
  ],
  "fields": [
   {
@@ -288,12 +291,24 @@
    "fieldname": "table_royw",
    "fieldtype": "Table",
    "options": "Job Execution Child Table"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route"
+  },
+  {
+   "default": "0",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Published"
   }
  ],
  "grid_page_length": 50,
- "index_web_pages_for_search": 1,
+ "has_web_view": 1,
+ "is_published_field": "published",
  "links": [],
- "modified": "2026-04-10 11:33:56.710010",
+ "modified": "2026-04-20 12:44:45.197613",
  "modified_by": "Administrator",
  "module": "Kaiten Erp",
  "name": "Job File",
@@ -339,6 +354,7 @@
    "write": 1
   }
  ],
+ "route": "job-file",
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
  "sort_field": "creation",
