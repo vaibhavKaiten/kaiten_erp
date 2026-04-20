@@ -2,12 +2,12 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.model.document import Document
+from frappe.website.website_generator import WebsiteGenerator
 from frappe.model.naming import make_autoname
 import re
 
 
-class JobFile(Document):
+class JobFile(WebsiteGenerator):
 	def autoname(self):
 		# Get first_name from lead if not already set
 		if not self.first_name and self.lead:

@@ -169,3 +169,8 @@ Backups run via cron at 9, 12, 15, 18, 21 hours daily (`cron_job/hourly_backup.p
 - **Agent:** `frappe-erp-builder` — Frappe/ERPNext builder and configurator. See `.github/agents/frappe-erp-builder.agent.md`.
 - **Agent:** `todo-creator` — Specialized for Frappe ToDo creation patterns. See `.github/agents/todo-creator.agent.md`.
 - **Repo memory:** `project_installation_structure.md` — Detailed field map for Project Installation DocType
+
+
+For more deep context read file [DeepContext][deepContextReference]
+
+[deepContextReference]: ../Skills/DEEP_CONTEXT.md
