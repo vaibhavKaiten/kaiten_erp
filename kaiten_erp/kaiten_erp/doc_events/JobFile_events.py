@@ -1,4 +1,5 @@
 import frappe
+import requests
 from frappe import _
 
 
@@ -22,9 +23,47 @@ def _normalize_select_value(doctype, fieldname, value):
     return value
 
 
+def _send_workflow_webhook(job_file_name):
+    job_file = frappe.get_doc("Job File", job_file_name)
+
+    owner_user = job_file.get("custom_job_file_owner")
+    mobile_no = ""
+    phone = ""
+
+    if owner_user:
+        user = frappe.db.get_value("User", owner_user, ["mobile_no", "phone"], as_dict=True)
+        if user:
+            mobile_no = user.mobile_no or ""
+            phone = user.phone or ""
+
+    payload = {
+        "job_file": job_file.name,
+        "workflow_state": job_file.workflow_state or "",
+        "first_name": job_file.first_name or "",
+        "last_name": job_file.last_name or "",
+        "owner": owner_user or "",
+        "mobile_no": mobile_no,
+        "phone": phone,
+    }
+
+    try:
+        requests.post(
+            "https://webhook.site/216a199f-73a3-4408-bf92-482654dfaf29",
+            json=payload,
+            timeout=10,
+        )
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Job File Workflow Webhook Error")
+
+
 def on_update(job_file, method):
 
     if job_file.has_value_changed("workflow_state"):
+        frappe.enqueue(
+            "kaiten_erp.kaiten_erp.doc_events.JobFile_events._send_workflow_webhook",
+            job_file_name=job_file.name,
+            queue="short",
+        )
        
 
         # Set Job File Owner when "Start Job File" is clicked (Draft -> In Progress)

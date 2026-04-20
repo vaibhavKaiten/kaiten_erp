@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Job File", {
     refresh: function (frm) {
-        add_customer_website_actions(frm);
+        
         update_customer_website_link(frm);
         setTimeout(function () {
             update_customer_website_link(frm);
@@ -108,34 +108,3 @@ function update_customer_website_link(frm) {
     });
 }
 
-function add_customer_website_actions(frm) {
-    if (frm.is_new()) {
-        return;
-    }
-
-    frm.add_custom_button("Open Customer Web View", function () {
-        const sharePath = get_customer_share_path(frm);
-        if (!sharePath) {
-            frappe.msgprint("Web access token or route missing. Save Job File in valid workflow state first.");
-            return;
-        }
-
-        window.open(sharePath, "_blank", "noopener,noreferrer");
-    }, "Website");
-
-    frm.add_custom_button("Copy Customer Share Link", async function () {
-        const sharePath = get_customer_share_path(frm);
-        if (!sharePath) {
-            frappe.msgprint("Web access token or route missing. Save Job File in valid workflow state first.");
-            return;
-        }
-
-        const shareUrl = window.location.origin + sharePath;
-        try {
-            await navigator.clipboard.writeText(shareUrl);
-            frappe.show_alert({ message: "Customer share link copied", indicator: "green" });
-        } catch (error) {
-            frappe.msgprint("Could not copy automatically. Use this link: " + shareUrl);
-        }
-    }, "Website");
-}

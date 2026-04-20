@@ -9,11 +9,11 @@ from frappe.website.website_generator import WebsiteGenerator
 
 class JobFile(WebsiteGenerator):
 	def before_save(self):
-		if (
-			not self.custom_web_access_token
-			and self.workflow_state in {"Job File Initiated", "In Progress"}
-		):
+		if not self.route:
+			self.set_route()
+		if not self.custom_web_access_token:
 			self.custom_web_access_token = secrets.token_urlsafe(32)
+		self.published = 1
 
 	def autoname(self):
 		# Get first_name from lead if not already set
@@ -50,3 +50,4 @@ class JobFile(WebsiteGenerator):
 			for row in (self.table_royw or [])
 		]
 		context.customer_mobile = getattr(self, "mobile_number", "") or ""
+		context.job_file_workflow_state = self.workflow_state or ""
