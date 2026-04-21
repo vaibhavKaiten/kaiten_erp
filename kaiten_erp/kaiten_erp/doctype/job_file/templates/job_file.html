@@ -294,6 +294,8 @@
         align-items: center;
         gap: var(--sp-4);
         padding: var(--sp-4) 0;
+        cursor: pointer;
+        user-select: none;
     }
 
     .stage-dot {
@@ -424,6 +426,151 @@
         color: var(--clr-sun-600);
         font-weight: 600;
     }
+
+    /* Accordion chevron */
+    .stage-chevron {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        color: var(--clr-text-3);
+        transition: color var(--dur-fast);
+    }
+
+    .stage-chevron svg {
+        width: 16px;
+        height: 16px;
+        transition: transform var(--dur-med) var(--ease-out-quart);
+    }
+
+    .stage[data-open="true"] .stage-chevron svg {
+        transform: rotate(180deg);
+    }
+
+    /* Sub-stages accordion container */
+    .sub-stages {
+        overflow: hidden;
+        padding-left: 64px;
+        padding-right: var(--sp-4);
+        max-height: 0;
+        padding-bottom: 0;
+        transition: max-height var(--dur-slow) var(--ease-out-quart),
+            padding-bottom var(--dur-med) ease;
+    }
+
+    .stage[data-open="true"] .sub-stages {
+        max-height: 500px;
+        padding-bottom: var(--sp-5);
+    }
+
+    /* Individual sub-stage row */
+    .sub-stage {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: 10px;
+        margin-bottom: var(--sp-2);
+    }
+
+    .sub-stage:last-child {
+        margin-bottom: 0;
+    }
+
+    .sub-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+    }
+
+    .sub-dot--completed {
+        background: var(--clr-success);
+        color: white;
+    }
+
+    .sub-dot--active {
+        background: var(--clr-active-bg);
+        border: 2px solid var(--clr-active);
+        color: var(--clr-active);
+    }
+
+    .sub-dot--hold {
+        background: var(--clr-hold-bg);
+        border: 2px solid var(--clr-hold);
+        color: var(--clr-hold);
+    }
+
+    .sub-dot--pending {
+        background: transparent;
+        border: 2px solid var(--clr-border);
+    }
+
+    .sub-label {
+        flex: 1;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--clr-text);
+    }
+
+    .sub-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 3px 10px;
+        border-radius: 100px;
+        flex-shrink: 0;
+    }
+
+    .sub-badge--active {
+        background: var(--clr-active-bg);
+        color: var(--clr-active);
+    }
+
+    .sub-badge--completed {
+        background: var(--clr-success-bg);
+        color: var(--clr-success);
+    }
+
+    .sub-badge--hold {
+        background: var(--clr-hold-bg);
+        color: var(--clr-hold);
+    }
+
+    .sub-badge--pending {
+        background: var(--clr-pending-bg);
+        color: var(--clr-pending);
+    }
+
+    .sub-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .sub-indicator--active {
+        background: var(--clr-active);
+    }
+
+    .sub-indicator--completed {
+        background: var(--clr-success);
+    }
+
+    .sub-indicator--hold {
+        background: var(--clr-hold);
+    }
+
+    .sub-indicator--pending {
+        background: var(--clr-border);
+    }
 </style>
 
 <div class="job-tracker-page">
@@ -485,17 +632,29 @@
             Powered by <strong>Raj Solar</strong> · Trusted Solar Solutions
         </footer>
 
-<!-- Removed: Powered by ERPNext footer -->
+        <!-- Removed: Powered by ERPNext footer -->
     </div>
 </div>
 
 <script id="execution-stage-data" type="application/json">{{ (execution_stages or []) | tojson | safe }}</script>
+<script id="job-file-state-data" type="application/json">{{ (job_file_workflow_state or "") | tojson | safe }}</script>
 
 <script>
     const executionStageJson = document.getElementById("execution-stage-data");
     const executionStages = executionStageJson ? JSON.parse(executionStageJson.textContent || "[]") : [];
+    const jobFileStateEl = document.getElementById("job-file-state-data");
+    const jobFileWorkflowState = jobFileStateEl ? JSON.parse(jobFileStateEl.textContent || '""') : "";
+
+    // Job File sub-stage definitions — each maps to one or more Frappe workflow states
+    const JOB_FILE_SUBSTAGES = [
+        { key: "started", label: "Started", workflowStates: ["In Progress", "Approval Pending"] },
+        { key: "initiated", label: "Initiated", workflowStates: ["Job File Initiated"] },
+    ];
+    const JOB_FILE_COMPLETE_STATES = ["Completed", "Complete", "Closed"];
+    const JOB_FILE_HOLD_STATES = ["On Hold", "Hold", "Rejected"];
 
     const STAGES = [
+        { key: "jobfile", label: "Job File", hasSubStages: true, aliases: [] },
         { key: "technicalsurvey", label: "Technical Survey", aliases: ["technical survey"] },
         { key: "structuremounting", label: "Structure Mounting", aliases: ["structure mounting"] },
         { key: "projectinstallation", label: "Project Installation", aliases: ["project installation"] },
@@ -537,6 +696,51 @@
         return executionStages.find((row) => aliasSet.has(normalizeText(row.stage)));
     }
 
+    // Derive the overall Job File macro-stage status from the Frappe workflow state
+    function getJobFileStageStatus() {
+        const wf = jobFileWorkflowState;
+        if (JOB_FILE_COMPLETE_STATES.includes(wf)) return "completed";
+        if (JOB_FILE_HOLD_STATES.includes(wf)) return "hold";
+        if (!wf || wf === "Draft") return "pending";
+        return "active";
+    }
+
+    // Derive per-sub-stage statuses for the Job File accordion
+    function getJobFileSubStages() {
+        const wf = jobFileWorkflowState;
+        const isComplete = JOB_FILE_COMPLETE_STATES.includes(wf);
+        const isHold = JOB_FILE_HOLD_STATES.includes(wf);
+
+        if (isComplete) {
+            return JOB_FILE_SUBSTAGES.map((s) => ({ ...s, status: "completed" }));
+        }
+
+        let currentIdx = -1;
+        // Resolve the effective state to search — when in a hold state, derive
+        // the base state by stripping " On Hold" suffix (e.g. "In Progress On Hold"
+        // → "In Progress"), then fall back to the raw value for a direct match.
+        const searchWf = isHold
+            ? wf.replace(/ On Hold$/i, "").trim()
+            : wf;
+        for (let i = 0; i < JOB_FILE_SUBSTAGES.length; i++) {
+            if (JOB_FILE_SUBSTAGES[i].workflowStates.includes(searchWf) ||
+                JOB_FILE_SUBSTAGES[i].workflowStates.includes(wf)) {
+                currentIdx = i;
+                break;
+            }
+        }
+
+        if (currentIdx === -1) {
+            return JOB_FILE_SUBSTAGES.map((s) => ({ ...s, status: "pending" }));
+        }
+
+        return JOB_FILE_SUBSTAGES.map((s, i) => {
+            if (i < currentIdx) return { ...s, status: "completed" };
+            if (i === currentIdx) return { ...s, status: isHold ? "hold" : "active" };
+            return { ...s, status: "pending" };
+        });
+    }
+
     function statusMeta(status) {
         if (status === "completed") {
             return {
@@ -560,10 +764,41 @@
             };
         }
         return {
-            badge: "Pending",
+            badge: "Upcoming",
             badgeClass: "pending",
             dot: '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5"></circle></svg>'
         };
+    }
+
+    function subStageMeta(status) {
+        if (status === "completed") {
+            return {
+                badge: "Done",
+                dot: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+            };
+        }
+        if (status === "active") {
+            return {
+                badge: "Current",
+                dot: '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"></circle></svg>'
+            };
+        }
+        if (status === "hold") {
+            return {
+                badge: "On Hold",
+                dot: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><line x1="8" y1="6" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="18"></line></svg>'
+            };
+        }
+        return { badge: "Pending", dot: "" };
+    }
+
+    function renderSubStages(subStages) {
+        return subStages
+            .map((sub) => {
+                const meta = subStageMeta(sub.status);
+                return `<div class="sub-stage"><div class="sub-dot sub-dot--${sub.status}">${meta.dot}</div><span class="sub-label">${sub.label}</span><span class="sub-badge sub-badge--${sub.status}">${meta.badge}</span><div class="sub-indicator sub-indicator--${sub.status}"></div></div>`;
+            })
+            .join("");
     }
 
     function renderPipeline(stagesWithStatus) {
@@ -573,18 +808,9 @@
         stagesWithStatus.forEach((stage, index) => {
             const stageNum = String(index + 1).padStart(2, "0");
             const meta = statusMeta(stage.status);
-            html += `
-<div class="stage" style="animation-delay: ${(index + 1) * 80}ms;">
-<div class="stage-header">
-<div class="stage-dot stage-dot--${stage.status}">${meta.dot}</div>
-<div class="stage-meta">
-<div class="stage-number">Stage ${stageNum}</div>
-<div class="stage-title">${stage.label}</div>
-</div>
-<span class="stage-badge stage-badge--${meta.badgeClass}">${meta.badge}</span>
-</div>
-</div>
-`;
+            const hasSubStages = stage.subStages && stage.subStages.length > 0;
+            const isOpen = stage.status === "active" || stage.status === "hold";
+            html += `<div class="stage" data-open="${isOpen}" style="animation-delay: ${(index + 1) * 80}ms;"><div class="stage-header" onclick="toggleStage(this.parentElement)"><div class="stage-dot stage-dot--${stage.status}">${meta.dot}</div><div class="stage-meta"><div class="stage-number">Stage ${stageNum}</div><div class="stage-title">${stage.label}</div></div><span class="stage-badge stage-badge--${meta.badgeClass}">${meta.badge}</span>${hasSubStages ? `<div class="stage-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>` : ""}</div>${hasSubStages ? `<div class="sub-stages">${renderSubStages(stage.subStages)}</div>` : ""}</div>`;
         });
 
         pipeline.innerHTML = html;
@@ -592,6 +818,11 @@
         const completedCount = stagesWithStatus.filter((stage) => stage.status === "completed").length;
         const completedTrack = (completedCount / Math.max(1, STAGES.length - 1)) * 100;
         pipeline.style.setProperty("--completed-track", Math.min(100, completedTrack) + "%");
+    }
+
+    function toggleStage(stageEl) {
+        const isOpen = stageEl.dataset.open === "true";
+        stageEl.setAttribute("data-open", String(!isOpen));
     }
 
     function renderProgress(stagesWithStatus) {
@@ -625,16 +856,23 @@
             return;
         }
 
-        titleEl.textContent = "Project Progress";
-        descEl.textContent = "Your solar installation workflow has started. Stage updates will appear here.";
+        titleEl.textContent = "Getting Started";
+        descEl.textContent = "Your solar project is being set up. We'll keep you updated at every step.";
     }
 
     function init() {
+        const jobFileStatus = getJobFileStageStatus();
+        const jobFileSubStages = getJobFileSubStages();
+
         const stagesWithStatus = STAGES.map((stageDef) => {
+            if (stageDef.key === "jobfile") {
+                return { label: stageDef.label, status: jobFileStatus, subStages: jobFileSubStages };
+            }
             const matchedRow = getStageRow(stageDef);
             return {
                 label: stageDef.label,
-                status: normalizeStatus(matchedRow ? matchedRow.status : "Not Created")
+                status: normalizeStatus(matchedRow ? matchedRow.status : "Not Created"),
+                subStages: []
             };
         });
 
