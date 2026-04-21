@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-20 16:09:09.278332",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "name1",
+  "variable_type",
+  "sample_variable",
+  "whatsapp_number",
+  "campaign"
+ ],
+ "fields": [
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Variable Name"
+  },
+  {
+   "fieldname": "variable_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Variable Type",
+   "options": "Text\nImage\nURL"
+  },
+  {
+   "fieldname": "sample_variable",
+   "fieldtype": "Data",
+   "label": "Sample Variable"
+  },
+  {
+   "fieldname": "whatsapp_number",
+   "fieldtype": "Phone",
+   "in_list_view": 1,
+   "label": "Whatsapp Number"
+  },
+  {
+   "fieldname": "campaign",
+   "fieldtype": "Link",
+   "label": "Campaign",
+   "options": "Campaign"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-20 16:57:29.405441",
+ "modified_by": "Administrator",
+ "module": "Kaiten Erp",
+ "name": "Twilio Message Variables",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
