@@ -288,6 +288,10 @@ doc_events = {
         "on_update": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_update",
         "on_trash": "kaiten_erp.kaiten_erp.doc_events.JobFile_events.on_trash",
     },
+
+    "Whatsapp Broadcast Queue":{
+        "after_insert": "kaiten_erp.kaiten_erp.doc_events.whatsapp_queue_events.after_insert",
+    },
     "Sales Order": {
         "validate": "kaiten_erp.kaiten_erp.doc_events.sales_order_events.validate",
         "on_update": "kaiten_erp.kaiten_erp.doc_events.sales_order_events.on_update",
