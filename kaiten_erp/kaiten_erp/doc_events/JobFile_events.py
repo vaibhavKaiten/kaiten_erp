@@ -58,7 +58,18 @@ def on_update(job_file, method):
 
             # Create ToDo for the Job File owner (Sales Manager) to prepare Quotation
             assign_sales_manager_owner_todo(job_file, opportunity)
-          
+
+            # Auto-create initial Draft Quotation linked to Opportunity and Job File
+            try:
+                initial_quotation = create_initial_quotation(job_file, opportunity)
+            except Exception as e:
+                initial_quotation = None
+                frappe.log_error(
+                    f"Failed to create initial Quotation for Job File {job_file.name} "
+                    f"/ Opportunity {opportunity.name}: {e}",
+                    "Initial Quotation Creation Error",
+                )
+
             # 3. Technical vendor executions
 
             # Prepare data for Technical Survey
@@ -439,6 +450,67 @@ def create_opportunity(job_file):
     frappe.db.commit()
 
     return opportunity
+
+
+def create_initial_quotation(job_file, opportunity):
+    """
+    Auto-create a Draft Quotation on Job File Initiation.
+    - Linked to Opportunity and Job File
+    - Rate = negotiated_amount from Job File
+    - Item = proposed_system (if set)
+    - No Technical Survey → after_insert hook sets custom_initial_quotation on Job File
+    """
+    quotation_to = "Customer" if job_file.customer else "Lead"
+    party_name = job_file.customer if job_file.customer else job_file.lead
+
+    if not party_name:
+        frappe.log_error(
+            f"Cannot create initial Quotation for Job File {job_file.name}: no Customer or Lead set.",
+            "Initial Quotation Creation",
+        )
+        return None
+
+    # Idempotency: skip if a non-cancelled Quotation already linked to this Opportunity
+    existing = frappe.db.get_value(
+        "Quotation",
+        {"opportunity": opportunity.name, "docstatus": ["!=", 2]},
+        "name",
+    )
+    if existing:
+        return frappe.get_doc("Quotation", existing)
+
+    proposed_system = job_file.get("proposed_system")
+    negotiated_amount = job_file.get("negotiated_amount") or 0
+
+    quotation_data = {
+        "doctype": "Quotation",
+        "quotation_to": quotation_to,
+        "party_name": party_name,
+        "opportunity": opportunity.name,
+        "custom_job_file": job_file.name,
+        "transaction_date": frappe.utils.nowdate(),
+    }
+
+    if proposed_system:
+        if frappe.db.exists("Item", proposed_system):
+            quotation_data["items"] = [
+                {
+                    "item_code": proposed_system,
+                    "qty": 1,
+                    "rate": negotiated_amount,
+                }
+            ]
+        else:
+            frappe.logger("kaiten_erp").warning(
+                f"create_initial_quotation: Item '{proposed_system}' not found for "
+                f"Job File {job_file.name}. Quotation will be created without items."
+            )
+
+    quotation = frappe.get_doc(quotation_data)
+    quotation.flags.ignore_permissions = True
+    quotation.insert()
+
+    return quotation
 
 
 def assign_sales_manager_owner_todo(job_file, opportunity):

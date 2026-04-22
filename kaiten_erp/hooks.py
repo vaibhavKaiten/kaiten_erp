@@ -308,6 +308,7 @@ doc_events = {
     },
     "Quotation": {
         "validate": "kaiten_erp.kaiten_erp.doc_events.quotation_events.validate",
+        "after_insert": "kaiten_erp.kaiten_erp.doc_events.quotation_events.after_insert",
         "on_update": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_update",
         "on_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_submit",
         "on_update_after_submit": "kaiten_erp.kaiten_erp.doc_events.quotation_events.on_update_after_submit",
