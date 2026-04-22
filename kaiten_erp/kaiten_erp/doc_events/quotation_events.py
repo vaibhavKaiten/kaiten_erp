@@ -14,6 +14,7 @@ def validate(doc, method=None):
     _sync_links_from_opportunity(doc)
     _fill_item_name_and_uom(doc)
     _set_default_followup_date(doc)
+    _apply_negotiated_amount_from_job_file(doc)
 
     from kaiten_erp.kaiten_erp.doc_events.tax_bifurcation import fill_tax_bifurcation
     fill_tax_bifurcation(doc)
@@ -610,6 +611,37 @@ def _lock_final_approved_item_structure(doc):
 # ---------------------------------------------------------------------------
 # Job File quotation link helpers
 # ---------------------------------------------------------------------------
+
+def _apply_negotiated_amount_from_job_file(doc):
+    """
+    Fetch negotiated_amount from the linked Job File and set it as the rate
+    (and recalculate amount) on all items.
+
+    Applies to both initial quotations (no TS) and final quotations (TS present)
+    as long as a Job File is linked.
+
+    Skipped when:
+    - No custom_job_file linked
+    - negotiated_amount is zero / unset on Job File
+    - doc is Final Approved and not new (item structure is locked separately)
+    """
+    if not doc.get("custom_job_file"):
+        return
+    # Final Approved has its own item lock — skip to avoid conflict
+    if doc.get("custom_quotation_stage") == "Final Approved" and not doc.is_new():
+        return
+
+    negotiated_amount = frappe.db.get_value(
+        "Job File", doc.custom_job_file, "negotiated_amount"
+    )
+    if not negotiated_amount:
+        return
+
+    from frappe.utils import flt
+    for item in doc.get("items") or []:
+        item.rate = flt(negotiated_amount)
+        item.amount = flt(item.qty or 1) * flt(negotiated_amount)
+
 
 def _link_quotation_to_job_file(doc):
     """

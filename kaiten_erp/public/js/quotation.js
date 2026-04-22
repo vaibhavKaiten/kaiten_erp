@@ -9,6 +9,7 @@ frappe.ui.form.on('Quotation', {
         frm.trigger('apply_stage_ui');
         frm.trigger('set_technical_survey_query');
         frm.trigger('fetch_opportunity_details');
+        frm.trigger('apply_negotiated_amount');
 
         // Follow-up reschedule button (submitted, not Ordered/Lost)
         if (frm.doc.docstatus === 1 && !['Ordered', 'Lost'].includes(frm.doc.status)) {
@@ -40,6 +41,29 @@ frappe.ui.form.on('Quotation', {
     opportunity: function (frm) {
         frm.trigger('set_technical_survey_query');
         frm.trigger('fetch_opportunity_details');
+    },
+
+    custom_job_file: function (frm) {
+        frm.trigger('apply_negotiated_amount');
+    },
+
+    apply_negotiated_amount: function (frm) {
+        // Only draft, must have job file and items
+        if (frm.doc.docstatus !== 0) return;
+        if (!frm.doc.custom_job_file) return;
+        if (!frm.doc.items || frm.doc.items.length === 0) return;
+        // Final Approved stage is locked server-side — skip
+        if (frm.doc.custom_quotation_stage === 'Final Approved') return;
+
+        frappe.db.get_value('Job File', frm.doc.custom_job_file, 'negotiated_amount', (r) => {
+            if (!r || !r.negotiated_amount) return;
+            const rate = flt(r.negotiated_amount);
+            (frm.doc.items || []).forEach(row => {
+                frappe.model.set_value(row.doctype, row.name, 'rate', rate);
+                frappe.model.set_value(row.doctype, row.name, 'amount', flt(row.qty || 1) * rate);
+            });
+            frm.refresh_field('items');
+        });
     },
 
     custom_quotation_stage: function (frm) {
