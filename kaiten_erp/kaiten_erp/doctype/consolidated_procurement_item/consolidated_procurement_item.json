@@ -1,7 +1,7 @@
 {
     "actions": [],
     "allow_rename": 1,
-    "creation": "2026-01-07 12:16:03.000000",
+    "creation": "2026-04-21 16:50:33.281214",
     "doctype": "DocType",
     "editable_grid": 1,
     "engine": "InnoDB",
@@ -14,6 +14,7 @@
         "uom",
         "column_break_2",
         "gst_percentage",
+        "warehouse",
         "section_break_quantity",
         "total_required_quantity",
         "actual_quantity",
@@ -81,7 +82,7 @@
             "fieldtype": "Float",
             "in_list_view": 1,
             "label": "GST %",
-            "precision": 2,
+            "precision": "2",
             "read_only": 1
         },
         {
@@ -96,7 +97,7 @@
             "fieldtype": "Float",
             "in_list_view": 1,
             "label": "Total Required Qty",
-            "precision": 3,
+            "precision": "3",
             "read_only": 1
         },
         {
@@ -107,7 +108,7 @@
             "fieldtype": "Float",
             "in_list_view": 1,
             "label": "Actual Qty to Order",
-            "precision": 3
+            "precision": "3"
         },
         {
             "fieldname": "column_break_quantity",
@@ -127,15 +128,14 @@
             "fieldname": "available_stock",
             "fieldtype": "Float",
             "label": "Available Stock",
-            "precision": 3,
+            "precision": "3",
             "read_only": 1
         },
         {
             "fieldname": "net_quantity_to_procure",
             "fieldtype": "Float",
-            "in_list_view": 0,
             "label": "Net Quantity To Procure",
-            "precision": 3,
+            "precision": "3",
             "read_only": 1
         },
         {
@@ -151,16 +151,23 @@
             "options": "Supplier"
         },
         {
+            "fieldname": "warehouse",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Warehouse",
+            "options": "Warehouse"
+        },
+        {
             "fieldname": "supplier_rate",
             "fieldtype": "Currency",
             "label": "Supplier Rate",
-            "precision": 2
+            "precision": "2"
         },
         {
             "fieldname": "amount",
             "fieldtype": "Currency",
             "label": "Amount",
-            "precision": 2
+            "precision": "2"
         },
         {
             "fieldname": "section_break_traceability",
@@ -177,12 +184,13 @@
     "index_web_pages_for_search": 1,
     "istable": 1,
     "links": [],
-    "modified": "2026-01-07 12:16:03.000000",
+    "modified": "2026-04-21 16:53:26.813746",
     "modified_by": "Administrator",
     "module": "Kaiten Erp",
     "name": "Consolidated Procurement Item",
     "owner": "Administrator",
     "permissions": [],
+    "row_format": "Dynamic",
     "sort_field": "modified",
     "sort_order": "DESC",
     "states": [],

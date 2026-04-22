@@ -1617,34 +1617,36 @@ def get_source_quotation_names(sales_order):
 
 def create_material_request_from_technical_survey(sales_order):
     """
-    Create Material Request from Technical Survey's System Configuration
-    This is the final source of truth for material requirements
+    Create Material Requests from Technical Survey's System Configuration.
 
-    Args:
-        sales_order: Sales Order document
+    Implements demand-driven split logic:
+    - Case 1 (fully available):   → Material Request (Material Transfer)
+    - Case 2 (not available):     → Material Request (Purchase)
+    - Case 3 (partially available): → MR (Transfer) for available qty +
+                                      MR (Purchase) for shortage qty
+
+    Never mixes Transfer and Purchase in the same MR.
+    Links all MRs to the Sales Order and the Technical Survey.
     """
-    # Check if Technical Survey is linked
+    from erpnext.stock.utils import get_stock_balance
+
     technical_survey_name = sales_order.get("custom_technical_survey")
 
     if not technical_survey_name:
         frappe.msgprint(
-            _(
-                "No Technical Survey linked to this Sales Order. Material Request will not be created."
-            ),
+            _("No Technical Survey linked to this Sales Order. Material Request will not be created."),
             alert=True,
             indicator="orange",
         )
         return
 
-    # Get Technical Survey document
     technical_survey = frappe.get_doc("Technical Survey", technical_survey_name)
 
-    # Verify Technical Survey is approved
     if technical_survey.workflow_state != "Approved":
         frappe.msgprint(
-            _(
-                "Technical Survey {0} is not approved. Material Request will not be created."
-            ).format(technical_survey_name),
+            _("Technical Survey {0} is not approved. Material Request will not be created.").format(
+                technical_survey_name
+            ),
             alert=True,
             indicator="red",
         )
@@ -1664,193 +1666,165 @@ def create_material_request_from_technical_survey(sales_order):
         )
         return
 
-    # Resolve warehouse once — validate SO's set_warehouse belongs to the same company
-    _item_warehouse = None
+    # Warehouse resolution:
+    # main_warehouse  = company's central inventory (source for transfers, destination for purchases)
+    # site_warehouse  = project execution / WIP warehouse (destination for transfers)
+    main_warehouse = get_default_warehouse(sales_order.company)
+    site_warehouse = None
     if sales_order.set_warehouse:
-        wh_company = frappe.db.get_value(
-            "Warehouse", sales_order.set_warehouse, "company"
-        )
+        wh_company = frappe.db.get_value("Warehouse", sales_order.set_warehouse, "company")
         if wh_company == sales_order.company:
-            _item_warehouse = sales_order.set_warehouse
-    if not _item_warehouse:
-        _item_warehouse = get_default_warehouse(sales_order.company)
+            site_warehouse = sales_order.set_warehouse
+    if not site_warehouse:
+        site_warehouse = main_warehouse
 
-    # Collect items from System Configuration
-    items = []
+    # ── Collect all items from Technical Survey ──────────────────────────────
+    raw_items = []
+    schedule_date = sales_order.delivery_date or frappe.utils.today()
 
-    # Add Panel items
-    if technical_survey.panel and technical_survey.panel_qty_bom:
+    def _safe_qty(value):
         try:
-            qty = (
-                float(technical_survey.panel_qty_bom)
-                if technical_survey.panel_qty_bom
-                else 0
-            )
-            if qty > 0:
-                items.append(
-                    {
-                        "item_code": technical_survey.panel,
-                        "qty": qty,
-                        "uom": frappe.db.get_value(
-                            "Item", technical_survey.panel, "stock_uom"
-                        )
-                        or "Nos",
-                        "schedule_date": sales_order.delivery_date
-                        or frappe.utils.today(),
-                        "warehouse": _item_warehouse,
-                        "sales_order": sales_order.name,
-                    }
-                )
+            return float(value) if value else 0.0
         except (ValueError, TypeError):
-            frappe.log_error(
-                f"Invalid panel quantity in Technical Survey {technical_survey_name}: {technical_survey.panel_qty_bom}"
-            )
+            return 0.0
 
-    # Add Inverter items
-    if technical_survey.inverter and technical_survey.inverter_qty_bom:
-        try:
-            qty = (
-                float(technical_survey.inverter_qty_bom)
-                if technical_survey.inverter_qty_bom
-                else 0
-            )
-            if qty > 0:
-                items.append(
-                    {
-                        "item_code": technical_survey.inverter,
-                        "qty": qty,
-                        "uom": frappe.db.get_value(
-                            "Item", technical_survey.inverter, "stock_uom"
-                        )
-                        or "Nos",
-                        "schedule_date": sales_order.delivery_date
-                        or frappe.utils.today(),
-                        "warehouse": _item_warehouse,
-                        "sales_order": sales_order.name,
-                    }
-                )
-        except (ValueError, TypeError):
-            frappe.log_error(
-                f"Invalid inverter quantity in Technical Survey {technical_survey_name}: {technical_survey.inverter_qty_bom}"
-            )
+    if technical_survey.panel and _safe_qty(technical_survey.panel_qty_bom) > 0:
+        raw_items.append({
+            "item_code": technical_survey.panel,
+            "qty": _safe_qty(technical_survey.panel_qty_bom),
+            "uom": frappe.db.get_value("Item", technical_survey.panel, "stock_uom") or "Nos",
+        })
 
-    # Add Battery items
-    if technical_survey.battery and technical_survey.battery_qty_bom:
-        try:
-            qty = (
-                float(technical_survey.battery_qty_bom)
-                if technical_survey.battery_qty_bom
-                else 0
-            )
-            if qty > 0:
-                items.append(
-                    {
-                        "item_code": technical_survey.battery,
-                        "qty": qty,
-                        "uom": frappe.db.get_value(
-                            "Item", technical_survey.battery, "stock_uom"
-                        )
-                        or "Nos",
-                        "schedule_date": sales_order.delivery_date
-                        or frappe.utils.today(),
-                        "warehouse": _item_warehouse,
-                        "sales_order": sales_order.name,
-                    }
-                )
-        except (ValueError, TypeError):
-            frappe.log_error(
-                f"Invalid battery quantity in Technical Survey {technical_survey_name}: {technical_survey.battery_qty_bom}"
-            )
+    if technical_survey.inverter and _safe_qty(technical_survey.inverter_qty_bom) > 0:
+        raw_items.append({
+            "item_code": technical_survey.inverter,
+            "qty": _safe_qty(technical_survey.inverter_qty_bom),
+            "uom": frappe.db.get_value("Item", technical_survey.inverter, "stock_uom") or "Nos",
+        })
 
-    # Add BOM items from table_vctx (other BOM items table)
-    if technical_survey.table_vctx:
-        for bom_item in technical_survey.table_vctx:
-            if bom_item.item_code and bom_item.qty:
-                try:
-                    qty = float(bom_item.qty) if bom_item.qty else 0
-                    if qty > 0:
-                        items.append(
-                            {
-                                "item_code": bom_item.item_code,
-                                "qty": qty,
-                                "uom": bom_item.uom
-                                or frappe.db.get_value(
-                                    "Item", bom_item.item_code, "stock_uom"
-                                )
-                                or "Nos",
-                                "schedule_date": sales_order.delivery_date
-                                or frappe.utils.today(),
-                                "warehouse": _item_warehouse,
-                                "sales_order": sales_order.name,
-                            }
-                        )
-                except (ValueError, TypeError):
-                    frappe.log_error(
-                        f"Invalid quantity for item {bom_item.item_code} in Technical Survey {technical_survey_name}: {bom_item.qty}"
-                    )
+    if technical_survey.battery and _safe_qty(technical_survey.battery_qty_bom) > 0:
+        raw_items.append({
+            "item_code": technical_survey.battery,
+            "qty": _safe_qty(technical_survey.battery_qty_bom),
+            "uom": frappe.db.get_value("Item", technical_survey.battery, "stock_uom") or "Nos",
+        })
 
-    if not items:
+    for bom_item in (technical_survey.table_vctx or []):
+        if bom_item.item_code and _safe_qty(bom_item.qty) > 0:
+            raw_items.append({
+                "item_code": bom_item.item_code,
+                "qty": _safe_qty(bom_item.qty),
+                "uom": bom_item.uom
+                    or frappe.db.get_value("Item", bom_item.item_code, "stock_uom")
+                    or "Nos",
+            })
+
+    if not raw_items:
         frappe.msgprint(
-            _(
-                "No items found in Technical Survey {0}'s System Configuration. Material Request will not be created."
-            ).format(technical_survey_name),
+            _("No items found in Technical Survey {0}'s System Configuration. Material Request will not be created.").format(
+                technical_survey_name
+            ),
             alert=True,
             indicator="orange",
         )
         return
 
-    # Resolve target warehouse — validate SO's set_warehouse belongs to the same company
-    target_warehouse = None
-    if sales_order.set_warehouse:
-        wh_company = frappe.db.get_value(
-            "Warehouse", sales_order.set_warehouse, "company"
-        )
-        if wh_company == sales_order.company:
-            target_warehouse = sales_order.set_warehouse
-    if not target_warehouse:
-        target_warehouse = get_default_warehouse(sales_order.company)
+    # ── Split items by stock availability (checked in main_warehouse) ─────
+    transfer_items = []  # Items available in main_warehouse → Material Transfer MR
+    purchase_items = []  # Items short in main_warehouse → Purchase MR
 
-    # Create Material Request
-    material_request = frappe.get_doc(
-        {
+    for item_data in raw_items:
+        item_code = item_data["item_code"]
+        required_qty = item_data["qty"]
+
+        # Available stock in the central/main warehouse (treat negative as 0)
+        available_qty = max(0.0, get_stock_balance(item_code, main_warehouse))
+
+        if available_qty >= required_qty:
+            # Case 1: Fully available → Transfer
+            transfer_items.append({
+                **item_data,
+                "qty": required_qty,
+                "warehouse": main_warehouse,
+                "schedule_date": schedule_date,
+                "sales_order": sales_order.name,
+            })
+        elif available_qty <= 0:
+            # Case 2: Nothing in stock → Purchase
+            purchase_items.append({
+                **item_data,
+                "qty": required_qty,
+                "warehouse": main_warehouse,
+                "schedule_date": schedule_date,
+                "sales_order": sales_order.name,
+            })
+        else:
+            # Case 3: Partially available → split
+            transfer_items.append({
+                **item_data,
+                "qty": available_qty,
+                "warehouse": main_warehouse,
+                "schedule_date": schedule_date,
+                "sales_order": sales_order.name,
+            })
+            purchase_items.append({
+                **item_data,
+                "qty": required_qty - available_qty,
+                "warehouse": main_warehouse,
+                "schedule_date": schedule_date,
+                "sales_order": sales_order.name,
+            })
+
+    # ── Helper to insert an MR and set custom link fields ─────────────────
+    def _insert_mr(mr_type, items, *, set_wh=None):
+        mr = frappe.get_doc({
             "doctype": "Material Request",
-            "material_request_type": "Material Transfer",
-            "schedule_date": sales_order.delivery_date or frappe.utils.today(),
+            "material_request_type": mr_type,
+            "schedule_date": schedule_date,
             "company": sales_order.company,
-            "set_warehouse": target_warehouse,
+            "set_warehouse": set_wh,
             "items": items,
-        }
-    )
+        })
+        if frappe.db.has_column("Material Request", "custom_source_technical_survey"):
+            mr.custom_source_technical_survey = technical_survey_name
+        if frappe.db.has_column("Material Request", "custom_source_sales_order"):
+            mr.custom_source_sales_order = sales_order.name
+        if frappe.db.has_column("Material Request", "custom_source_customer"):
+            mr.custom_source_customer = sales_order.customer
+        mr.flags.ignore_advance_validation = True
+        mr.insert(ignore_permissions=True)
+        mr.add_comment(
+            "Info",
+            f"Created from Technical Survey: {technical_survey_name} via Sales Order: {sales_order.name}",
+        )
+        return mr
 
-    # Add custom fields to link Technical Survey and Sales Order (will appear in connections tab)
-    if frappe.db.has_column("Material Request", "custom_source_technical_survey"):
-        material_request.custom_source_technical_survey = technical_survey_name
+    created = []
 
-    if frappe.db.has_column("Material Request", "custom_source_sales_order"):
-        material_request.custom_source_sales_order = sales_order.name
+    # Material Transfer MR (for items already in main_warehouse, to be moved to site)
+    if transfer_items:
+        mr = _insert_mr(
+            "Material Transfer",
+            transfer_items,
+            set_wh=site_warehouse,  # destination = site/WIP warehouse
+        )
+        created.append(f"{mr.name} (Transfer)")
 
-    if frappe.db.has_column("Material Request", "custom_source_customer"):
-        material_request.custom_source_customer = sales_order.customer
+    # Purchase MR (for items that need to be procured)
+    if purchase_items:
+        mr = _insert_mr(
+            "Purchase",
+            purchase_items,
+            set_wh=main_warehouse,  # destination = main warehouse (receive stock here)
+        )
+        created.append(f"{mr.name} (Purchase)")
 
-    # Set flag to skip advance payment validation during Sales Order submission
-    # The advance invoice will be created AFTER this Material Request
-    material_request.flags.ignore_advance_validation = True
-
-    material_request.insert(ignore_permissions=True)
-
-    # Add comment for audit trail
-    material_request.add_comment(
-        "Info",
-        f"Created from Technical Survey: {technical_survey_name} via Sales Order: {sales_order.name}",
-    )
-
-    frappe.msgprint(
-        _("Material Request {0} created").format(
-            material_request.name
-        ),
-        alert=True,
-        indicator="green",
-    )
+    if created:
+        frappe.msgprint(
+            _("Material Request(s) created: {0}").format(", ".join(created)),
+            alert=True,
+            indicator="green",
+        )
 
     frappe.db.commit()
 

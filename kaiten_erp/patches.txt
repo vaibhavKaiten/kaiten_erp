@@ -38,4 +38,5 @@ kaiten_erp.patches.rename_property_photo_label
 kaiten_erp.patches.set_technical_survey_visit_type_select
 kaiten_erp.patches.remove_meter_installation_location_log_field
 kaiten_erp.patches.set_visit_type_select_with_default
+kaiten_erp.patches.remove_procurement_consolidation_header_warehouse
 
