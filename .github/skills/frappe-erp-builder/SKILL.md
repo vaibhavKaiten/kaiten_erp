@@ -515,6 +515,63 @@ SELECT name, status, total FROM `tabSales Order` LIMIT 10;
 
 ---
 
+## Phase 13 — Data Migrations (Patches)
+Use patches when you need to perform one-time actions during an update, such as renaming a field, moving data between tables, or setting default values for existing records.
+
+13.1 The Patch Script Template
+Create your patch in your app folder (e.g., yourapp/patches/v1_0/migrate_old_totals.py).
+Python
+'''bash
+import frappe
+
+def execute():
+    """
+    The 'execute' function is the entry point for bench migrate.
+    Always make patches idempotent (safe to run multiple times, though Frappe logs execution).
+    """
+    # Example: Move data from an old field to a new one
+    frappe.db.sql("""
+        UPDATE `tabSales Order` 
+        SET new_total_field = old_total_field 
+        WHERE new_total_field IS NULL
+    """)
+    
+    # Example: Update specific documents using the ORM
+    orders = frappe.get_all("Sales Order", filters={"docstatus": 1})
+    for order in orders:
+        doc = frappe.get_doc("Sales Order", order.name)
+        doc.custom_status = "Migrated"
+        doc.save()
+'''        
+13.2 Registering the Patch
+You must register the patch in your app's patches.txt file (located in yourapp/yourapp/patches.txt).
+
+Plaintext
+# [pre_model_sync] runs BEFORE DocType JSONs are synced to the DB
+[pre_model_sync]
+myapp.patches.v1_0.rename_deprecated_fields
+
+# [post_model_sync] runs AFTER DocType JSONs are synced (default)
+[post_model_sync]
+myapp.patches.v1_0.migrate_old_totals
+13.3 Patch Best Practices
+Idempotency: Ensure the script doesn't fail if some changes are already present.
+
+Performance: For large datasets, use frappe.db.sql instead of frappe.get_doc to avoid memory overhead.
+
+Logging: Frappe automatically records executed patches in the tabPatch Log. To re-run a patch during development, you must delete its entry from this table.
+
+Commit: Always commit both the .py script and the update to patches.txt.
+
+Final Execution Checklist (Updated)
+[ ] ...
+
+[ ] Data migration patches written and registered in patches.txt
+
+[ ] Patches tested on a copy of production data
+
+[ ] bench migrate run cleanly without SQL errors
+
 ## Execution Checklist
 
 For every new ERP build, verify:
