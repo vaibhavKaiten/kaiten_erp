@@ -60,7 +60,15 @@ def on_update(job_file, method):
             assign_sales_manager_owner_todo(job_file, opportunity)
 
             # Auto-create initial Draft Quotation linked to Opportunity and Job File
-            initial_quotation = create_initial_quotation(job_file, opportunity)
+            try:
+                initial_quotation = create_initial_quotation(job_file, opportunity)
+            except Exception as e:
+                initial_quotation = None
+                frappe.log_error(
+                    f"Failed to create initial Quotation for Job File {job_file.name} "
+                    f"/ Opportunity {opportunity.name}: {e}",
+                    "Initial Quotation Creation Error",
+                )
 
             # 3. Technical vendor executions
 
@@ -484,13 +492,19 @@ def create_initial_quotation(job_file, opportunity):
     }
 
     if proposed_system:
-        quotation_data["items"] = [
-            {
-                "item_code": proposed_system,
-                "qty": 1,
-                "rate": negotiated_amount,
-            }
-        ]
+        if frappe.db.exists("Item", proposed_system):
+            quotation_data["items"] = [
+                {
+                    "item_code": proposed_system,
+                    "qty": 1,
+                    "rate": negotiated_amount,
+                }
+            ]
+        else:
+            frappe.logger("kaiten_erp").warning(
+                f"create_initial_quotation: Item '{proposed_system}' not found for "
+                f"Job File {job_file.name}. Quotation will be created without items."
+            )
 
     quotation = frappe.get_doc(quotation_data)
     quotation.flags.ignore_permissions = True
