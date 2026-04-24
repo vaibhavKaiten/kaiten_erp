@@ -1,0 +1,55 @@
+{
+	"actions": [],
+	"creation": "2026-04-23 00:00:00.000000",
+	"doctype": "DocType",
+	"engine": "InnoDB",
+	"field_order": [
+		"twilio_section",
+		"twilio_account_sid",
+		"twilio_auth_token",
+		"twilio_from_number"
+	],
+	"fields": [
+		{
+			"fieldname": "twilio_section",
+			"fieldtype": "Section Break",
+			"label": "Twilio Settings"
+		},
+		{
+			"fieldname": "twilio_account_sid",
+			"fieldtype": "Data",
+			"label": "Account SID"
+		},
+		{
+			"fieldname": "twilio_auth_token",
+			"fieldtype": "Password",
+			"label": "Auth Token"
+		},
+		{
+			"fieldname": "twilio_from_number",
+			"fieldtype": "Data",
+			"label": "From Number (WhatsApp)",
+			"description": "Include country code, e.g. +919521373117"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"issingle": 1,
+	"links": [],
+	"modified": "2026-04-23 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Kaiten Erp",
+	"name": "Kaiten Erp Settings",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 1,
+			"read": 1,
+			"role": "System Manager",
+			"write": 1
+		}
+	],
+	"sort_field": "creation",
+	"sort_order": "DESC",
+	"states": []
+}

@@ -1,3 +1,5 @@
+import json
+
 import frappe
 import requests
 from frappe import _
@@ -35,20 +37,32 @@ def _send_workflow_webhook(whatsapp_broadcast_queue_name):
         lead = frappe.get_doc("Lead", party_name)
         first_name = lead.first_name or ""
         mobile_no = lead.whatsapp_no or ""
-  
 
-    payload = {
-        "party": whatsapp_broadcast_queue.party,
-        "dynamic_link_uzxz": whatsapp_broadcast_queue.dynamic_link_uzxz,
-        "first_name": first_name or "",
-        "Message": whatsapp_broadcast_queue.Message,
-        "mobile_no": mobile_no,
+    settings = frappe.get_single("Kaiten Erp Settings")
+    account_sid = settings.twilio_account_sid
+    auth_token = settings.get_password("twilio_auth_token")
+    from_number = settings.twilio_from_number or "+919521373117"
+
+    content_variables = {
+        "name": first_name,
+        "case_number": whatsapp_broadcast_queue.case_number or "",
+        "ac_mgr_name": whatsapp_broadcast_queue.ac_mgr_name or "",
+        "ac_mgr_number": whatsapp_broadcast_queue.ac_mgr_number or "",
+    }
+
+    url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
+    data = {
+        "To": f"whatsapp:{mobile_no}",
+        "From": f"whatsapp:{from_number}",
+        "ContentSid": "HX7aa6295c61bf05d4667db8cfdb26fcfc",
+        "ContentVariables": json.dumps(content_variables),
     }
 
     try:
         requests.post(
-            "https://webhook.site/216a199f-73a3-4408-bf92-482654dfaf29",
-            json=payload,
+            url,
+            data=data,
+            auth=(account_sid, auth_token),
             timeout=10,
         )
     except Exception:

@@ -7,6 +7,9 @@
     "field_order": [
         "party",
         "dynamic_link_uzxz",
+        "case_number",
+        "ac_mgr_name",
+        "ac_mgr_number",
         "table_gedd",
         "description"
     ],
@@ -22,6 +25,21 @@
             "fieldtype": "Dynamic Link",
             "label": "Party",
             "options": "party"
+        },
+        {
+            "fieldname": "case_number",
+            "fieldtype": "Data",
+            "label": "Case Number"
+        },
+        {
+            "fieldname": "ac_mgr_name",
+            "fieldtype": "Data",
+            "label": "Account Manager Name"
+        },
+        {
+            "fieldname": "ac_mgr_number",
+            "fieldtype": "Data",
+            "label": "Account Manager Number"
         },
         {
             "fieldname": "Message",
