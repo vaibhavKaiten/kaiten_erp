@@ -11,7 +11,7 @@ class JobFile(WebsiteGenerator):
 	def before_save(self):
 		if not self.route:
 			self.set_route()
-		if not self.custom_web_access_token:
+		if not self.get("custom_web_access_token"):
 			self.custom_web_access_token = secrets.token_urlsafe(32)
 		self.published = 1
 

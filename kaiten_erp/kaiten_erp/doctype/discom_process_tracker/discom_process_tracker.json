@@ -1,0 +1,299 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-25 18:27:07.947027",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project_information_section",
+  "customer",
+  "job_file",
+  "column_break_hgdt",
+  "discom_name",
+  "solar_portal_id",
+  "column_break_lbgx",
+  "project_capacity",
+  "location",
+  "feasibility_section",
+  "feasibility_status",
+  "feasibility_report",
+  "column_break_afuo",
+  "vendor",
+  "quotation",
+  "agreement_tab",
+  "final_quotation",
+  "column_break_kcri",
+  "agreement_upload_status",
+  "installation_tab",
+  "foundation_photo",
+  "inverter",
+  "installation_status",
+  "column_break_zjiz",
+  "front_view",
+  "wiring",
+  "column_break_uttg",
+  "rear_view",
+  "earthing",
+  "inspection_tab",
+  "inspection_status",
+  "column_break_djex",
+  "inspection_report",
+  "commissioning_tab",
+  "commissioning_report",
+  "column_break_ayog",
+  "status",
+  "subsidy_tab",
+  "eligible",
+  "subsidy_status",
+  "remarks",
+  "tab_break_dwws",
+  "table_llpq"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_information_section",
+   "fieldtype": "Section Break",
+   "label": "Project Information"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "job_file",
+   "fieldtype": "Link",
+   "label": "Job File",
+   "options": "Job File"
+  },
+  {
+   "fieldname": "discom_name",
+   "fieldtype": "Data",
+   "label": "DISCOM Name"
+  },
+  {
+   "fieldname": "solar_portal_id",
+   "fieldtype": "Data",
+   "label": "Solar Portal ID"
+  },
+  {
+   "fieldname": "project_capacity",
+   "fieldtype": "Float",
+   "label": "Project Capacity"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "feasibility_section",
+   "fieldtype": "Section Break",
+   "label": "Feasibility"
+  },
+  {
+   "fieldname": "feasibility_status",
+   "fieldtype": "Select",
+   "label": "Feasibility Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "feasibility_report",
+   "fieldtype": "Attach",
+   "label": "Feasibility Report"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Attach",
+   "label": "Quotation"
+  },
+  {
+   "fieldname": "agreement_tab",
+   "fieldtype": "Tab Break",
+   "label": "Agreement"
+  },
+  {
+   "fieldname": "final_quotation",
+   "fieldtype": "Attach",
+   "label": "Final Quotation"
+  },
+  {
+   "fieldname": "agreement_upload_status",
+   "fieldtype": "Select",
+   "label": "Agreement Upload Status",
+   "options": "Pending\nUploaded to Portal"
+  },
+  {
+   "fieldname": "installation_tab",
+   "fieldtype": "Tab Break",
+   "label": "Installation"
+  },
+  {
+   "fieldname": "foundation_photo",
+   "fieldtype": "Attach",
+   "label": "Foundation Photo"
+  },
+  {
+   "fieldname": "inverter",
+   "fieldtype": "Attach",
+   "label": "Inverter"
+  },
+  {
+   "fieldname": "installation_status",
+   "fieldtype": "Select",
+   "label": "Installation Status",
+   "options": "Pending\nCompleted\nDocs Uploaded"
+  },
+  {
+   "fieldname": "column_break_zjiz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "front_view",
+   "fieldtype": "Attach",
+   "label": "Front View"
+  },
+  {
+   "fieldname": "wiring",
+   "fieldtype": "Attach",
+   "label": "Wiring"
+  },
+  {
+   "fieldname": "column_break_uttg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rear_view",
+   "fieldtype": "Attach",
+   "label": "Rear View"
+  },
+  {
+   "fieldname": "earthing",
+   "fieldtype": "Attach",
+   "label": "Earthing"
+  },
+  {
+   "fieldname": "inspection_tab",
+   "fieldtype": "Tab Break",
+   "label": "Inspection"
+  },
+  {
+   "fieldname": "inspection_status",
+   "fieldtype": "Select",
+   "label": "Inspection Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "inspection_report",
+   "fieldtype": "Attach",
+   "label": "Inspection Report"
+  },
+  {
+   "fieldname": "commissioning_tab",
+   "fieldtype": "Tab Break",
+   "label": "Commissioning"
+  },
+  {
+   "fieldname": "commissioning_report",
+   "fieldtype": "Attach",
+   "label": "Commissioning Report"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nCompleted"
+  },
+  {
+   "fieldname": "subsidy_tab",
+   "fieldtype": "Tab Break",
+   "label": "Subsidy"
+  },
+  {
+   "default": "0",
+   "fieldname": "eligible",
+   "fieldtype": "Check",
+   "label": "Eligible"
+  },
+  {
+   "fieldname": "subsidy_status",
+   "fieldtype": "Select",
+   "label": "Subsidy Status",
+   "options": "Applied\nIn Process\nRejected\nDisbursed"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_hgdt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_lbgx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_afuo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kcri",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_djex",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ayog",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tab_break_dwws",
+   "fieldtype": "Tab Break",
+   "label": "Documents"
+  },
+  {
+   "fieldname": "table_llpq",
+   "fieldtype": "Table",
+   "label": "Documents",
+   "options": "DISCOM Documents"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-26 17:50:52.812575",
+ "modified_by": "Administrator",
+ "module": "Kaiten Erp",
+ "name": "DISCOM Process Tracker",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

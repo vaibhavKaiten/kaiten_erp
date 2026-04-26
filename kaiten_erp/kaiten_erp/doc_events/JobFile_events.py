@@ -164,7 +164,10 @@ def on_update(job_file, method):
 
             frappe.db.set_value("Job File", job_file.name, update_data, update_modified=False)
 
-            # 6. Show success message
+            # 6. Create DISCOM Process Tracker
+            create_discom_process_tracker(job_file)
+
+            # 7. Show success message
             opportunity_url = f"/app/opportunity/{opportunity.name}"
             message = f"""Opportunity <b><a href=\"{opportunity_url}\">{opportunity.name}</a></b> and Execution Documents have been created successfully.<br><br>"""
             frappe.msgprint(message, title="Documents Created", indicator="green")
@@ -241,6 +244,28 @@ def _ensure_customer_in_discom(customer, discom_name, job_file_name):
     discom_doc.flags.ignore_permissions = True
     discom_doc.flags.ignore_validate = True
     discom_doc.save()
+
+
+def create_discom_process_tracker(job_file):
+    """Auto-create a DISCOM Process Tracker when a Job File is initiated."""
+    if frappe.db.exists("DISCOM Process Tracker", {"job_file": job_file.name}):
+        return
+
+    discom_name = None
+    if job_file.discom:
+        discom_name = frappe.db.get_value("DISCOM Master", job_file.discom, "discom_name")
+
+    tracker = frappe.get_doc({
+        "doctype": "DISCOM Process Tracker",
+        "job_file": job_file.name,
+        "customer": job_file.customer,
+        "discom_name": discom_name or job_file.discom,
+        "project_capacity": job_file.proposed_system,
+        "location": job_file.territory,
+        "vendor": job_file.custom_assigned_technical_supplier,
+    })
+    tracker.flags.ignore_permissions = True
+    tracker.insert()
 
 
 def _remove_customer_from_discom(customer, discom_name):
