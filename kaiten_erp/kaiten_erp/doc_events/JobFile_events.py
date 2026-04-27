@@ -534,7 +534,22 @@ def create_initial_quotation(job_file, opportunity):
     quotation = frappe.get_doc(quotation_data)
     quotation.flags.ignore_permissions = True
     quotation.insert()
-
+    # closing todo for initial quotation creation
+    try:
+        initial_quotaiont_todo = frappe.db.get_all("ToDo", filters={
+            "reference_type": "Opportunity",
+            "reference_name": opportunity.name,
+            "role" : "Sales Manager",
+            "priority": "High",
+            "status": "Open", 
+            "description" : ["like", "%Create quotation for%"]
+        })
+        for todo in initial_quotaiont_todo:
+            frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+    except Exception as e:
+        frappe.msgprint(
+            f"Failed to close Sales Manager ToDo for Opportunity {opportunity.name} after creating initial Quotation: {str(e)}"
+        )
     return quotation
 
 
