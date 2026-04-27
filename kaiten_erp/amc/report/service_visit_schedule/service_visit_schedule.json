@@ -1,0 +1,21 @@
+{
+    "add_total_row": 0,
+    "doctype": "Report",
+    "is_standard": "Yes",
+    "module": "AMC",
+    "name": "Service Visit Schedule",
+    "ref_doctype": "Service Visit",
+    "report_name": "Service Visit Schedule",
+    "report_type": "Script Report",
+    "roles": [
+        {
+            "role": "AMC Manager"
+        },
+        {
+            "role": "Service Technician"
+        },
+        {
+            "role": "System Manager"
+        }
+    ]
+}

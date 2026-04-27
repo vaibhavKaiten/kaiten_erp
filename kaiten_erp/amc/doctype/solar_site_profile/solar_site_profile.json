@@ -1,0 +1,180 @@
+{
+	"actions": [],
+	"allow_rename": 1,
+	"autoname": "naming_series:",
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Document",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"naming_series",
+		"site_name",
+		"job_file",
+		"customer",
+		"column_break_4",
+		"site_type",
+		"address",
+		"status",
+		"section_break_7",
+		"system_capacity",
+		"no_of_panels",
+		"column_break_9",
+		"inverter_make",
+		"inverter_model",
+		"inverter_serial_no",
+		"column_break_12",
+		"installation_date",
+		"notes"
+	],
+	"fields": [
+		{
+			"fieldname": "naming_series",
+			"fieldtype": "Select",
+			"label": "Naming Series",
+			"options": "SITE-.YYYY.-.#####",
+			"reqd": 1
+		},
+		{
+			"fieldname": "site_name",
+			"fieldtype": "Data",
+			"label": "Site Name",
+			"reqd": 1
+		},
+		{
+			"fieldname": "job_file",
+			"fieldtype": "Link",
+			"label": "Job File",
+			"options": "Job File",
+			"reqd": 1
+		},
+		{
+			"fieldname": "customer",
+			"fieldtype": "Link",
+			"label": "Customer",
+			"options": "Customer",
+			"reqd": 1
+		},
+		{
+			"fieldname": "column_break_4",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "site_type",
+			"fieldtype": "Select",
+			"label": "Site Type",
+			"options": "Residential\nCommercial\nIndustrial",
+			"reqd": 1
+		},
+		{
+			"fieldname": "address",
+			"fieldtype": "Link",
+			"label": "Address",
+			"options": "Address",
+			"reqd": 1
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "Active\nInactive\nDecommissioned",
+			"default": "Active",
+			"reqd": 1
+		},
+		{
+			"fieldname": "section_break_7",
+			"fieldtype": "Section Break",
+			"label": "System Details"
+		},
+		{
+			"fieldname": "system_capacity",
+			"fieldtype": "Float",
+			"label": "System Capacity (kWp)",
+			"reqd": 1
+		},
+		{
+			"fieldname": "no_of_panels",
+			"fieldtype": "Int",
+			"label": "No. of Panels",
+			"reqd": 1
+		},
+		{
+			"fieldname": "column_break_9",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "inverter_make",
+			"fieldtype": "Data",
+			"label": "Inverter Make",
+			"reqd": 1
+		},
+		{
+			"fieldname": "inverter_model",
+			"fieldtype": "Data",
+			"label": "Inverter Model",
+			"reqd": 1
+		},
+		{
+			"fieldname": "inverter_serial_no",
+			"fieldtype": "Data",
+			"label": "Inverter Serial No",
+			"reqd": 1
+		},
+		{
+			"fieldname": "column_break_12",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "installation_date",
+			"fieldtype": "Date",
+			"label": "Installation Date",
+			"reqd": 1
+		},
+		{
+			"fieldname": "notes",
+			"fieldtype": "Text",
+			"label": "Notes"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "Solar Site Profile",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"write": 1
+		},
+		{
+			"create": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "Sales User",
+			"write": 1
+		},
+		{
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "Customer"
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"track_changes": 1
+}

@@ -1,0 +1,191 @@
+{
+	"actions": [],
+	"allow_rename": 1,
+	"autoname": "naming_series:",
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Document",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"naming_series",
+		"customer",
+		"solar_site",
+		"amc_contract",
+		"column_break_3",
+		"source",
+		"priority",
+		"status",
+		"section_break_6",
+		"issue_category",
+		"description",
+		"column_break_9",
+		"reported_on",
+		"sla_deadline",
+		"assigned_to",
+		"section_break_12",
+		"service_visit",
+		"resolution",
+		"resolved_on",
+		"notes"
+	],
+	"fields": [
+		{
+			"fieldname": "naming_series",
+			"fieldtype": "Select",
+			"label": "Naming Series",
+			"options": "CMP-.YYYY.-.#####",
+			"reqd": 1
+		},
+		{
+			"fieldname": "customer",
+			"fieldtype": "Link",
+			"label": "Customer",
+			"options": "Customer",
+			"reqd": 1
+		},
+		{
+			"fieldname": "solar_site",
+			"fieldtype": "Link",
+			"label": "Solar Site",
+			"options": "Solar Site Profile",
+			"reqd": 1
+		},
+		{
+			"fieldname": "amc_contract",
+			"fieldtype": "Link",
+			"label": "AMC Contract",
+			"options": "AMC Contract"
+		},
+		{
+			"fieldname": "column_break_3",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "source",
+			"fieldtype": "Select",
+			"label": "Source",
+			"options": "Call\nWhatsApp\nPortal\nEmail\nOther",
+			"reqd": 1
+		},
+		{
+			"fieldname": "priority",
+			"fieldtype": "Select",
+			"label": "Priority",
+			"options": "Low\nMedium\nHigh\nCritical",
+			"default": "Medium",
+			"reqd": 1
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "Open\nAssigned\nIn Progress\nResolved\nClosed\nEscalated",
+			"default": "Open",
+			"reqd": 1
+		},
+		{
+			"fieldname": "section_break_6",
+			"fieldtype": "Section Break",
+			"label": "Issue Details"
+		},
+		{
+			"fieldname": "issue_category",
+			"fieldtype": "Select",
+			"label": "Issue Category",
+			"options": "No Generation\nLow Generation\nInverter Fault\nGrid Issue\nPhysical Damage\nOther",
+			"reqd": 1
+		},
+		{
+			"fieldname": "description",
+			"fieldtype": "Text Editor",
+			"label": "Description",
+			"reqd": 1
+		},
+		{
+			"fieldname": "column_break_9",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "reported_on",
+			"fieldtype": "Datetime",
+			"label": "Reported On",
+			"read_only": 1
+		},
+		{
+			"fieldname": "sla_deadline",
+			"fieldtype": "Datetime",
+			"label": "SLA Deadline",
+			"read_only": 1
+		},
+		{
+			"fieldname": "assigned_to",
+			"fieldtype": "Link",
+			"label": "Assigned To",
+			"options": "Employee"
+		},
+		{
+			"fieldname": "section_break_12",
+			"fieldtype": "Section Break",
+			"label": "Resolution"
+		},
+		{
+			"fieldname": "service_visit",
+			"fieldtype": "Link",
+			"label": "Service Visit",
+			"options": "Service Visit"
+		},
+		{
+			"fieldname": "resolution",
+			"fieldtype": "Text Editor",
+			"label": "Resolution"
+		},
+		{
+			"fieldname": "resolved_on",
+			"fieldtype": "Datetime",
+			"label": "Resolved On"
+		},
+		{
+			"fieldname": "notes",
+			"fieldtype": "Text",
+			"label": "Internal Notes"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"is_submittable": 1,
+	"links": [],
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "Complaint",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"amend": 1,
+			"cancel": 1,
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"submit": 1,
+			"write": 1
+		},
+		{
+			"create": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "Sales User",
+			"write": 1
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"track_changes": 1
+}

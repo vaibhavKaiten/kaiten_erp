@@ -1,0 +1,51 @@
+{
+    "app": "kaiten_erp",
+    "content": "[{\"id\": \"amc_header_1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>AMC</b></span>\", \"col\": 12}}, {\"id\": \"amc_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Solar Site Profile\", \"col\": 4}}, {\"id\": \"amc_shortcut_2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"AMC Contract\", \"col\": 4}}, {\"id\": \"amc_shortcut_3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Service Visit\", \"col\": 4}}, {\"id\": \"amc_shortcut_4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Complaint\", \"col\": 4}}, {\"id\": \"amc_shortcut_5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Renewal Notice\", \"col\": 4}}]",
+    "doctype": "Workspace",
+    "label": "AMC",
+    "module": "AMC",
+    "name": "AMC",
+    "public": 1,
+    "links": [
+        {
+            "hidden": 0,
+            "label": "Solar Site Profile",
+            "link_to": "Solar Site Profile",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "label": "AMC Contract",
+            "link_to": "AMC Contract",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "label": "Service Visit",
+            "link_to": "Service Visit",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "label": "Complaint",
+            "link_to": "Complaint",
+            "link_type": "DocType",
+            "onboard": 1,
+            "type": "Link"
+        },
+        {
+            "hidden": 0,
+            "label": "Renewal Notice",
+            "link_to": "Renewal Notice",
+            "link_type": "DocType",
+            "onboard": 0,
+            "type": "Link"
+        }
+    ]
+}

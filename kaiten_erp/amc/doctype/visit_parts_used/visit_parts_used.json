@@ -1,0 +1,67 @@
+{
+	"actions": [],
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Child Table",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"item",
+		"qty",
+		"rate",
+		"amount",
+		"within_contract_limit",
+		"billable"
+	],
+	"fields": [
+		{
+			"fieldname": "item",
+			"fieldtype": "Link",
+			"label": "Item",
+			"options": "Item",
+			"reqd": 1
+		},
+		{
+			"fieldname": "qty",
+			"fieldtype": "Float",
+			"label": "Qty",
+			"reqd": 1
+		},
+		{
+			"fieldname": "rate",
+			"fieldtype": "Currency",
+			"label": "Rate",
+			"reqd": 1
+		},
+		{
+			"fieldname": "amount",
+			"fieldtype": "Currency",
+			"label": "Amount",
+			"read_only": 1,
+			"formula": "qty * rate"
+		},
+		{
+			"fieldname": "within_contract_limit",
+			"fieldtype": "Check",
+			"label": "Within Contract Limit",
+			"read_only": 1
+		},
+		{
+			"fieldname": "billable",
+			"fieldtype": "Check",
+			"label": "Billable (Beyond Limit)",
+			"default": 0
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"istable": 1,
+	"link_field": "parent",
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "Visit Parts Used",
+	"owner": "Administrator",
+	"permissions": [],
+	"sort_field": "modified",
+	"sort_order": "DESC"
+}

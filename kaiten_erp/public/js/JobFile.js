@@ -6,6 +6,24 @@
 frappe.ui.form.on('Job File', {
     refresh: function (frm) {
         setup_vendor_fields(frm);
+
+        if (!frm.is_new() && frm.doc.docstatus < 2) {
+            frm.add_custom_button(__("Solar Site Profile"), function () {
+                frappe.call({
+                    method: "kaiten_erp.amc.api.job_file_amc_integration.create_solar_site_profile",
+                    args: { job_file_name: frm.doc.name },
+                    callback: function (r) {
+                        if (r.message) {
+                            const msg = r.message.existing
+                                ? __("Solar Site Profile already exists: {0}", [r.message.name])
+                                : __("Solar Site Profile {0} created.", [r.message.name]);
+                            frappe.msgprint(msg);
+                            frappe.set_route("Form", "Solar Site Profile", r.message.name);
+                        }
+                    },
+                });
+            }, __("Create"));
+        }
     },
 
     // When Assignment Territory changes

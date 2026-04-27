@@ -1,0 +1,262 @@
+{
+	"actions": [],
+	"allow_rename": 1,
+	"autoname": "naming_series:",
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Document",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"naming_series",
+		"amc_contract",
+		"customer",
+		"solar_site",
+		"column_break_3",
+		"visit_type",
+		"complaint",
+		"status",
+		"section_break_6",
+		"scheduled_date",
+		"scheduled_time",
+		"actual_visit_date",
+		"column_break_9",
+		"technician",
+		"visit_start_time",
+		"visit_end_time",
+		"section_break_12",
+		"system_generation",
+		"column_break_14",
+		"issues_found",
+		"work_done",
+		"section_break_16",
+		"checklist",
+		"section_break_18",
+		"parts_used",
+		"column_break_20",
+		"billable_parts_amount",
+		"section_break_21",
+		"photos",
+		"customer_signature",
+		"customer_rating"
+	],
+	"fields": [
+		{
+			"fieldname": "naming_series",
+			"fieldtype": "Select",
+			"label": "Naming Series",
+			"options": "SV-.YYYY.-.#####",
+			"reqd": 1
+		},
+		{
+			"fieldname": "amc_contract",
+			"fieldtype": "Link",
+			"label": "AMC Contract",
+			"options": "AMC Contract",
+			"reqd": 1
+		},
+		{
+			"fieldname": "customer",
+			"fieldtype": "Link",
+			"label": "Customer",
+			"options": "Customer",
+			"read_only": 1,
+			"fetch_from": "amc_contract.customer"
+		},
+		{
+			"fieldname": "solar_site",
+			"fieldtype": "Link",
+			"label": "Solar Site",
+			"options": "Solar Site Profile",
+			"read_only": 1,
+			"fetch_from": "amc_contract.solar_site"
+		},
+		{
+			"fieldname": "column_break_3",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "visit_type",
+			"fieldtype": "Select",
+			"label": "Visit Type",
+			"options": "Preventive\nBreakdown\nEmergency",
+			"reqd": 1
+		},
+		{
+			"fieldname": "complaint",
+			"fieldtype": "Link",
+			"label": "Complaint",
+			"options": "Complaint"
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "Scheduled\nIn Progress\nCompleted\nCancelled",
+			"default": "Scheduled",
+			"reqd": 1
+		},
+		{
+			"fieldname": "section_break_6",
+			"fieldtype": "Section Break",
+			"label": "Visit Schedule & Timing"
+		},
+		{
+			"fieldname": "scheduled_date",
+			"fieldtype": "Date",
+			"label": "Scheduled Date",
+			"reqd": 1
+		},
+		{
+			"fieldname": "scheduled_time",
+			"fieldtype": "Time",
+			"label": "Scheduled Time"
+		},
+		{
+			"fieldname": "actual_visit_date",
+			"fieldtype": "Date",
+			"label": "Actual Visit Date"
+		},
+		{
+			"fieldname": "column_break_9",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "technician",
+			"fieldtype": "Link",
+			"label": "Technician",
+			"options": "Employee",
+			"reqd": 1
+		},
+		{
+			"fieldname": "visit_start_time",
+			"fieldtype": "Datetime",
+			"label": "Visit Start Time"
+		},
+		{
+			"fieldname": "visit_end_time",
+			"fieldtype": "Datetime",
+			"label": "Visit End Time"
+		},
+		{
+			"fieldname": "section_break_12",
+			"fieldtype": "Section Break",
+			"label": "Site Assessment"
+		},
+		{
+			"fieldname": "system_generation",
+			"fieldtype": "Float",
+			"label": "System Generation (kWh)"
+		},
+		{
+			"fieldname": "column_break_14",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "issues_found",
+			"fieldtype": "Text",
+			"label": "Issues Found"
+		},
+		{
+			"fieldname": "work_done",
+			"fieldtype": "Text Editor",
+			"label": "Work Done",
+			"reqd": 1
+		},
+		{
+			"fieldname": "section_break_16",
+			"fieldtype": "Section Break",
+			"label": "Checklist & Parts"
+		},
+		{
+			"fieldname": "checklist",
+			"fieldtype": "Table",
+			"label": "Service Checklist",
+			"options": "Service Checklist",
+			"reqd": 1
+		},
+		{
+			"fieldname": "section_break_18",
+			"fieldtype": "Section Break",
+			"label": "Parts Used"
+		},
+		{
+			"fieldname": "parts_used",
+			"fieldtype": "Table",
+			"label": "Parts Used",
+			"options": "Visit Parts Used"
+		},
+		{
+			"fieldname": "column_break_20",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "billable_parts_amount",
+			"fieldtype": "Currency",
+			"label": "Billable Parts Amount",
+			"read_only": 1,
+			"default": 0
+		},
+		{
+			"fieldname": "section_break_21",
+			"fieldtype": "Section Break",
+			"label": "Customer Sign-Off"
+		},
+		{
+			"fieldname": "photos",
+			"fieldtype": "Attach Image",
+			"label": "Photos"
+		},
+		{
+			"fieldname": "customer_signature",
+			"fieldtype": "Signature",
+			"label": "Customer Signature"
+		},
+		{
+			"fieldname": "customer_rating",
+			"fieldtype": "Rating",
+			"label": "Customer Rating"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"is_submittable": 1,
+	"links": [],
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "Service Visit",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"amend": 1,
+			"cancel": 1,
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"submit": 1,
+			"write": 1
+		},
+		{
+			"amend": 1,
+			"cancel": 1,
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "Sales User",
+			"submit": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"track_changes": 1
+}

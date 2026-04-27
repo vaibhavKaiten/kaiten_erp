@@ -1,0 +1,120 @@
+{
+	"actions": [],
+	"allow_rename": 1,
+	"autoname": "naming_series:",
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Document",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"naming_series",
+		"amc_contract",
+		"customer",
+		"column_break_2",
+		"expiry_date",
+		"proposed_value",
+		"column_break_5",
+		"quotation",
+		"renewed_contract",
+		"status"
+	],
+	"fields": [
+		{
+			"fieldname": "naming_series",
+			"fieldtype": "Select",
+			"label": "Naming Series",
+			"options": "RNW-.YYYY.-.#####",
+			"reqd": 1
+		},
+		{
+			"fieldname": "amc_contract",
+			"fieldtype": "Link",
+			"label": "AMC Contract",
+			"options": "AMC Contract",
+			"reqd": 1
+		},
+		{
+			"fieldname": "customer",
+			"fieldtype": "Link",
+			"label": "Customer",
+			"options": "Customer",
+			"read_only": 1,
+			"fetch_from": "amc_contract.customer"
+		},
+		{
+			"fieldname": "column_break_2",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "expiry_date",
+			"fieldtype": "Date",
+			"label": "Expiry Date",
+			"read_only": 1,
+			"fetch_from": "amc_contract.end_date"
+		},
+		{
+			"fieldname": "proposed_value",
+			"fieldtype": "Currency",
+			"label": "Proposed Value",
+			"reqd": 1
+		},
+		{
+			"fieldname": "column_break_5",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "quotation",
+			"fieldtype": "Link",
+			"label": "Quotation",
+			"options": "Quotation"
+		},
+		{
+			"fieldname": "renewed_contract",
+			"fieldtype": "Link",
+			"label": "Renewed Contract",
+			"options": "AMC Contract"
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "Pending\nSent\nAccepted\nRejected\nLapsed",
+			"default": "Pending",
+			"reqd": 1
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "Renewal Notice",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"write": 1
+		},
+		{
+			"create": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "Sales User",
+			"write": 1
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"track_changes": 1
+}
