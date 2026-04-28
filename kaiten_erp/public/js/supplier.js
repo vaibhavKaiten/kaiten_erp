@@ -131,3 +131,48 @@ function add_create_portal_user_button(frm) {
     }, __('Portal Users')).addClass('btn-primary');
 }
 
+function add_link_existing_user_button(frm) {
+    frm.add_custom_button(__('Link Existing User'), function () {
+        let d = new frappe.ui.Dialog({
+            title: __('Link Existing User to Supplier'),
+            fields: [
+                {
+                    fieldname: 'user',
+                    fieldtype: 'Link',
+                    label: __('User'),
+                    options: 'User',
+                    reqd: 1,
+                    get_query: function () {
+                        return { filters: { enabled: 1 } };
+                    }
+                }
+            ],
+            primary_action_label: __('Link User'),
+            primary_action: function (values) {
+                frappe.call({
+                    method: 'kaiten_erp.kaiten_erp.api.supplier_portal.link_existing_user_to_supplier',
+                    args: {
+                        supplier_name: frm.doc.name,
+                        user_email: values.user
+                    },
+                    freeze: true,
+                    freeze_message: __('Linking user...'),
+                    callback: function (r) {
+                        if (r.message && r.message.success) {
+                            frappe.show_alert({
+                                message: __('User {0} linked to {1}', [values.user, frm.doc.name]),
+                                indicator: 'green'
+                            }, 8);
+                            d.hide();
+                            frm.reload_doc();
+                        } else if (r.message && r.message.error) {
+                            frappe.msgprint({ title: __('Error'), message: r.message.error, indicator: 'red' });
+                        }
+                    }
+                });
+            }
+        });
+        d.show();
+    }, __('Portal Users'));
+}
+

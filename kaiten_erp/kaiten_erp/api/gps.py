@@ -12,9 +12,9 @@ GPS_TEMP_FIELD_CANDIDATES = {
 }
 LOCATION_LOG_TABLE_CANDIDATES = (
     "custom_location_log",
-    "location_log",
     "custom_location_activity_log",
     "custom_location__history",
+    "location_log",
 )
 CHILD_FIELD_CANDIDATES = {
     "timestamp": ("timestamp", "custom_timestamp", "date_time"),
@@ -60,7 +60,11 @@ def log_workflow_location(doc):
 
     # Skip silently if no location log child table exists on this doctype.
     log_table_field = next(
-        (f for f in LOCATION_LOG_TABLE_CANDIDATES if doc.meta.has_field(f)), None
+        (
+            f for f in LOCATION_LOG_TABLE_CANDIDATES
+            if doc.meta.has_field(f) and doc.meta.get_field(f).fieldtype == "Table"
+        ),
+        None,
     )
     if not log_table_field:
         return

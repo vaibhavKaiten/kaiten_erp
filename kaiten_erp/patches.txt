@@ -40,4 +40,4 @@ kaiten_erp.patches.remove_meter_installation_location_log_field
 kaiten_erp.patches.set_visit_type_select_with_default
 kaiten_erp.patches.remove_procurement_consolidation_header_warehouse
 kaiten_erp.patches.remove_job_file_column_breaks
-
+kaiten_erp.kaiten_erp.patches.fix_location_log_visibility_and_logging

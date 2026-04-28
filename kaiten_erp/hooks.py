@@ -104,6 +104,10 @@ fixtures = [
     # -------------------------
     {"dt": "Report", "filters": [["module", "=", "AMC"], ["is_standard", "=", "Yes"]]},
     # -------------------------
+    # Print Formats
+    # -------------------------
+    {"dt": "Print Format", "filters": [["module", "=", "Kaiten Erp"]]},
+    # -------------------------
     # Custom Roles (Explicit for Safety)
     # -------------------------
     {
@@ -197,10 +201,11 @@ doctype_js = {
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "kaiten_erp.utils.jinja_methods",
-# 	"filters": "kaiten_erp.utils.jinja_filters"
-# }
+jinja = {
+    "methods": [
+        "kaiten_erp.kaiten_erp.api.quotation_print.get_quotation_print_data",
+    ]
+}
 
 # Installation
 # ------------

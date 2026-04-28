@@ -1,4 +1,4 @@
-frappe.ready(() => {
+$(document).ready(function () {
     const interval = setInterval(() => {
         let logo = document.querySelector('.app-loading img');
         if (logo) {

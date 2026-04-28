@@ -53,6 +53,7 @@
     "gps_longitude",
     "gps_location",
     "gps_map_link",
+    "custom_location__history",
     "location_log"
   ],
   "fields": [
@@ -107,7 +108,6 @@
       "label": "Grid Sync Status",
       "options": "Yes\nNo"
     },
-
     {
       "fieldname": "basic_details_tab",
       "fieldtype": "Tab Break",
@@ -297,6 +297,11 @@
       "hidden": 1,
       "allow_on_submit": 1,
       "label": "GPS Map Link"
+    },
+    {
+      "fieldname": "custom_location__history",
+      "fieldtype": "Tab Break",
+      "label": "Location & History"
     },
     {
       "fieldname": "location_log",

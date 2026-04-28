@@ -1,0 +1,1047 @@
+{#================================================================
+SOLAR QUOTATION PRINT FORMAT – Frappe / ERPNext Jinja Template
+================================================================#}
+{#– Contact mobile/email come directly from Quotation doc –#}
+{%- set mobile = doc.contact_mobile or "" -%}
+{%- set email = doc.contact_email or "" -%}
+
+{#– Fetch company details (for phone/email/website/description) –#}
+{%- set company_doc = frappe.get_doc("Company", doc.company) -%}
+
+{#– Fetch BOM-expanded print data –#}
+{%- set print_data = get_quotation_print_data(doc) -%}
+{%- set bom_rows = print_data.bom_rows -%}
+
+{#– Derive solar capacity: 1. custom field 2. first item name prefix 3. blank –#}
+{%- if doc.custom_solar_capacity -%}
+{%- set capacity = doc.custom_solar_capacity -%}
+{%- elif doc.items and doc.items[0].item_name -%}
+{%- set _iname = doc.items[0].item_name -%}
+{%- set _kw = _iname.split('-')[0].strip() if '-' in _iname else _iname.split(' ')[0] -%}
+{%- set capacity = _kw if ('KW' in _kw|upper or 'kw' in _kw|lower) else "" -%}
+{%- else -%}
+{%- set capacity = "" -%}
+{%- endif -%}
+{#– Title suffix –#}
+{%- set title_suffix = ("– " ~ capacity) if capacity else "" -%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Solar Quotation – {{ doc.name }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #1a1a1a;
+            padding: 10px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        @media print {
+            body {
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 10.5px;
+            }
+
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 8mm 8mm 8mm 8mm;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+
+            table {
+                font-size: 10px !important;
+            }
+
+            th {
+                background: #1b5e20 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 4px 5px !important;
+            }
+
+            td {
+                padding: 3px 4px !important;
+            }
+
+            .section-title {
+                background: #1b5e20 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                font-size: 11px !important;
+                padding: 4px 8px !important;
+                margin: 10px 0 4px !important;
+            }
+
+            .total-row td {
+                background: #e8f5e9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .highlight-row td {
+                background: #c8e6c9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .main-title {
+                font-size: 13px !important;
+            }
+
+            .header-company h1 {
+                font-size: 13px !important;
+            }
+
+            .two-col {
+                display: block !important;
+            }
+
+            .two-col>div {
+                width: 100% !important;
+                margin-bottom: 4px;
+            }
+        }
+
+        .container {
+            max-width: 780px;
+            margin: auto;
+            width: 100%;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #1b5e20;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .header-logo {
+            flex: 0 0 auto;
+            max-width: 45%;
+        }
+
+        .header-logo img {
+            max-width: 160px;
+            max-height: 65px;
+            object-fit: contain;
+        }
+
+        .header-company {
+            text-align: right;
+        }
+
+        .header-company h1 {
+            font-size: 15px;
+            color: #1b5e20;
+            font-weight: 700;
+        }
+
+        .header-company p {
+            font-size: 10.5px;
+            color: #444;
+            margin-top: 2px;
+        }
+
+        .header-company .gstin {
+            font-weight: 700;
+            color: #222;
+        }
+
+        /* ── QUOTE META ── */
+        .quote-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 8px 0;
+            padding: 8px 10px;
+            background: #f1f8f4;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .quote-meta>div {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .quote-meta p {
+            margin: 2px 0;
+            font-size: 11px;
+            word-wrap: break-word;
+        }
+
+        .meta-right {
+            text-align: right;
+            flex: 0 0 auto;
+            max-width: 50%;
+        }
+
+        /* ── MAIN TITLE ── */
+        .main-title {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1b5e20;
+            margin: 11px 0 8px;
+            padding: 7px 10px;
+            border: 2px solid #1b5e20;
+            background: #f9fff9;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            background: #1b5e20;
+            color: #fff;
+            padding: 5px 11px;
+            margin: 13px 0 6px;
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        /* ── TABLES ── */
+        table {
+            width: 100%;
+            border-collapse: collapse !important;
+            margin-top: 3px;
+            font-size: 11px;
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        th {
+            background: #1b5e20 !important;
+            color: #ffffff !important;
+            padding: 5px 6px !important;
+            text-align: left !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            word-wrap: break-word;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        td {
+            border: 1px solid #ccc !important;
+            padding: 4px 6px;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        tr:nth-child(even) td {
+            background: #fafafa;
+        }
+
+        .tr {
+            text-align: right;
+        }
+
+        .tc {
+            text-align: center;
+        }
+
+        .total-row td {
+            background: #e8f5e9 !important;
+            font-weight: 700;
+        }
+
+        .highlight-row td {
+            background: #c8e6c9 !important;
+            font-weight: 700;
+            font-size: 12.5px;
+        }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            background: #f1f8f4;
+            border-left: 4px solid #1b5e20;
+            padding: 7px 12px;
+            margin: 7px 0;
+            font-size: 11.5px;
+        }
+
+        .info-box ul {
+            padding-left: 17px;
+            margin: 3px 0;
+        }
+
+        .info-box li {
+            margin: 2px 0;
+        }
+
+        /* ── PRICING BOX ── */
+        .pricing-box {
+            border: 2px solid #1b5e20;
+            padding: 10px 14px;
+            margin: 10px 0;
+            background: #e8f5e9;
+            text-align: center;
+        }
+
+        .pricing-box .amount {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1b5e20;
+        }
+
+        .pricing-box .amount-words {
+            font-size: 11px;
+            color: #555;
+            font-style: italic;
+            margin-top: 3px;
+        }
+
+        /* ── TWO COL ── */
+        .two-col {
+            display: flex;
+            gap: 14px;
+        }
+
+        .two-col>div {
+            flex: 1;
+        }
+
+        /* ── TERMS ── */
+        .terms-list {
+            padding-left: 18px;
+            margin: 4px 0;
+        }
+
+        .terms-list li {
+            margin: 3px 0;
+            font-size: 11.5px;
+        }
+
+        /* ── SIGNATURE ── */
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 35px;
+            padding-top: 10px;
+        }
+
+        .sig-block {
+            text-align: center;
+            width: 40%;
+        }
+
+        .sig-block .line {
+            border-top: 1px solid #333;
+            margin-bottom: 4px;
+        }
+
+        .sig-block p {
+            font-size: 11px;
+            margin: 1px 0;
+        }
+
+        .stamp-box {
+            border: 1px dashed #999;
+            width: 110px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* ── FOOTER ── */
+        .footer-bar {
+            margin-top: 14px;
+            padding: 7px 12px;
+            background: #1b5e20;
+            color: #fff;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        h4 {
+            margin: 9px 0 3px;
+            font-size: 12.5px;
+            color: #1b5e20;
+        }
+
+        .note {
+            font-size: 10.5px;
+            color: #666;
+            font-style: italic;
+            margin: 4px 0;
+        }
+
+        .warranty-table td:first-child {
+            font-weight: 600;
+            width: 33%;
+        }
+
+        /* ── CANCELLATION BOX ── */
+        .cancel-box {
+            background: #fff8e1;
+            border-left: 3px solid #f9a825;
+            padding: 6px 11px;
+            margin: 8px 0;
+            font-size: 11px;
+        }
+
+        .cancel-box ul {
+            padding-left: 16px;
+            margin: 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- ═══════════════════════════════ PAGE 1 ═══════════════════════════════ -->
+
+        <!-- HEADER : Logo LEFT · Company RIGHT -->
+        <div class="header">
+            <div class="header-logo">
+                <img src="{{ frappe.utils.get_url('/files/company-logo.webp') }}" alt="{{ doc.company }} Logo" />
+            </div>
+            <div class="header-company">
+                <h1>{{ doc.company }}</h1>
+                {% if company_doc.company_description %}<p>{{ company_doc.company_description }}</p>{% endif %}
+                {% if doc.company_address_display %}
+                <p style="font-size:10px;">{{ doc.company_address_display | striptags | replace('\n', ', ') | trim(', ')
+                    }}</p>
+                {% elif company_doc.registered_address %}
+                <p>{{ company_doc.registered_address }}</p>
+                {% endif %}
+                {% if doc.company_gstin %}
+                <p class="gstin">GSTIN: {{ doc.company_gstin }}</p>
+                {% elif company_doc.tax_id %}
+                <p class="gstin">GSTIN: {{ company_doc.tax_id }}</p>
+                {% endif %}
+                <p>
+                    {% if company_doc.phone_no %}📞 {{ company_doc.phone_no }}{% endif %}
+                    {% if company_doc.email %} | ✉ {{ company_doc.email }}{% endif %}
+                    {% if company_doc.website %} | 🌐 {{ company_doc.website }}{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- QUOTATION META -->
+        <div class="quote-meta">
+            <div>
+                <p><strong>To:</strong></p>
+                <p><strong>Client Name:</strong> {{ doc.customer_name }}</p>
+                {% if doc.address_display %}
+                <p><strong>Address:</strong> {{ doc.address_display | striptags | replace('\n', ' ') | replace(' ', ' ')
+                    | trim }}</p>
+                {% endif %}
+                {% if mobile %}<p><strong>Mobile:</strong> {{ mobile }}</p>{% endif %}
+                {% if email %}<p><strong>Email:</strong> {{ email }}</p>{% endif %}
+            </div>
+            <div class="meta-right">
+                <p><strong>Quotation No:</strong> {{ doc.name }}</p>
+                <p><strong>Date:</strong> {{ frappe.utils.formatdate(doc.transaction_date, "dd-mm-yyyy") }}</p>
+                <p><strong>Validity:</strong>
+                    {% if doc.valid_till %}
+                    {{ frappe.utils.date_diff(doc.valid_till, doc.transaction_date) }} Days from date of issue
+                    {% else %}
+                    15 Days from date of issue
+                    {% endif %}
+                </p>
+                {% if doc.custom_job_file %}<p><strong>Job File:</strong> {{ doc.custom_job_file }}</p>{% endif %}
+                <p><strong>Ref:</strong>
+                    {% if doc.custom_reference %}{{ doc.custom_reference }}{% else %}Site Visit / Telephonic{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- MAIN TITLE -->
+        <div class="main-title">QUOTATION FOR ON-GRID SOLAR ROOFTOP SYSTEM {{ title_suffix }}</div>
+
+        <!-- SUBJECT -->
+        <p style="font-size: 11.5px; margin: 6px 0;">
+            <strong>Subject:</strong> Supply, Installation, Testing &amp; Commissioning of
+            {% if capacity %}<strong>{{ capacity }}</strong>{% endif %}
+            On-Grid Solar Rooftop Power Plant under
+            <strong>PM Surya Ghar Muft Bijli Yojana</strong> (Central Government Subsidy Scheme).
+        </p>
+
+        <!-- WHY GO SOLAR -->
+        <div class="info-box">
+            <strong>Why Go Solar?</strong>
+            <ul>
+                <li>Save up to <strong>80% on electricity bills</strong></li>
+                <li>25+ years panel performance warranty</li>
+                <li>Government subsidy up to ₹78,000 for 3 KW under PM Surya Ghar Yojana</li>
+                <li>Return on Investment (ROI) in just 3–4 years</li>
+                <li>Earn from surplus power export via Net Metering if DCR Panels are installed</li>
+            </ul>
+        </div>
+
+        <!-- ── BILL OF MATERIAL ── -->
+        <div class="section-title">📋 BILL OF MATERIAL (BOM)</div>
+        <table style="table-layout:fixed;">
+            <thead>
+                <tr>
+                    <th style="width:6%;" class="tc">S.No</th>
+                    <th style="width:20%;">Item</th>
+                    <th style="width:30%;">Description / Specification</th>
+                    <th style="width:14%;">Make</th>
+                    <th style="width:14%;">Warranty</th>
+                    <th style="width:8%;" class="tc">Qty</th>
+                    <th style="width:8%;" class="tc">Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in bom_rows %}
+                <tr>
+                    <td class="tc">{{ row.s_no }}</td>
+                    <td><strong>{{ row.item_name }}</strong></td>
+                    <td style="font-size:11px;">{{ row.description | striptags }}</td>
+                    <td>{{ row.brand }}</td>
+                    <td>{{ row.warranty }}</td>
+                    <td class="tc">{{ row.qty | int if row.qty == (row.qty | int) else row.qty }}</td>
+                    <td class="tc">{{ row.uom }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="note">* All material is BIS / IEC certified and MNRE / DISCOM approved as applicable.</p>
+        <p class="note">* Any additional work beyond defined scope shall be charged separately. Rates shall be mutually
+            agreed before execution.</p>
+
+        <!-- ── COMMERCIAL OFFER ── -->
+        <div class="section-title">💰 COMMERCIAL OFFER – For {{ capacity }} On Grid Solar System</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:7%;" class="tc">S.No.</th>
+                    <th>Particulars</th>
+                    <th style="width:24%;" class="tr">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="tc">1</td>
+                    <td>
+                        Panels + Inverter + Battery (if any) — 70% of deal amount (pre GST)<br>
+                        <small style="color:#555;">
+                            Structure, Wiring &amp; other accessories — 20% of deal amount (pre GST)<br>
+                            Installation &amp; Commissioning — 10% of deal amount (pre GST)
+                        </small>
+                    </td>
+                    <td class="tr">{{ "{:,.2f}".format(doc.net_total) }}</td>
+                </tr>
+
+                {%- set cgst_ns = namespace(val=0) -%}
+                {%- set sgst_ns = namespace(val=0) -%}
+                {%- set igst_ns = namespace(val=0) -%}
+                {%- set cgst_rate_ns = namespace(val=0) -%}
+                {%- set sgst_rate_ns = namespace(val=0) -%}
+
+                {% if doc.custom_tax_bifurcation %}
+                {% for tbrow in doc.custom_tax_bifurcation %}
+                {% if tbrow.tax_category == "CGST" %}{%- set cgst_ns.val = cgst_ns.val + (tbrow.amount | float) -%}{%
+                endif %}
+                {% if tbrow.tax_category == "SGST" %}{%- set sgst_ns.val = sgst_ns.val + (tbrow.amount | float) -%}{%
+                endif %}
+                {% if tbrow.tax_category == "IGST" %}{%- set igst_ns.val = igst_ns.val + (tbrow.amount | float) -%}{%
+                endif %}
+                {% endfor %}
+                {% elif doc.taxes %}
+                {% for tax in doc.taxes %}
+                {% if "CGST" in tax.description|upper %}{%- set cgst_ns.val = cgst_ns.val + (tax.tax_amount | float)
+                -%}{%- set cgst_rate_ns.val = tax.rate -%}{% endif %}
+                {% if "SGST" in tax.description|upper %}{%- set sgst_ns.val = sgst_ns.val + (tax.tax_amount | float)
+                -%}{%- set sgst_rate_ns.val = tax.rate -%}{% endif %}
+                {% if "IGST" in tax.description|upper %}{%- set igst_ns.val = igst_ns.val + (tax.tax_amount | float)
+                -%}{% endif %}
+                {% endfor %}
+                {% endif %}
+
+                {% if cgst_ns.val > 0 %}
+                <tr>
+                    <td class="tc">2a</td>
+                    <td>CGST{% if cgst_rate_ns.val %} @ {{ cgst_rate_ns.val }}%{% endif %}</td>
+                    <td class="tr">{{ "{:,.2f}".format(cgst_ns.val) }}</td>
+                </tr>
+                {% endif %}
+                {% if sgst_ns.val > 0 %}
+                <tr>
+                    <td class="tc">2b</td>
+                    <td>SGST{% if sgst_rate_ns.val %} @ {{ sgst_rate_ns.val }}%{% endif %}</td>
+                    <td class="tr">{{ "{:,.2f}".format(sgst_ns.val) }}</td>
+                </tr>
+                {% endif %}
+                {% if igst_ns.val > 0 %}
+                <tr>
+                    <td class="tc">2c</td>
+                    <td>IGST</td>
+                    <td class="tr">{{ "{:,.2f}".format(igst_ns.val) }}</td>
+                </tr>
+                {% endif %}
+
+                <tr class="total-row">
+                    <td class="tc">3</td>
+                    <td><strong>TOTAL SYSTEM COST (Inclusive of GST)</strong></td>
+                    <td class="tr"><strong>₹ {{ "{:,.2f}".format(doc.grand_total) }}</strong></td>
+                </tr>
+                <tr>
+                    <td class="tc">4</td>
+                    <td>
+                        Less: Central Government Subsidy (PM Surya Ghar Yojana)
+                        {% if doc.custom_subsidy_amount and doc.custom_subsidy_amount > 0 %}
+                        – ₹ {{ "{:,.2f}".format(doc.custom_subsidy_amount) }}
+                        {% endif %}
+                    </td>
+                    <td class="tr">
+                        {% if doc.custom_subsidy_amount and doc.custom_subsidy_amount > 0 %}
+                        – {{ "{:,.2f}".format(doc.custom_subsidy_amount) }}
+                        {% else %}
+                        – (as applicable)
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="highlight-row">
+                    <td class="tc">5</td>
+                    <td><strong>NET COST TO CUSTOMER POST SUBSIDY</strong></td>
+                    <td class="tr">
+                        <strong>₹ {{ "{:,.2f}".format(
+                            (doc.rounded_total or doc.grand_total) -
+                            (doc.custom_subsidy_amount if doc.custom_subsidy_amount else 0)
+                            ) }}</strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- FINAL PRICE BOX -->
+        {%- set final_payable = doc.rounded_total or doc.grand_total -%}
+        <div class="pricing-box">
+            <div class="amount">Final Customer Payable: {{ frappe.utils.fmt_money(final_payable, currency=doc.currency)
+                }}/-</div>
+            <div class="amount-words">( {{ doc.in_words }} )</div>
+        </div>
+
+        <!-- ── PROJECT ESTIMATES ── -->
+        <div class="section-title">📊 PROJECT ESTIMATES</div>
+        <table>
+            <tr>
+                <th style="width:42%;">Parameter</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>System Capacity</td>
+                <td>{% if capacity %}{{ capacity }} {% endif %}As per BOM above</td>
+            </tr>
+            <tr>
+                <td>Estimated Daily Generation</td>
+                <td>12 – 15 Units/Day (per KW)</td>
+            </tr>
+            <tr>
+                <td>Estimated Monthly Generation</td>
+                <td>360 – 450 Units/Month</td>
+            </tr>
+            <tr>
+                <td>Estimated Annual Generation</td>
+                <td>4,300 – 5,400 Units/Year</td>
+            </tr>
+            <tr>
+                <td>Annual Savings (@ ₹8/unit avg.)</td>
+                <td>₹ 34,400 – ₹ 43,200 per year</td>
+            </tr>
+            <tr>
+                <td>Payback Period (after subsidy)</td>
+                <td>~3 to 3.5 Years</td>
+            </tr>
+            <tr>
+                <td>25-Year Lifetime Saving</td>
+                <td>₹ 8,00,000+ (approx.)</td>
+            </tr>
+            <tr>
+                <td>Rooftop Space Required</td>
+                <td>~250 – 300 Sq. Ft. (shadow-free area)</td>
+            </tr>
+            <tr>
+                <td>Installation &amp; Commissioning Timeline</td>
+                <td>30 – 45 Days (from date of more than 50% advance payment)</td>
+            </tr>
+        </table>
+        <p class="note">* Generation estimates are based on average solar irradiance in Rajasthan and may vary by season
+            &amp; weather.
+            Generation, savings, ROI are indicative only and not guaranteed. Actual performance depends on weather,
+            usage, shading and grid conditions.</p>
+
+        <!-- ── SUBSIDY DETAILS ── -->
+        <div class="section-title">🏛️ SUBSIDY DETAILS – PM SURYA GHAR MUFT BIJLI YOJANA</div>
+        <div class="info-box">
+            <ul>
+                <li><strong>Scheme:</strong> PM Surya Ghar Muft Bijli Yojana (Central Govt. Subsidy)</li>
+                <li><strong>Subsidy for 3 KW:</strong> ₹78,000 (₹30,000/KW for first 2 KW + ₹18,000/KW for next 1 KW)
+                </li>
+                <li><strong>Eligibility:</strong> Domestic / Residential consumers with valid electricity connection
+                </li>
+                <li><strong>Process:</strong> Apply online at <strong>pmsuryaghar.gov.in</strong> → Approval →
+                    Installation → DISCOM Inspection → Net Meter → Subsidy credited to bank A/C within 30–60 days</li>
+                <li><strong>Documents Required:</strong> Aadhar Card, Electricity Bill, Bank Passbook, Photo, Roof Photo
+                </li>
+                <li>Our team will provide <strong>complete assistance</strong> for subsidy application and documentation
+                </li>
+            </ul>
+        </div>
+
+        <!-- PAGE BREAK -->
+        <div class="page-break"></div>
+
+        <!-- ═══════════════════════════════ PAGE 2 ═══════════════════════════════ -->
+
+        <!-- ── SCOPE OF WORK ── -->
+        <div class="section-title">🔧 SCOPE OF WORK</div>
+        <div class="two-col">
+            <div>
+                <h4>✅ Included in this Quotation:</h4>
+                <ul class="terms-list">
+                    <li>Supply of all solar components as per BOM</li>
+                    <li>Complete installation &amp; commissioning</li>
+                    <li>GI mounting structure (RCC/Tin Shed as applicable)</li>
+                    <li>DC &amp; AC wiring (up to 30 meters from panel to inverter)</li>
+                    <li>Earthing (3 points) &amp; Lightning Arrestor</li>
+                    <li>ACDB / DCDB installation</li>
+                    <li>Net Metering application &amp; coordination with DISCOM</li>
+                    <li>Subsidy application assistance (PM Surya Ghar Portal)</li>
+                    <li>System testing &amp; handover</li>
+                    <li>Wi-Fi monitoring setup (if inverter supports) and customer provides</li>
+                    <li>Remote Monitoring System at customer mobile to monitor plant performance</li>
+                    <li>Additional Support (Strut Channel) at the higher side of panels for extra strength during winds
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h4>❌ Not Included / Extra:</h4>
+                <ul class="terms-list">
+                    <li>Any civil work / RCC base / roof strengthening</li>
+                    <li>Extra wiring beyond 30 meters</li>
+                    <li>Underground cabling / trenching</li>
+                    <li>Electrical panel upgradation (if required)</li>
+                    <li>Tree cutting / shade removal</li>
+                    <li>Any charges by DISCOM for meter / inspection (if applicable)</li>
+                    <li>AMC beyond warranty period</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ── WARRANTY DETAILS ── -->
+        <div class="section-title">🛡️ WARRANTY DETAILS</div>
+        <table class="warranty-table">
+            <thead>
+                <tr>
+                    <th style="width:33%;">Component</th>
+                    <th style="width:22%;">Performance Warranty</th>
+                    <th style="width:22%;">Product Warranty</th>
+                    <th>Covered By</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Solar Panels</td>
+                    <td>25–30 Years (≥80% output)</td>
+                    <td>10–12 Years</td>
+                    <td>Manufacturer</td>
+                </tr>
+                <tr>
+                    <td>Solar Inverter</td>
+                    <td>—</td>
+                    <td>5–10 Years</td>
+                    <td>Manufacturer</td>
+                </tr>
+                <tr>
+                    <td>Mounting Structure</td>
+                    <td>—</td>
+                    <td>7 Years (Anti-corrosion)</td>
+                    <td>Installer</td>
+                </tr>
+                <tr>
+                    <td>Workmanship</td>
+                    <td>—</td>
+                    <td>5 Years</td>
+                    <td>{{ doc.company }}</td>
+                </tr>
+                <tr>
+                    <td>Cables &amp; Accessories</td>
+                    <td>—</td>
+                    <td>As per manufacturer</td>
+                    <td>Manufacturer</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="note" style="margin-top:5px;">⚠️ Any change in the structure of the plant, positioning of
+            panels/inverters, or wiring without involving the EPC
+            shall make the warranty on the entire solar plant null and void.</p>
+
+        <!-- ── PAYMENT SCHEDULE ── -->
+        <div class="section-title">💳 PAYMENT SCHEDULE</div>
+        {% if doc.payment_schedule %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:8%;" class="tc">Stage</th>
+                    <th>Milestone / Due Date</th>
+                    <th style="width:15%;" class="tr">% of Total</th>
+                    <th style="width:22%;" class="tr">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ps in doc.payment_schedule %}
+                <tr>
+                    <td class="tc">{{ loop.index }}</td>
+                    <td>{{ ps.due_date }}</td>
+                    <td class="tr">{{ "{:.0f}".format(ps.invoice_portion) }}%</td>
+                    <td class="tr">{{ "{:,.2f}".format(ps.payment_amount) }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td></td>
+                    <td><strong>Total Customer Payable</strong></td>
+                    <td class="tr"><strong>100%</strong></td>
+                    <td class="tr"><strong>₹ {{ "{:,.2f}".format(doc.rounded_total or doc.grand_total) }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:8%;" class="tc">Stage</th>
+                    <th>Milestone</th>
+                    <th style="width:15%;" class="tr">% of Total</th>
+                    <th style="width:22%;" class="tr">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="tc">1</td>
+                    <td>Advance – At the time of order confirmation</td>
+                    <td class="tr">10%</td>
+                    <td class="tr">{{ "{:,.2f}".format((doc.grand_total or 0) * 0.10) }}</td>
+                </tr>
+                <tr>
+                    <td class="tc">2</td>
+                    <td>Before material dispatch to site</td>
+                    <td class="tr">85%</td>
+                    <td class="tr">{{ "{:,.2f}".format((doc.grand_total or 0) * 0.85) }}</td>
+                </tr>
+                <tr>
+                    <td class="tc">3</td>
+                    <td>After successful installation &amp; commissioning</td>
+                    <td class="tr">5%</td>
+                    <td class="tr">{{ "{:,.2f}".format((doc.grand_total or 0) * 0.05) }}</td>
+                </tr>
+                <tr class="total-row">
+                    <td></td>
+                    <td><strong>Total Customer Payable</strong></td>
+                    <td class="tr"><strong>100%</strong></td>
+                    <td class="tr"><strong>₹ {{ "{:,.2f}".format(doc.rounded_total or doc.grand_total) }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        <p class="note">* Payment via NEFT/RTGS/UPI/Cheque. Cash payments not accepted.</p>
+        <p class="note">* 100% of the payment has to be cleared on or before meter commissioning.</p>
+
+        <div class="cancel-box">
+            <strong>Order Cancellation Policy:</strong>
+            <ul>
+                <li>Before material procurement: 10% of order value shall be forfeited</li>
+                <li>After procurement: 30–50% forfeiture</li>
+                <li>After dispatch: No refund</li>
+            </ul>
+            <p style="margin-top:4px;">Company reserves the right to stop work or delay delivery in case of payment
+                delay.
+                Any delay beyond 7 days shall attract interest <strong>@ 18% per annum</strong>.</p>
+        </div>
+
+        <!-- ── GST TAX BIFURCATION (if custom table present) ── -->
+        {% if doc.custom_tax_bifurcation %}
+        <div class="section-title">🧾 GST TAX BIFURCATION</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tax Category</th>
+                    <th style="width:20%;" class="tr">Taxable Amount (₹)</th>
+                    <th style="width:14%;" class="tr">On Amount (%)</th>
+                    <th style="width:12%;" class="tr">Rate (%)</th>
+                    <th style="width:20%;" class="tr">Tax Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tr in doc.custom_tax_bifurcation %}
+                <tr>
+                    <td>{{ tr.tax_category }}</td>
+                    <td class="tr">{{ "{:,.2f}".format(tr.total | float) }}</td>
+                    <td class="tr">{{ tr.on_amount }}%</td>
+                    <td class="tr">{{ tr.tax_ }}%</td>
+                    <td class="tr">{{ "{:,.2f}".format(tr.amount | float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- ── BANK DETAILS ── -->
+        <div class="section-title">🏦 BANK DETAILS FOR PAYMENT</div>
+        {%- set bank_accounts = frappe.get_list("Bank Account",
+        filters={"company": doc.company, "is_default": 1},
+        fields=["bank", "bank_account_no", "branch_code", "branch"], limit=1) -%}
+        {% if bank_accounts %}
+        {%- set bank = bank_accounts[0] -%}
+        <table>
+            <tr>
+                <td style="width:35%;font-weight:600;">Account Name</td>
+                <td>{{ doc.company }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;">Bank Name</td>
+                <td>{{ bank.bank }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;">Account Number</td>
+                <td>{{ bank.bank_account_no }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;">IFSC Code</td>
+                <td>{{ bank.branch_code }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;">Branch</td>
+                <td>{{ bank.branch }}</td>
+            </tr>
+        </table>
+        {% else %}
+        <p class="note">Bank details not configured. Please set default Bank Account in ERPNext.</p>
+        {% endif %}
+
+        <!-- ── TERMS & CONDITIONS ── -->
+        <div class="section-title">📜 TERMS &amp; CONDITIONS</div>
+        {% if doc.terms %}
+        <div style="font-size:11.5px;">{{ doc.terms }}</div>
+        {% else %}
+        <ol class="terms-list">
+            <li>This quotation is valid for
+                <strong>{% if doc.valid_till %}{{ frappe.utils.date_diff(doc.valid_till, doc.transaction_date) }} days{%
+                    else %}15 days{% endif %}</strong>
+                from the date of issue. Prices may change after validity period.
+            </li>
+            <li>GST is charged as per prevailing government rates (currently 8.9% composite for solar rooftop systems).
+            </li>
+            <li>Delivery of material and Installation will commence within <strong>7–20 working days</strong> after
+                receipt of advance payment and site readiness.</li>
+            <li>The client must provide shadow-free roof area, electricity connection, and safe access to the
+                installation site.</li>
+            <li>Any additional civil/electrical work required at site will be charged separately after mutual consent.
+            </li>
+            <li>Subsidy amount is subject to government approval and DISCOM inspection. The company will assist but is
+                not liable for subsidy delays or rejections.</li>
+            <li>Net Metering approval is subject to DISCOM (JVVNL/AVVNL/JdVVNL) procedures and timelines.</li>
+            <li>Generation figures are estimated based on standard conditions. Actual output depends on weather,
+                shading, panel orientation, and maintenance.</li>
+            <li>Warranty claims will be processed as per respective manufacturer's warranty policy.</li>
+            <li>The company is not responsible for damage caused by natural calamities, theft, voltage fluctuations from
+                grid, or unauthorized modifications.</li>
+            <li>In case of any dispute, jurisdiction shall be courts of Jaipur, Rajasthan only.</li>
+            <li>Annual Maintenance Contract (AMC) can be availed separately after the warranty period at mutually agreed
+                terms.</li>
+        </ol>
+        {% endif %}
+
+        <!-- ── CUSTOMER ACCEPTANCE ── -->
+        <div class="section-title">✍️ CUSTOMER ACCEPTANCE</div>
+        <div class="info-box" style="background:#fff; border-left-color:#333;">
+            <p style="font-size:11.5px;">I/We have read and understood the above quotation, bill of material, scope of
+                work, warranty details,
+                and terms &amp; conditions. I/We hereby accept and confirm this order for the installation of
+                <strong>On-Grid Solar Rooftop System{% if capacity %} – {{ capacity }}{% endif %}</strong>
+                as detailed in quotation <strong>{{ doc.name }}</strong> dated <strong>{{ doc.transaction_date
+                    }}</strong>.
+            </p>
+            <br>
+            <div style="display:flex; justify-content:space-between; font-size:11.5px;">
+                <div>
+                    <p>Customer Name: <strong>{{ doc.customer_name }}</strong></p>
+                    <p>Mobile No.: _________________________________</p>
+                </div>
+                <div>
+                    <p>Date: _______________</p>
+                    <p>Place: ______________</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SIGNATURE AREA ── -->
+        <div class="signature-area">
+            <div class="sig-block">
+                <br><br><br>
+                <div class="line"></div>
+                <p><strong>Customer Signature</strong></p>
+                <p>(With Date &amp; Stamp if applicable)</p>
+            </div>
+            <div style="text-align:center;">
+                <div class="stamp-box">Company Seal /<br>Stamp</div>
+            </div>
+            <div class="sig-block">
+                <br><br><br>
+                <div class="line"></div>
+                <p><strong>Authorized Signatory</strong></p>
+                <p>For {{ doc.company }}</p>
+            </div>
+        </div>
+
+        <!-- ── FOOTER ── -->
+        <div class="footer-bar">
+            <strong>{{ doc.company }}</strong>
+            {%- if doc.company_gstin %} | GSTIN: {{ doc.company_gstin }}{% endif %}
+            {%- if company_doc.phone_no %} | 📞 {{ company_doc.phone_no }}{% endif %}
+            {%- if company_doc.email %} | ✉ {{ company_doc.email }}{% endif %}
+            {%- if company_doc.website %} | 🌐 {{ company_doc.website }}{% endif %}
+        </div>
+        <p style="text-align:center; font-size:10px; color:#999; margin-top:5px;">This is a system-generated quotation.
+            | {{ doc.name }} | {{ doc.transaction_date }}</p>
+
+    </div><!-- /container -->
+</body>
+
+</html>

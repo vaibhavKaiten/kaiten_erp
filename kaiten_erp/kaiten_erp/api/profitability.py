@@ -10,7 +10,6 @@ def update_profitability(job_file_name):
     material_cost = _get_material_cost(job_file_name)
     gross_profit = selling_price - material_cost
     profit_pct = round((gross_profit / selling_price * 100), 2) if selling_price else 0
-    cost_pct = round((material_cost / selling_price * 100), 2) if selling_price else 0
 
     frappe.db.set_value(
         "Job File",
@@ -20,7 +19,6 @@ def update_profitability(job_file_name):
             "custom_total_material_cost": material_cost,
             "custom_gross_profit": gross_profit,
             "custom_profit_percentage": profit_pct,
-            "custom_cost_": cost_pct,
         },
         update_modified=False,
     )

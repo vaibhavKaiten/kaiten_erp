@@ -58,7 +58,9 @@
     "gps_longitude",
     "gps_location",
     "gps_map_link",
-    "location_log"
+    "custom_location__history",
+    "location_log",
+    "custom_location_activity_log"
   ],
   "fields": [
     {
@@ -325,11 +327,25 @@
       "label": "GPS Map Link"
     },
     {
+      "fieldname": "custom_location__history",
+      "fieldtype": "Tab Break",
+      "label": "Location & History"
+    },
+    {
       "fieldname": "location_log",
       "fieldtype": "Table",
       "allow_on_submit": 1,
       "read_only": 1,
       "label": "Location Log",
+      "options": "Location Log"
+    },
+    {
+      "fieldname": "custom_location_activity_log",
+      "fieldtype": "Table",
+      "allow_on_submit": 1,
+      "read_only": 1,
+      "hidden": 0,
+      "label": "Location Activity Log",
       "options": "Location Log"
     }
   ],

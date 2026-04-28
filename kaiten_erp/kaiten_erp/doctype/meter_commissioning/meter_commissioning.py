@@ -1,9 +1,10 @@
 # Copyright (c) 2026, up411@gmail.com and contributors
 # For license information, please see license.txt
 
-
+import frappe
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
+from kaiten_erp.kaiten_erp.api.gps import log_workflow_location
 
 class MeterCommissioning(Document):
     def autoname(self):
@@ -13,3 +14,6 @@ class MeterCommissioning(Document):
             frappe.throw("K Number is required")
         series = make_autoname(".####")
         self.name = f"{self.first_name}-{k_no}-{series}"
+
+    def validate(self):
+        log_workflow_location(self)
