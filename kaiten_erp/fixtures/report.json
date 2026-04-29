@@ -1,0 +1,107 @@
+[
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-04-29 14:09:20.755261",
+  "module": "AMC",
+  "name": "Service Visit Schedule",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Service Visit",
+  "reference_report": null,
+  "report_name": "Service Visit Schedule",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "role": "AMC Manager"
+   },
+   {
+    "role": "Service Technician"
+   },
+   {
+    "role": "System Manager"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-04-29 14:09:20.771900",
+  "module": "AMC",
+  "name": "Complaint Aging",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Complaint",
+  "reference_report": null,
+  "report_name": "Complaint Aging",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "role": "AMC Manager"
+   },
+   {
+    "role": "Service Technician"
+   },
+   {
+    "role": "System Manager"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-04-29 14:09:20.787433",
+  "module": "AMC",
+  "name": "AMC Expiry Register",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "AMC Contract",
+  "reference_report": null,
+  "report_name": "AMC Expiry Register",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "role": "AMC Manager"
+   },
+   {
+    "role": "Service Technician"
+   },
+   {
+    "role": "System Manager"
+   }
+  ],
+  "timeout": 0
+ }
+]

@@ -25,15 +25,16 @@
   "column_break_kcri",
   "agreement_upload_status",
   "installation_tab",
-  "foundation_photo",
-  "inverter",
+  "electricity_bill_photo",
+  "aadhar_card",
+  "property_ownership_document",
   "installation_status",
+  "download_customer_site_snapshot_docs",
   "column_break_zjiz",
-  "front_view",
-  "wiring",
+  "bank_passbook_cheque",
+  "pan_card",
   "column_break_uttg",
-  "rear_view",
-  "earthing",
+  "property_photo_with_geo_tagging",
   "inspection_tab",
   "inspection_status",
   "column_break_djex",
@@ -96,7 +97,7 @@
    "fieldname": "feasibility_status",
    "fieldtype": "Select",
    "label": "Feasibility Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": " \nOk\nNot Ok"
   },
   {
    "fieldname": "feasibility_report",
@@ -136,48 +137,65 @@
    "label": "Installation"
   },
   {
-   "fieldname": "foundation_photo",
+   "fieldname": "electricity_bill_photo",
    "fieldtype": "Attach",
-   "label": "Foundation Photo"
+   "label": "Electricity Bill Photo",
+   "fetch_from": "job_file.custom_electricity_bill_photo",
+   "read_only": 1
   },
   {
-   "fieldname": "inverter",
+   "fieldname": "aadhar_card",
    "fieldtype": "Attach",
-   "label": "Inverter"
+   "label": "Aadhar Card",
+   "fetch_from": "job_file.custom_aadhar_card",
+   "read_only": 1
+  },
+  {
+   "fieldname": "property_ownership_document",
+   "fieldtype": "Attach",
+   "label": "Property Ownership Document",
+   "fetch_from": "job_file.custom_property_ownership_document",
+   "read_only": 1
   },
   {
    "fieldname": "installation_status",
    "fieldtype": "Select",
-   "label": "Installation Status",
-   "options": "Pending\nCompleted\nDocs Uploaded"
+   "label": "Documents Uploaded",
+   "options": "yes\nno"
+  },
+  {
+   "fieldname": "download_customer_site_snapshot_docs",
+   "fieldtype": "Button",
+   "label": "Download Customer Site Snapshot Docs (ZIP)"
   },
   {
    "fieldname": "column_break_zjiz",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "front_view",
+   "fieldname": "bank_passbook_cheque",
    "fieldtype": "Attach",
-   "label": "Front View"
+   "label": "Bank Passbook/Cheque",
+   "fetch_from": "job_file.custom_bank_passbookcheque_",
+   "read_only": 1
   },
   {
-   "fieldname": "wiring",
+   "fieldname": "pan_card",
    "fieldtype": "Attach",
-   "label": "Wiring"
+   "label": "Pan Card",
+   "fetch_from": "job_file.custom_pan_card",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_uttg",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "rear_view",
+   "fieldname": "property_photo_with_geo_tagging",
    "fieldtype": "Attach",
-   "label": "Rear View"
-  },
-  {
-   "fieldname": "earthing",
-   "fieldtype": "Attach",
-   "label": "Earthing"
+   "label": "Property Photo with Geo tagging",
+   "fetch_from": "job_file.custom_property_photo",
+   "read_only": 1
   },
   {
    "fieldname": "inspection_tab",
