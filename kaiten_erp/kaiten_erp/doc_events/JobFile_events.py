@@ -164,7 +164,10 @@ def on_update(job_file, method):
 
             frappe.db.set_value("Job File", job_file.name, update_data, update_modified=False)
 
-            # 6. Show success message
+            # 6. Create DISCOM Process Tracker
+            create_discom_process_tracker(job_file)
+
+            # 7. Show success message
             opportunity_url = f"/app/opportunity/{opportunity.name}"
             message = f"""Opportunity <b><a href=\"{opportunity_url}\">{opportunity.name}</a></b> and Execution Documents have been created successfully.<br><br>"""
             frappe.msgprint(message, title="Documents Created", indicator="green")
@@ -243,6 +246,28 @@ def _ensure_customer_in_discom(customer, discom_name, job_file_name):
     discom_doc.save()
 
 
+def create_discom_process_tracker(job_file):
+    """Auto-create a DISCOM Process Tracker when a Job File is initiated."""
+    if frappe.db.exists("DISCOM Process Tracker", {"job_file": job_file.name}):
+        return
+
+    discom_name = None
+    if job_file.discom:
+        discom_name = frappe.db.get_value("DISCOM Master", job_file.discom, "discom_name")
+
+    tracker = frappe.get_doc({
+        "doctype": "DISCOM Process Tracker",
+        "job_file": job_file.name,
+        "customer": job_file.customer,
+        "discom_name": discom_name or job_file.discom,
+        "project_capacity": job_file.proposed_system,
+        "location": job_file.territory,
+        "vendor": job_file.custom_assigned_technical_supplier,
+    })
+    tracker.flags.ignore_permissions = True
+    tracker.insert()
+
+
 def _remove_customer_from_discom(customer, discom_name):
     """Remove a customer's row from a DISCOM Master's Linked Customers table."""
     if not frappe.db.exists("DISCOM Master", discom_name):
@@ -271,8 +296,8 @@ def _create_token_amount_todo(job_file):
     k_number = job_file.k_number or job_file.name
     amount = frappe.utils.fmt_money(job_file.token_amount_recieved, currency="INR")
 
-    description = f"{customer_name} - {k_number}. Create payment entry - {amount}"
-
+   
+    description = f"Create payment entry for {customer_name} - {k_number} (Token Amount: {amount})"
     accounts_managers = frappe.get_all(
         "Has Role",
         filters={"role": "Accounts Manager", "parenttype": "User"},
@@ -509,7 +534,22 @@ def create_initial_quotation(job_file, opportunity):
     quotation = frappe.get_doc(quotation_data)
     quotation.flags.ignore_permissions = True
     quotation.insert()
-
+    # closing todo for initial quotation creation
+    try:
+        initial_quotaiont_todo = frappe.db.get_all("ToDo", filters={
+            "reference_type": "Opportunity",
+            "reference_name": opportunity.name,
+            "role" : "Sales Manager",
+            "priority": "High",
+            "status": "Open", 
+            "description" : ["like", "%Create quotation for%"]
+        })
+        for todo in initial_quotaiont_todo:
+            frappe.db.set_value("ToDo", todo.name, "status", "Closed", update_modified=False)
+    except Exception as e:
+        frappe.msgprint(
+            f"Failed to close Sales Manager ToDo for Opportunity {opportunity.name} after creating initial Quotation: {str(e)}"
+        )
     return quotation
 
 
@@ -748,8 +788,7 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
             continue
 
         customer_first_name = job_file.first_name or job_file.name
-        description = f"{customer_first_name} - {technical_survey_name} - Initiate Technical Survey"
-
+        description = f"Initiate Technical Survey for {customer_first_name} - {technical_survey_name}"
         from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
         due_date = get_execution_todo_due_date("Technical Survey", technical_survey_name)
 

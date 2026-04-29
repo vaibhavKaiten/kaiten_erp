@@ -175,7 +175,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -217,7 +217,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -605,7 +605,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": "3"
    },
    {
@@ -731,7 +731,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": "3"
    },
    {
@@ -999,7 +999,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1111,7 +1111,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1153,7 +1153,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1354,7 +1354,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1466,7 +1466,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1508,7 +1508,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1709,7 +1709,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1821,7 +1821,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -1863,7 +1863,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -2064,7 +2064,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -2176,7 +2176,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -2218,7 +2218,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -2419,7 +2419,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -2531,7 +2531,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {
@@ -2573,7 +2573,7 @@
     "send_email": 1,
     "state": "On Hold",
     "update_field": "workflow_state",
-    "update_value": "Hold",
+    "update_value": "On Hold",
     "workflow_builder_id": null
    },
    {

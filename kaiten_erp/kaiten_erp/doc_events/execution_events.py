@@ -117,8 +117,8 @@ def _create_structure_payment_todo(doc):
     k_part = f" ({jf.get('k_number')})" if jf.get("k_number") else ""
     description = (
         f"Collect Structure Payment"
-        f" - {customer_name}{k_part}"
-        f" | {so_name}"
+        f" for {customer_name}{k_part}"
+        f" - {so_name}"
     )
 
     # Collect unique enabled users: Job File owner + SO submitter

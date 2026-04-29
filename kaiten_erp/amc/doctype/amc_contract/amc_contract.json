@@ -1,0 +1,231 @@
+{
+	"actions": [],
+	"allow_rename": 1,
+	"autoname": "naming_series:",
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Document",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"naming_series",
+		"customer",
+		"solar_site",
+		"column_break_1",
+		"contract_type",
+		"status",
+		"section_break_4",
+		"start_date",
+		"end_date",
+		"contract_value",
+		"currency",
+		"column_break_8",
+		"visits_per_year",
+		"visits_completed",
+		"visits_remaining",
+		"section_break_11",
+		"includes_inverter",
+		"includes_cleaning",
+		"parts_limit",
+		"column_break_14",
+		"sla_response_hours",
+		"sla_resolution_hours",
+		"assigned_manager",
+		"section_break_17",
+		"notes"
+	],
+	"fields": [
+		{
+			"fieldname": "naming_series",
+			"fieldtype": "Select",
+			"label": "Naming Series",
+			"options": "AMC-.YYYY.-.#####",
+			"reqd": 1
+		},
+		{
+			"fieldname": "customer",
+			"fieldtype": "Link",
+			"label": "Customer",
+			"options": "Customer",
+			"reqd": 1
+		},
+		{
+			"fieldname": "solar_site",
+			"fieldtype": "Link",
+			"label": "Solar Site",
+			"options": "Solar Site Profile",
+			"reqd": 1
+		},
+		{
+			"fieldname": "column_break_1",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "contract_type",
+			"fieldtype": "Select",
+			"label": "Contract Type",
+			"options": "Basic\nComprehensive\nPremium",
+			"reqd": 1
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "Draft\nActive\nExpiring\nExpired\nRenewed\nCancelled",
+			"default": "Draft",
+			"reqd": 1
+		},
+		{
+			"fieldname": "section_break_4",
+			"fieldtype": "Section Break",
+			"label": "Contract Period"
+		},
+		{
+			"fieldname": "start_date",
+			"fieldtype": "Date",
+			"label": "Start Date",
+			"reqd": 1
+		},
+		{
+			"fieldname": "end_date",
+			"fieldtype": "Date",
+			"label": "End Date",
+			"reqd": 1
+		},
+		{
+			"fieldname": "contract_value",
+			"fieldtype": "Currency",
+			"label": "Contract Value (Annual Fee)",
+			"reqd": 1
+		},
+		{
+			"fieldname": "currency",
+			"fieldtype": "Link",
+			"label": "Currency",
+			"options": "Currency",
+			"read_only": 1,
+			"default": "INR"
+		},
+		{
+			"fieldname": "column_break_8",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "visits_per_year",
+			"fieldtype": "Int",
+			"label": "Visits Per Year",
+			"reqd": 1
+		},
+		{
+			"fieldname": "visits_completed",
+			"fieldtype": "Int",
+			"label": "Visits Completed",
+			"read_only": 1,
+			"default": 0
+		},
+		{
+			"fieldname": "visits_remaining",
+			"fieldtype": "Int",
+			"label": "Visits Remaining",
+			"read_only": 1,
+			"fieldtype": "Int",
+			"formula": "visits_per_year - visits_completed"
+		},
+		{
+			"fieldname": "section_break_11",
+			"fieldtype": "Section Break",
+			"label": "Coverage & SLA"
+		},
+		{
+			"fieldname": "includes_inverter",
+			"fieldtype": "Check",
+			"label": "Includes Inverter Replacement"
+		},
+		{
+			"fieldname": "includes_cleaning",
+			"fieldtype": "Check",
+			"label": "Includes Panel Cleaning"
+		},
+		{
+			"fieldname": "parts_limit",
+			"fieldtype": "Currency",
+			"label": "Parts Limit (₹)",
+			"default": 0
+		},
+		{
+			"fieldname": "column_break_14",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "sla_response_hours",
+			"fieldtype": "Int",
+			"label": "SLA Response Hours",
+			"default": 24,
+			"reqd": 1
+		},
+		{
+			"fieldname": "sla_resolution_hours",
+			"fieldtype": "Int",
+			"label": "SLA Resolution Hours",
+			"default": 72,
+			"reqd": 1
+		},
+		{
+			"fieldname": "assigned_manager",
+			"fieldtype": "Link",
+			"label": "Assigned Account Manager",
+			"options": "User"
+		},
+		{
+			"fieldname": "section_break_17",
+			"fieldtype": "Section Break",
+			"label": "Additional Info"
+		},
+		{
+			"fieldname": "notes",
+			"fieldtype": "Text Editor",
+			"label": "Notes"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"is_submittable": 1,
+	"links": [],
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "AMC Contract",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"amend": 1,
+			"cancel": 1,
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"submit": 1,
+			"write": 1
+		},
+		{
+			"amend": 1,
+			"cancel": 1,
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "Sales User",
+			"submit": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"track_changes": 1
+}

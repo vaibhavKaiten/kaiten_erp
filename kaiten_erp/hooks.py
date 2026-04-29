@@ -54,6 +54,7 @@ fixtures = [
     # -------------------------
     {"dt": "Custom Field", "filters": [["module", "=", "Kaiten Erp"]]},
     {"dt": "DocType", "filters": [["module", "=", "Kaiten Erp"]]},
+    {"dt": "DocType", "filters": [["module", "=", "AMC"]]},
     # -------------------------
     # Property Setters
     # -------------------------
@@ -90,15 +91,18 @@ fixtures = [
     # -------------------------
     {"dt": "Client Script", "filters": [["module", "=", "Kaiten Erp"]]},
     # -------------------------
-    # Workflows
-    # -------------------------
-    {"dt": "Workflow" },
-    {"dt": "Workflow State"},
-    {"dt": "Workflow Action"},
-    # -------------------------
     # Custom Permissions
     # -------------------------
     {"dt": "Custom DocPerm"},
+    # -------------------------
+    # Workspaces
+    # -------------------------
+    {"dt": "Workspace", "filters": [["module", "=", "Kaiten Erp"]]},
+    {"dt": "Workspace", "filters": [["module", "=", "AMC"]]},
+    # -------------------------
+    # Reports
+    # -------------------------
+    {"dt": "Report", "filters": [["module", "=", "AMC"], ["is_standard", "=", "Yes"]]},
     # -------------------------
     # Custom Roles (Explicit for Safety)
     # -------------------------
@@ -114,6 +118,8 @@ fixtures = [
                     "Vendor Head",
                     "Sales Executive",
                     "DISCOM Manager",
+                    "AMC Manager",
+                    "Service Technician",
                 ],
             ]
         ],
@@ -254,6 +260,12 @@ permission_query_conditions = {
     "Job File": "kaiten_erp.kaiten_erp.doctype.job_file.job_file_list.get_permission_query_conditions",
     "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_permission_query",
     "DISCOM Master": "kaiten_erp.kaiten_erp.permissions.discom_master_permissions.get_permission_query_conditions",
+    
+    # AMC Permissions
+    "Solar Site Profile": "kaiten_erp.amc.permissions.solar_site_profile_permissions.get_permission_query_conditions",
+    "AMC Contract": "kaiten_erp.amc.permissions.amc_contract_permissions.get_permission_query_conditions",
+    "Service Visit": "kaiten_erp.amc.permissions.service_visit_permissions.get_permission_query_conditions",
+    "Complaint": "kaiten_erp.amc.permissions.complaint_permissions.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -266,6 +278,12 @@ has_permission = {
     "Job File": "kaiten_erp.kaiten_erp.permissions.job_file_permissions.has_permission",
     "ToDo": "kaiten_erp.kaiten_erp.permissions.todo_permissions.todo_has_permission",
     "DISCOM Master": "kaiten_erp.kaiten_erp.permissions.discom_master_permissions.has_permission",
+    
+    # AMC Permissions
+    "Solar Site Profile": "kaiten_erp.amc.permissions.solar_site_profile_permissions.has_permission",
+    "AMC Contract": "kaiten_erp.amc.permissions.amc_contract_permissions.has_permission",
+    "Service Visit": "kaiten_erp.amc.permissions.service_visit_permissions.has_permission",
+    "Complaint": "kaiten_erp.amc.permissions.complaint_permissions.has_permission",
 }
 
 
@@ -388,12 +406,36 @@ doc_events = {
             "kaiten_erp.kaiten_erp.doc_events.execution_events.update_job_file_on_approval",
         ],
     },
+    
+    # ===== AMC DocTypes =====
+    "Solar Site Profile": {
+        "validate": "kaiten_erp.amc.doc_events.solar_site_profile_events.validate",
+    },
+    "AMC Contract": {
+        "validate": "kaiten_erp.amc.doc_events.amc_contract_events.validate",
+        "on_submit": "kaiten_erp.amc.doc_events.amc_contract_events.on_submit",
+        "on_cancel": "kaiten_erp.amc.doc_events.amc_contract_events.on_cancel",
+    },
+    "Service Visit": {
+        "validate": "kaiten_erp.amc.doc_events.service_visit_events.validate",
+        "on_submit": "kaiten_erp.amc.doc_events.service_visit_events.on_submit",
+        "on_cancel": "kaiten_erp.amc.doc_events.service_visit_events.on_cancel",
+    },
+    "Complaint": {
+        "before_insert": "kaiten_erp.amc.doc_events.complaint_events.before_insert",
+        "after_insert": "kaiten_erp.amc.doc_events.complaint_events.after_insert",
+        "on_update": "kaiten_erp.amc.doc_events.complaint_events.on_update",
+        "on_submit": "kaiten_erp.amc.doc_events.complaint_events.on_submit",
+    },
 }
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
+    "daily": [
+        "kaiten_erp.amc.cron_job.amc_tasks.daily_amc_jobs"
+    ],
     "cron": {
         "0 9,12,15,18,21 * * *": [
             "kaiten_erp.kaiten_erp.cron_job.hourly_backup.take_full_backup"

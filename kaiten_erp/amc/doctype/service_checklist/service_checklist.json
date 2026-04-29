@@ -1,0 +1,52 @@
+{
+	"actions": [],
+	"creation": "2026-04-23",
+	"doctype": "DocType",
+	"document_type": "Child Table",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"check_item",
+		"category",
+		"status",
+		"remarks"
+	],
+	"fields": [
+		{
+			"fieldname": "check_item",
+			"fieldtype": "Data",
+			"label": "Check Item",
+			"reqd": 1
+		},
+		{
+			"fieldname": "category",
+			"fieldtype": "Select",
+			"label": "Category",
+			"options": "Safety\nElectrical\nMechanical\nPerformance\nDocumentation",
+			"reqd": 1
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "OK\nIssue Found\nNot Applicable",
+			"reqd": 1
+		},
+		{
+			"fieldname": "remarks",
+			"fieldtype": "Small Text",
+			"label": "Remarks"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"istable": 1,
+	"link_field": "parent",
+	"modified": "2026-04-23",
+	"modified_by": "Administrator",
+	"module": "AMC",
+	"name": "Service Checklist",
+	"owner": "Administrator",
+	"permissions": [],
+	"sort_field": "modified",
+	"sort_order": "DESC"
+}

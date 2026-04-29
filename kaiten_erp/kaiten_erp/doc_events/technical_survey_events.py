@@ -22,13 +22,13 @@ def _get_vendor_field(doc):
 
 
 def _get_customer_first_name(doc):
-    """Return the customer's first name for display in ToDo descriptions.
+    """Return the customer name for display in ToDo descriptions.
 
     Resolution order:
     1. doc.first_name (most execution doctypes carry this directly)
-    2. doc.customer Link -> Customer.customer_name (first word)
+    2. doc.customer Link -> Customer.customer_name
     3. linked Job File first_name
-    4. linked Job File customer -> Customer.customer_name (first word)
+    4. linked Job File customer -> Customer.customer_name
     5. Fallback: doc.name
     """
     first_name = getattr(doc, "first_name", None)
@@ -39,7 +39,7 @@ def _get_customer_first_name(doc):
     if customer:
         cname = frappe.db.get_value("Customer", customer, "customer_name")
         if cname:
-            return cname.split()[0]
+            return cname
 
     job_file_name = _get_job_file_name_from_doc(doc)
     if job_file_name:
@@ -51,15 +51,15 @@ def _get_customer_first_name(doc):
         if jf_customer:
             cname = frappe.db.get_value("Customer", jf_customer, "customer_name")
             if cname:
-                return cname.split()[0]
+                return cname
 
     return doc.name
 
 
 def _format_todo_description(doc, action_text):
-    """Return a standardised ToDo description: '{first_name} - {doc.name} - {action_text}'."""
-    first_name = _get_customer_first_name(doc)
-    return f"{first_name} - {doc.name} - {action_text}"
+    """Return a standardised ToDo description: '{action_text} for {customer_name} {doc.name}'."""
+    customer_name = _get_customer_first_name(doc)
+    return f"{action_text} for {customer_name} {doc.name}"
 
 
 def close_open_todos_by_role(doc, role):
@@ -312,7 +312,7 @@ def assign_to_internal_user(doc):
         )
         return
 
-    description = _format_todo_description(doc, f"Execute {doc.doctype}")
+    description = _format_todo_description(doc, "Execute")
 
     from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
     due_date = get_execution_todo_due_date(doc.doctype, doc.name)
@@ -528,7 +528,7 @@ def assign_to_vendor_managers(doc):
         try:
             user_full_name = frappe.db.get_value("User", user, "full_name") or user
 
-            description = _format_todo_description(doc, f"Start {doc.doctype}")
+            description = _format_todo_description(doc, "Start")
 
             from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
             due_date = get_execution_todo_due_date(doc.doctype, doc.name)
@@ -892,7 +892,7 @@ def assign_to_vendor_executives_on_in_progress(doc):
         )
         return
 
-    description = _format_todo_description(doc, f"Execute {doc.doctype}")
+    description = _format_todo_description(doc, "Execute")
 
     from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
     due_date = get_execution_todo_due_date(doc.doctype, doc.name)
@@ -949,7 +949,7 @@ def assign_to_vendor_heads_for_approval(doc):
         )
         return
 
-    description = _format_todo_description(doc, f"Approve {doc.doctype}")
+    description = _format_todo_description(doc, "Approve")
     created = 0
 
     for vh in vendor_heads:
@@ -1025,7 +1025,7 @@ def assign_to_sales_managers_for_execution(doc):
         )
         return
 
-    description = _format_todo_description(doc, f"Execute {doc.doctype}")
+    description = _format_todo_description(doc, "Execute")
 
     from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
     due_date = get_execution_todo_due_date(doc.doctype, doc.name)
@@ -1101,7 +1101,7 @@ def assign_to_vendor_executives_on_rejected(doc):
         )
         return
 
-    description = _format_todo_description(doc, f"Rectify and Resubmit {doc.doctype}")
+    description = _format_todo_description(doc, "Rectify and Resubmit")
 
     for user in users_to_assign:
         if not frappe.db.get_value("User", user, "enabled"):
@@ -1166,7 +1166,7 @@ def assign_to_vendor_managers_for_review(doc):
         )
         return
 
-    description = _format_todo_description(doc, f"Review {doc.doctype}")
+    description = _format_todo_description(doc, "Review")
     created = 0
 
     for user in vendor_managers:
@@ -1445,10 +1445,21 @@ def assign_final_quotation_todo(doc):
     if not has_role:
         return
 
-    description = _(
-        "Technical Survey {0} approved. Please create Final Quotation from Opportunity {1}."
-    ).format(doc.name, opportunity_name)
+    customer = frappe.db.get_value("Opportunity", opportunity_name, "party_name")
+    if not customer:
+        customer = frappe.db.get_value("Job File", job_file_name, "customer")
+    if not customer:
+        customer = doc.get("customer")
 
+    customer_name = customer
+    if customer:
+        customer_name = frappe.db.get_value("Customer", customer, "customer_name") or customer
+    if not customer_name:
+        customer_name = doc.name
+
+    description = "Create Final Quotation for {0} from {1}".format(
+        customer_name, opportunity_name
+    )
     existing_todo = frappe.db.exists(
         "ToDo",
         {

@@ -47,7 +47,7 @@ def _send_workflow_webhook(whatsapp_broadcast_queue_name):
 
     try:
         requests.post(
-            "https://webhook.site/216a199f-73a3-4408-bf92-482654dfaf29",
+            "https://api.twilio.com/2010-04-01/Accounts/{ACCOUNT_SID}/Messages.json",
             json=payload,
             timeout=10,
         )
