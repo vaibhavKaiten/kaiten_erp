@@ -455,8 +455,8 @@ def _create_vendor_head_initiate_ts_todo(doc):
         if existing:
             continue
 
-        description = f"{customer_name} - {ts_name} - Initiate Technical Survey"
-
+       
+        description = f"Initiate Technical Survey for {customer_name} - {ts_name}"
         from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
         due_date = get_execution_todo_due_date("Technical Survey", ts_name)
 

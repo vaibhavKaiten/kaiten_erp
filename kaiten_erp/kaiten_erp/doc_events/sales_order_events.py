@@ -103,8 +103,8 @@ def _create_verification_handover_todo_on_tranche2_paid(doc):
     if not vendor_heads:
         return
 
-    description = f"{customer_first_name} - {vh_name} - Initiate Verification Handover"
-
+    
+    description = f"Initiate Verification Handover for {customer_first_name} - {vh_name}"
     from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
     due_date = get_execution_todo_due_date("Verification Handover", vh_name)
 
@@ -194,8 +194,8 @@ def create_tranche2_followup_todo_on_mc_approved(doc, method=None):
     )
     k_number = frappe.db.get_value("Job File", job_file, "k_number") or ""
     k_part = f" ({k_number})" if k_number else ""
-    description = f"{customer_name}{k_part}. Followup for the second tranche of payment."
-
+    
+    description = f"Followup for {customer_name}{k_part} for the second tranche of payment."
     todo = frappe.get_doc({
         "doctype": "ToDo",
         "allocated_to": owner,
@@ -375,9 +375,8 @@ def _milestone_todo_description(sales_order_name, milestone_label, amount, custo
     k_part = f" ({k_number})" if k_number else ""
     amt_fmt = frappe.utils.fmt_money(amount, currency="INR")
     return (
-        f"Create Sales Invoice & Payment Entry"
+        f"Create Sales Invoice & Payment Entry for {customer_name}"
         f" - {milestone_label} {amt_fmt}"
-        f" - {customer_name}{k_part}"
         f" | {sales_order_name}"
     )
 
@@ -477,8 +476,7 @@ def _stock_transfer_todo_description(sales_order_name, customer_name, k_number):
     """Build a standardised ToDo description for a Stock Manager material transfer task."""
     k_part = f" ({k_number})" if k_number else ""
     return (
-        f"Material Transfer Required"
-        f" - {customer_name}{k_part}"
+        f"Material Transfer Required for {customer_name}{k_part}"
         f" | {sales_order_name}"
     )
 
@@ -792,6 +790,15 @@ def _payment_entry_todo_description(sales_order_name, milestone_label, amount, c
 
 def _open_payment_entry_todos(sales_order_name, milestone_label):
     """Return Open Accounts Manager 'Create Payment Entry' ToDos for a milestone."""
+    customer = frappe.db.get_value("Sales Order", sales_order_name, "customer")
+    customer_name = (
+        frappe.db.get_value("Customer", customer, "customer_name") if customer else None
+    ) or customer
+    desc_filter = (
+        f"Create Payment Entry for {customer_name} | {milestone_label} %| {sales_order_name}"
+        if customer_name
+        else f"Create Payment Entry for% | {milestone_label} %| {sales_order_name}"
+    )
     return frappe.db.get_all(
         "ToDo",
         filters={
@@ -799,7 +806,7 @@ def _open_payment_entry_todos(sales_order_name, milestone_label):
             "reference_name": sales_order_name,
             "role": "Accounts Manager",
             "status": "Open",
-            "description": ["like", f"Create Payment Entry for% | {milestone_label} %| {sales_order_name}"],
+            "description": ["like", desc_filter],
         },
         fields=["name", "description"],
     )
@@ -837,7 +844,7 @@ def _create_payment_entry_todo(doc, row):
                 "allocated_to": user,
                 "role": "Accounts Manager",
                 "status": "Open",
-                "description": ["like", f"Create Payment Entry for% | {row.milestone} %| {doc.name}"],
+                "description": ["like", f"Create Payment Entry for {customer_name} | {row.milestone} %| {doc.name}"],
             },
         )
         if existing:
@@ -1348,8 +1355,8 @@ def _sf_create_vh_todo_for_next(job_file_name, next_doctype, jf_field):
     if not vendor_heads:
         return
 
-    description = f"{customer_first_name} - {next_doc_name} - Initiate {next_doctype}"
-
+    
+    description = f"Initiate {next_doctype} for {customer_first_name} | {next_doc_name}"
     from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
     due_date = get_execution_todo_due_date(next_doctype, next_doc_name)
 

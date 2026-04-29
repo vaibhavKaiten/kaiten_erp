@@ -11,6 +11,13 @@ Chain: Payment Entry → references → Sales Invoice → milestone row (invoice
 import frappe
 
 
+def _get_so_customer_name(sales_order_name):
+    customer = frappe.db.get_value("Sales Order", sales_order_name, "customer")
+    if not customer:
+        return ""
+    return frappe.db.get_value("Customer", customer, "customer_name") or customer
+
+
 def on_submit(doc, method=None):
     """Close 'Create Payment Entry' ToDos when a PE is submitted for a matching milestone."""
     _toggle_payment_entry_todos(doc, action="close")
@@ -67,6 +74,8 @@ def _toggle_payment_entry_todos(pe_doc, action="close"):
 
 def _close_pe_todos_for_so(sales_order_name):
     """Close all Open 'Create Payment Entry' ToDos for a Sales Order."""
+    customer_name = _get_so_customer_name(sales_order_name)
+    desc_filter = f"Create Payment Entry for {customer_name} | {sales_order_name}" if customer_name else "Create Payment Entry for%|"
     todos = frappe.db.get_all(
         "ToDo",
         filters={
@@ -74,7 +83,7 @@ def _close_pe_todos_for_so(sales_order_name):
             "reference_name": sales_order_name,
             "role": "Accounts Manager",
             "status": "Open",
-            "description": ["like", f"Create Payment Entry for%| {sales_order_name}"],
+            "description": ["like", desc_filter],
         },
         fields=["name"],
     )
@@ -88,6 +97,8 @@ def _close_pe_todos_for_so(sales_order_name):
 
 def _reopen_pe_todos_for_so(sales_order_name):
     """Reopen Closed 'Create Payment Entry' ToDos for a Sales Order."""
+    customer_name = _get_so_customer_name(sales_order_name)
+    desc_filter = f"Create Payment Entry for {customer_name} | {sales_order_name}" if customer_name else "Create Payment Entry for%|"
     todos = frappe.db.get_all(
         "ToDo",
         filters={
@@ -95,7 +106,7 @@ def _reopen_pe_todos_for_so(sales_order_name):
             "reference_name": sales_order_name,
             "role": "Accounts Manager",
             "status": "Closed",
-            "description": ["like", f"Create Payment Entry for%| {sales_order_name}"],
+            "description": ["like", desc_filter],
         },
         fields=["name"],
     )

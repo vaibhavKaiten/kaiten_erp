@@ -157,7 +157,8 @@ def _create_vendor_head_todos(doc, next_doctype):
         )
         return
 
-    description = f"{customer_first_name} - {next_doc_name} - Initiate {next_doctype}"
+    
+    description = f"Initiate {next_doctype} for {customer_first_name} - {next_doc_name}"
     due_date = get_execution_todo_due_date(next_doctype, next_doc_name)
 
     created = 0
@@ -277,9 +278,9 @@ def _sf_intercept_mc_approved(doc):
     customer_first_name = jf_data.get("first_name") or ""
     k_part = f" ({jf_data.get('k_number')})" if jf_data.get("k_number") else ""
     description = (
-        f"Collect Final Payment"
-        f" - {customer_first_name}{k_part}"
-        f" | {so_name}"
+        f"Collect Final Payment for"
+        f"  {customer_first_name}{k_part}"
+        f" - {so_name}"
     )
 
     if frappe.db.exists("ToDo", {
