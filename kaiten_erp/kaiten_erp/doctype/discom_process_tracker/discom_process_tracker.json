@@ -96,7 +96,7 @@
    "fieldname": "feasibility_status",
    "fieldtype": "Select",
    "label": "Feasibility Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Ok\nNot Ok"
   },
   {
    "fieldname": "feasibility_report",
