@@ -4,7 +4,7 @@ import frappe
 def execute():
     doctype = "DISCOM Process Tracker"
     fieldname = "feasibility_status"
-    options = " \nOk\nNot Ok"
+    options = "Ok\nNot Ok"
 
     frappe.db.set_value(
         "DocField",
@@ -33,18 +33,12 @@ def execute():
         )
 
     if frappe.db.table_exists(doctype) and frappe.db.has_column(doctype, fieldname):
-        frappe.db.sql(
-            """
-            UPDATE `tabDISCOM Process Tracker`
-            SET `feasibility_status` = ' '
-            WHERE `feasibility_status` = 'Pending'
-            """
-        )
+        # Migrate old values to new options
         frappe.db.sql(
             """
             UPDATE `tabDISCOM Process Tracker`
             SET `feasibility_status` = 'Ok'
-            WHERE `feasibility_status` = 'Approved'
+            WHERE `feasibility_status` IN ('Pending', 'Approved', ' ', '')
             """
         )
         frappe.db.sql(
