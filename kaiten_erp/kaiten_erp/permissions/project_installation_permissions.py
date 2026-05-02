@@ -45,25 +45,31 @@ def has_permission(doc, ptype=None, user=None):
     if not _has_active_todo(user, doc.name):
         return False
 
-    # Resolve supplier(s) for user
-    vendor_companies = frappe.db.sql("""
-        SELECT DISTINCT dl.link_name
-        FROM `tabContact` c
-        INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name
-        WHERE c.user = %s
-          AND dl.link_doctype = 'Supplier'
-          AND dl.parenttype = 'Contact'
-    """, (user,), as_dict=True)
+    # Vendor Head role has different permission logic - they can access any document with active ToDo
+    if "Vendor Head" in roles:
+        # Vendor Head users can access any document they have a ToDo for, regardless of supplier mapping
+        pass
+    else:
+        # Vendor Manager/Executive need supplier mapping
+        # Resolve supplier(s) for user
+        vendor_companies = frappe.db.sql("""
+            SELECT DISTINCT dl.link_name
+            FROM `tabContact` c
+            INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name
+            WHERE c.user = %s
+              AND dl.link_doctype = 'Supplier'
+              AND dl.parenttype = 'Contact'
+        """, (user,), as_dict=True)
 
-    vendor_names = [v.link_name for v in vendor_companies]
-    
-    # No supplier mapping → no access
-    if not vendor_names:
-        return False
-    
-    # Supplier must match
-    if doc.assigned_vendor not in vendor_names:
-        return False
+        vendor_names = [v.link_name for v in vendor_companies]
+        
+        # No supplier mapping → no access
+        if not vendor_names:
+            return False
+        
+        # Supplier must match
+        if doc.assigned_vendor not in vendor_names:
+            return False
 
     # Once ToDo exists and supplier matches, allow all CRUD operations
     if ptype in ("read", "write", "save", "submit", "cancel", "amend", "export", "share", "print"):
