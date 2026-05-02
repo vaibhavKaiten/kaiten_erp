@@ -67,6 +67,6 @@ Client Territory Data .csv
 .github/prompts/*
 .github/copilot-instructions.md
 
-# temp commenting this amc modules for now, as it is not being used and is taking up space in the repo. We can always add it back in later if needed.
+# roo code plans folder
 
-# kaiten_erp/amc/*
+plans/*
