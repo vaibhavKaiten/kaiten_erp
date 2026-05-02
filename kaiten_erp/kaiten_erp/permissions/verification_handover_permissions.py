@@ -71,7 +71,11 @@ def has_permission(doc, ptype=None, user=None):
         if not vendor_names:
             return False
         
-        # Supplier must match
+        # First ensure assigned_vendor is not empty/falsy
+        if not doc.assigned_vendor or not doc.assigned_vendor.strip():
+            return False
+        
+        # Then check if supplier matches
         if doc.assigned_vendor not in vendor_names:
             return False
 

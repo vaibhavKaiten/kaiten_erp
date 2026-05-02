@@ -71,7 +71,12 @@ def has_permission(doc, ptype=None, user=None):
             frappe.logger().info(f"Structure Mounting permission denied for {user}: No supplier mapping found")
             return False
         
-        # Supplier must match
+        # First ensure assigned_vendor is not empty/falsy
+        if not doc.assigned_vendor or not doc.assigned_vendor.strip():
+            frappe.logger().info(f"Structure Mounting permission denied for {user}: Document has no assigned vendor")
+            return False
+        
+        # Then check if supplier matches
         if doc.assigned_vendor not in vendor_names:
             frappe.logger().info(f"Structure Mounting permission denied for {user}: Document assigned to {doc.assigned_vendor}, user linked to {vendor_names}")
             return False
