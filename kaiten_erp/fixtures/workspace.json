@@ -103,7 +103,12 @@
     "roles": [],
     "sequence_id": 0.0,
     "shortcuts": [],
+<<<<<<< HEAD
+  "title": null,
+    "type": null
+=======
   "title": "AMC",
-  "type": "Workspace"
+    "type": "Workspace"
+>>>>>>> 772b21ede9c0526fb354d32094505519ce6793e3
   }
 ]
