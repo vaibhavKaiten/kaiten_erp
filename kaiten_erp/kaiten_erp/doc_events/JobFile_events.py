@@ -296,8 +296,8 @@ def _create_token_amount_todo(job_file):
     k_number = job_file.k_number or job_file.name
     amount = frappe.utils.fmt_money(job_file.token_amount_recieved, currency="INR")
 
-    description = f"{customer_name} - {k_number}. Create payment entry - {amount}"
-
+   
+    description = f"Create payment entry for {customer_name} - {k_number} (Token Amount: {amount})"
     accounts_managers = frappe.get_all(
         "Has Role",
         filters={"role": "Accounts Manager", "parenttype": "User"},
@@ -788,8 +788,7 @@ def assign_vendor_head_todos(job_file, technical_survey_name):
             continue
 
         customer_first_name = job_file.first_name or job_file.name
-        description = f"{customer_first_name} - {technical_survey_name} - Initiate Technical Survey"
-
+        description = f"Initiate Technical Survey for {customer_first_name} - {technical_survey_name}"
         from kaiten_erp.kaiten_erp.api.execution_chain_todo import get_execution_todo_due_date
         due_date = get_execution_todo_due_date("Technical Survey", technical_survey_name)
 

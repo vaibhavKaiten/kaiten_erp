@@ -68,7 +68,7 @@ def test_execution_manager_assignment(job_file_name):
                         "allocated_to": user,
                         "reference_type": "Job File",
                         "reference_name": job_file.name,
-                        "description": f"Job File requires approval. Negotiated Amount is less than MRP.",
+                        "description": f"Job File requires approval. Negotiated Amount is less than MRP for customer {job_file.customer}. ",
                         "priority": "High",
                         "status": "Open",
                     }
@@ -76,7 +76,7 @@ def test_execution_manager_assignment(job_file_name):
                 todo.flags.ignore_permissions = True
                 todo.insert()
                 frappe.db.commit()
-                print(f"    ✓ Created ToDo: {todo.name}")
+              
             except Exception as e:
                 print(f"    ✗ Error creating ToDo: {str(e)}")
                 import traceback

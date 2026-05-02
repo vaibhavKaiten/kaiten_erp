@@ -37,7 +37,7 @@ def has_permission(doc, ptype=None, user=None):
     if isinstance(doc, str):
         return True
 
-    is_vendor_user = any(r in roles for r in ["Vendor Executive", "Vendor Manager"])
+    is_vendor_user = any(r in roles for r in ["Vendor Executive", "Vendor Manager", "Vendor Head"])
     if not is_vendor_user:
         return False
 

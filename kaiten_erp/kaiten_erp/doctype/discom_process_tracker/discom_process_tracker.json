@@ -48,6 +48,7 @@
         "subsidy_status",
         "remarks",
         "tab_break_dwws",
+        "documents_html",
         "table_llpq"
     ],
     "fields": [
@@ -281,6 +282,12 @@
             "label": "Documents"
         },
         {
+            "fieldname": "documents_html",
+            "fieldtype": "HTML",
+            "label": "Documents HTML",
+            "options": ""
+        },
+        {
             "fieldname": "table_llpq",
             "fieldtype": "Table",
             "label": "Documents",
@@ -290,7 +297,7 @@
     "grid_page_length": 50,
     "index_web_pages_for_search": 1,
     "links": [],
-    "modified": "2026-04-26 17:50:52.812575",
+    "modified": "2026-05-02 00:00:00.000000",
     "modified_by": "Administrator",
     "module": "Kaiten Erp",
     "name": "DISCOM Process Tracker",

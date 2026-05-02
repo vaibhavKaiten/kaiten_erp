@@ -9,7 +9,11 @@
   "external_link": null,
   "for_user": null,
   "hide_custom": 0,
+<<<<<<< HEAD
   "icon": null,
+=======
+  "icon": "octicon octicon-home",
+>>>>>>> 772b21ede9c0526fb354d32094505519ce6793e3
   "indicator_color": null,
   "is_hidden": 0,
   "label": "AMC",
@@ -92,7 +96,11 @@
     "type": "Link"
    }
   ],
+<<<<<<< HEAD
   "modified": "2026-04-29 19:04:11.105254",
+=======
+  "modified": "2026-04-24 12:46:21.557315",
+>>>>>>> 772b21ede9c0526fb354d32094505519ce6793e3
   "module": "AMC",
   "name": "AMC",
   "number_cards": [],
@@ -103,7 +111,12 @@
   "roles": [],
   "sequence_id": 0.0,
   "shortcuts": [],
+<<<<<<< HEAD
   "title": null,
   "type": null
+=======
+  "title": "AMC",
+  "type": "Workspace"
+>>>>>>> 772b21ede9c0526fb354d32094505519ce6793e3
  }
 ]
