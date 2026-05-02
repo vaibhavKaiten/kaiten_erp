@@ -41,7 +41,7 @@ def has_permission(doc, ptype=None, user=None):
     if "Sales Manager" in roles:
         return bool(_has_active_todo(user, doc.name))
 
-    is_vendor_user = any(r in roles for r in ["Vendor Executive", "Vendor Manager"])
+    is_vendor_user = any(r in roles for r in ["Vendor Executive", "Vendor Manager", "Vendor Head"])
     if not is_vendor_user:
         return False
 
