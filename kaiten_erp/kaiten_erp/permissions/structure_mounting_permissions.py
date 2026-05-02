@@ -42,28 +42,44 @@ def has_permission(doc, ptype=None, user=None):
         return False
 
     # MUST have active ToDo assigned
-    if not _has_active_todo(user, doc.name):
+    has_todo = _has_active_todo(user, doc.name)
+    if not has_todo:
+        frappe.logger().info(f"Structure Mounting permission denied for {user}: No active ToDo for {doc.name}")
         return False
 
-    # Resolve supplier(s) for user
-    vendor_companies = frappe.db.sql("""
-        SELECT DISTINCT dl.link_name
-        FROM `tabContact` c
-        INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name
-        WHERE c.user = %s
-          AND dl.link_doctype = 'Supplier'
-          AND dl.parenttype = 'Contact'
-    """, (user,), as_dict=True)
+    # Vendor Head role has different permission logic - they can access any document with active ToDo
+    if "Vendor Head" in roles:
+        frappe.logger().info(f"Structure Mounting permission granted for Vendor Head {user} with active ToDo for {doc.name}")
+        # Vendor Head users can access any document they have a ToDo for, regardless of supplier mapping
+        # This allows them to supervise across multiple vendors
+    else:
+        # Vendor Manager/Executive need supplier mapping
+        # Resolve supplier(s) for user
+        vendor_companies = frappe.db.sql("""
+            SELECT DISTINCT dl.link_name
+            FROM `tabContact` c
+            INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name
+            WHERE c.user = %s
+              AND dl.link_doctype = 'Supplier'
+              AND dl.parenttype = 'Contact'
+        """, (user,), as_dict=True)
 
-    vendor_names = [v.link_name for v in vendor_companies]
-    
-    # No supplier mapping → no access
-    if not vendor_names:
-        return False
-    
-    # Supplier must match
-    if doc.assigned_vendor not in vendor_names:
-        return False
+        vendor_names = [v.link_name for v in vendor_companies]
+        
+        # No supplier mapping → no access
+        if not vendor_names:
+            frappe.logger().info(f"Structure Mounting permission denied for {user}: No supplier mapping found")
+            return False
+        
+        # First ensure assigned_vendor is not empty/falsy
+        if not doc.assigned_vendor or not doc.assigned_vendor.strip():
+            frappe.logger().info(f"Structure Mounting permission denied for {user}: Document has no assigned vendor")
+            return False
+        
+        # Then check if supplier matches
+        if doc.assigned_vendor not in vendor_names:
+            frappe.logger().info(f"Structure Mounting permission denied for {user}: Document assigned to {doc.assigned_vendor}, user linked to {vendor_names}")
+            return False
 
     # Once ToDo exists and supplier matches, allow all CRUD operations
     if ptype in ("read", "write", "save", "submit", "cancel", "amend", "export", "share", "print"):
